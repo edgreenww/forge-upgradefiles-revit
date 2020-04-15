@@ -16,16 +16,22 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
+require('dotenv').config()
 const path = require('path');
 const express = require('express');
 const cookieSession = require('cookie-session');
 
 const PORT = process.env.PORT || 3000;
 const config = require('./config');
+
+
+
 if (config.credentials.client_id == null || config.credentials.client_secret == null) {
     console.error('Missing FORGE_CLIENT_ID or FORGE_CLIENT_SECRET env. variables.');
     return;
 }
+
+console.log("FORGE_CLIENT_ID:", config.credentials.client_id)
 
 if (!String.prototype.format) {
     String.prototype.format = function () {

@@ -142,7 +142,8 @@ function cancelWorkitem(workItemId, access_token) {
 function upgradeFile(inputUrl, outputUrl, projectId, createVersionData, fileExtension, access_token_3Legged, access_token_2Legged) {
 
     return new Promise(function (resolve, reject) {
-
+        console.log("inputUrl", inputUrl )
+        console.log("outputUrl", outputUrl )
         const workitemBody = createPostWorkitemBody(inputUrl, outputUrl, fileExtension, access_token_3Legged.access_token);
         if( workitemBody === null){
             reject('workitem request body is null');
@@ -175,6 +176,9 @@ function upgradeFile(inputUrl, outputUrl, projectId, createVersionData, fileExte
                     createVersionData: createVersionData,
                     access_token_3Legged: access_token_3Legged
                 })
+
+                console.log("workitemList")
+                console.log(workitemList)
 
                 if (response.statusCode >= 400) {
                     console.log('error code: ' + response.statusCode + ' response message: ' + response.statusMessage);
@@ -476,6 +480,8 @@ function createPostWorkitemBody(inputUrl, outputUrl, fileExtension, access_token
             };
             break;
     }
+    console.log("workitem body")
+    console.log(body)
     return body;
 }
 

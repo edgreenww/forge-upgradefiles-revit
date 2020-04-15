@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -56,28 +56,83 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DesignAutomationBridge, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Autodesk.Forge.DesignAutomation.Revit.2019.0.0-beta2\lib\net47\DesignAutomationBridge.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="RevitAPI">
-      <HintPath>C:\Program Files\Autodesk\Revit 2019\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.XML" />
     <Reference Include="WindowsBase" />
+    <Reference Include="AdWindows">
+      <HintPath>packages\Autodesk.Revit.SDK.2020.2.1\lib\net471\AdWindows.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitAPI">
+      <HintPath>packages\Autodesk.Revit.SDK.2020.2.1\lib\net471\RevitAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitAPIIFC">
+      <HintPath>packages\Autodesk.Revit.SDK.2020.2.1\lib\net471\RevitAPIIFC.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitAPIMacros">
+      <HintPath>packages\Autodesk.Revit.SDK.2020.2.1\lib\net471\RevitAPIMacros.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitAPIUI">
+      <HintPath>packages\Autodesk.Revit.SDK.2020.2.1\lib\net471\RevitAPIUI.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitAPIUIMacros">
+      <HintPath>packages\Autodesk.Revit.SDK.2020.2.1\lib\net471\RevitAPIUIMacros.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitAddInUtility">
+      <HintPath>packages\Autodesk.Revit.SDK.2020.2.1\lib\net471\RevitAddInUtility.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitAPIBrowserUtils">
+      <HintPath>packages\Autodesk.Revit.SDK.2020.2.1\lib\net471\RevitAPIBrowserUtils.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitAPIFoundation">
+      <HintPath>packages\Autodesk.Revit.SDK.2020.2.1\lib\net471\RevitAPIFoundation.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitAPILink">
+      <HintPath>packages\Autodesk.Revit.SDK.2020.2.1\lib\net471\RevitAPILink.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitAPIMacrosInterop">
+      <HintPath>packages\Autodesk.Revit.SDK.2020.2.1\lib\net471\RevitAPIMacrosInterop.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitAPIMacrosInteropAPI">
+      <HintPath>packages\Autodesk.Revit.SDK.2020.2.1\lib\net471\RevitAPIMacrosInteropAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitAPISteel">
+      <HintPath>packages\Autodesk.Revit.SDK.2020.2.1\lib\net471\RevitAPISteel.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitAPIUILink">
+      <HintPath>packages\Autodesk.Revit.SDK.2020.2.1\lib\net471\RevitAPIUILink.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitAPIUIMacrosInterop">
+      <HintPath>packages\Autodesk.Revit.SDK.2020.2.1\lib\net471\RevitAPIUIMacrosInterop.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitAPIUIMacrosInteropAPI">
+      <HintPath>packages\Autodesk.Revit.SDK.2020.2.1\lib\net471\RevitAPIUIMacrosInteropAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitDB">
+      <HintPath>packages\Autodesk.Revit.SDK.2020.2.1\lib\net471\RevitDB.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitDBAPI">
+      <HintPath>packages\Autodesk.Revit.SDK.2020.2.1\lib\net471\RevitDBAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitNET">
+      <HintPath>packages\Autodesk.Revit.SDK.2020.2.1\lib\net471\RevitNET.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitUI">
+      <HintPath>packages\Autodesk.Revit.SDK.2020.2.1\lib\net471\RevitUI.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitUIAPI">
+      <HintPath>packages\Autodesk.Revit.SDK.2020.2.1\lib\net471\RevitUIAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="DesignAutomationBridge">
+      <HintPath>packages\Autodesk.Forge.DesignAutomation.Revit.2020.0.0\lib\net47\DesignAutomationBridge.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Command.cs" />
@@ -101,12 +156,12 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="FileUpgraderApp.bundle\Contents\FileUpgrader.addin" />
     <Content Include="FileUpgraderApp.bundle\Contents\FileUpgrader.dll" />
     <Content Include="FileUpgraderApp.bundle\PackageContents.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

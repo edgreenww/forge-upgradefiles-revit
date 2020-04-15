@@ -102,7 +102,7 @@ async function getHubs(oauthClient, credentials, res) {
     const hubs = new HubsApi();
     const data = await hubs.getHubs({}, oauthClient, credentials);
     const treeNodes = data.body.data.map((hub) => {
-        if( hub.attributes.extension.type === 'hubs:autodesk.bim360:Account'){
+        if( hub.attributes.extension.type === 'hubs:autodesk.bim360:Account'){  // hubs:autodesk.core:Hub
             const hubType = 'bim360Hubs';
             return createTreeNode(
                 hub.links.self.href,
@@ -110,9 +110,19 @@ async function getHubs(oauthClient, credentials, res) {
                 hubType,
                 true
             );
-        }else
+        }else if (hub.attributes.extension.type === 'hubs:autodesk.core:Hub'){  // hubs:autodesk.core:Hub
+            const hubType = 'bim360Hubs';
+            return createTreeNode(
+                hub.links.self.href,
+                hub.attributes.name,
+                hubType,
+                true
+            );
+        }
+        else{
             return null;
-        });
+        }
+    });
     // Only BIM360 hubs are supported for now
     res.json(treeNodes.filter(node => node !== null));
 }

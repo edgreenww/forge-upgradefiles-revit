@@ -64,6 +64,9 @@ router.post('/da4revit/v1/upgrader/files', async (req, res, next) => {
     const fileItemId   = req.body.fileItemId;
     const fileItemName = req.body.fileItemName;
 
+    console.log(req.body)
+
+
     if (fileItemId === '' || fileItemName === '') {
         res.status(500).end();
         return;
