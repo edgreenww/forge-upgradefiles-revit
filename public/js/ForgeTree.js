@@ -259,6 +259,7 @@ function upgradeFile(node) {
 
   const fileItemId   = node.id;
   const fileItemName = node.text;
+  console.log('node', node)
 
   jQuery.post({
     url: '/api/forge/da4revit/v1/upgrader/files',

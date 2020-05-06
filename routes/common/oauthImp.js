@@ -25,14 +25,26 @@ class OAuth {
         this._session = session;
     }
 
-    getClient(scopes = config.scopes.internal) {
-        const { client_id, client_secret, callback_url } = config.credentials;
-        return new AuthClientThreeLegged(client_id, client_secret, callback_url, scopes);
+    getClient(client_id = null, client_secret=null, scopes = config.scopes.internal) {
+        //const { client_id, client_secret, callback_url } = config.credentials;
+        return new AuthClientThreeLegged(
+            client_id || config.credentials.client_id, 
+            client_secret || config.credentials.client_secret,
+            config.credentials.callback_url, 
+            scopes
+            );
     }
 
-    get2LeggedClient(scopes = config.scopes.internal_2legged){
-        const { client_id, client_secret } = config.credentials;
-        return new AuthClientTwoLegged(client_id, client_secret, scopes );
+    get2LeggedClient(client_id = null, client_secret=null, scopes = config.scopes.internal_2legged){
+        // const { client_id, client_secret } = config.credentials;
+        console.log('here the shit')
+        console.log(client_id, config.credentials.client_id, client_secret , config.credentials.client_secret)
+        return new AuthClientTwoLegged(
+            client_id || config.credentials.client_id, 
+            client_secret || config.credentials.client_secret,
+            
+            scopes
+            );
     }
 
     isAuthorized() {
