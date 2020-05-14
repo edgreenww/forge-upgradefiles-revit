@@ -41,18 +41,168 @@ const SOCKET_TOPIC_WORKITEM = 'Workitem-Notification';
 let router = express.Router();
 
 
+
 ///////////////////////////////////////////////////////////////////////
 /// Middleware for obtaining a token for each request.
 ///////////////////////////////////////////////////////////////////////
 router.use(async (req, res, next) => {
     const oauth = new OAuth(req.session);
     let credentials = await oauth.getInternalToken();
+
     let oauth_client = oauth.getClient();
 
+    let incomingCreds = {
+        "client_id" : req.client_id,
+        "client_secret" : req.client_secret,
+
+    }
+    console.log('credentials', credentials)
+    // let oauth_client2 = oauth.getClientOurWay(req.scopes, incomingCreds);
+    console.log('oauth_client', oauth_client)
     req.oauth_client = oauth_client;
     req.oauth_token = credentials;
     next();
 });
+
+
+///////////////////////////////////////////////////////////////////////
+/// NEW ROUTE - upgrade revit file to specified version using Design Automation 
+/// for Revit API - python call version
+///////////////////////////////////////////////////////////////////////
+router.post('/da4revit/v1/upgrader/files/api', async (req, res, next) => {
+    const fileItemId   = req.body.fileItemId;
+    const fileItemName = req.body.fileItemName;
+
+    if (fileItemId === '' || fileItemName === '') {
+        res.status(500).end();
+        return;
+    }
+
+    if (fileItemId === '#') {
+        res.status(500).end('not supported item');
+    } 
+
+    const params = fileItemId.split('/');
+    if( params.length < 3){
+        res.status(500).end('selected item id has problem');
+    }
+
+    const resourceName = params[params.length - 2];
+    if (resourceName !== 'items') {
+        res.status(500).end('not supported item');
+        return;
+    }
+
+    const resourceId = params[params.length - 1];
+    const projectId = params[params.length - 3];
+
+    const incoming_oauth_token = {
+        "access_token": req.body.oauth_token,
+        "expires_in" : 3600
+    }
+
+    const incoming_oauth_token_2legged = {
+        "access_token":  req.body.oauth2_token,
+        "expires_in" : 3600
+    }
+   
+
+
+
+    console.log("incoming_oauth_token", incoming_oauth_token)
+
+    console.log("req.oauth_client", req.oauth_client)
+
+    
+    console.log(fileItemId, fileItemName )
+    try {
+        const items = new ItemsApi();
+        console.log('Getting parent item folder....')
+        
+
+        const folder = await items.getItemParentFolder(projectId, resourceId, req.oauth_client, incoming_oauth_token);
+        if(folder === null || folder.statusCode !== 200){
+            console.log('failed to get the parent folder.');
+            res.status(500).end('ailed to get the parent folder');
+            return;
+        }
+        console.log('Getting parent item folder.... success')
+        console.log('Checking file format ....')
+        
+        const fileParams = fileItemName.split('.');
+        const fileExtension = fileParams[fileParams.length-1].toLowerCase();
+        if( fileExtension !== 'rvt' && fileExtension !== 'rfa' && fileExtension !== 'fte'){
+            console.log('info: the file format is not supported');
+            res.status(500).end('the file format is not supported');
+            return;
+        }
+
+        console.log('Checking file format .... OK')
+
+        console.log('Creating storage.. ')
+
+        const storageInfo = await getNewCreatedStorageInfo(projectId, folder.body.data.id, fileItemName, req.oauth_client, incoming_oauth_token);
+        if (storageInfo === null ) {
+            console.log('failed to create the storage');
+            res.status(500).end('failed to create the storage');
+            return;
+        }
+        const outputUrl = storageInfo.StorageUrl;
+        console.log('Creating storage..  OK')
+        console.log('Getting latest version info... ')
+
+        // get the storage of the input item version
+        const versionInfo = await getLatestVersionInfo(projectId, resourceId, req.oauth_client, incoming_oauth_token);
+        if (versionInfo === null ) {
+            console.log('failed to get lastest version of the file');
+            res.status(500).end('failed to get lastest version of the file');
+            return;
+        }
+        const inputUrl = versionInfo.versionUrl;
+        console.log('Getting latest version info... success')
+
+        console.log('Creating version body...')
+
+        const createVersionBody = createBodyOfPostVersion(resourceId,fileItemName, storageInfo.StorageId, versionInfo.versionType);
+        if (createVersionBody === null ) {
+            console.log('failed to create body of Post Version');
+            res.status(500).end('failed to create body of Post Version');
+            return;
+        }
+        console.log('Creating version body... OK')
+        
+
+        ////////////////////////////////////////////////////////////////////////////////
+        // use 2 legged token for design automation
+
+        console.log('Getting 2 legged authentication for Design Automation')
+        const oauth = new OAuth(req.session);
+        const oauth_client = oauth.get2LeggedClient();;
+        const oauth_token = await oauth_client.authenticate();
+
+        console.log('Authenticated... ')
+        console.log('Sending upgrade request... ')
+
+        let upgradeRes = await upgradeFile(inputUrl, outputUrl, projectId, createVersionBody, fileExtension, incoming_oauth_token, incoming_oauth_token_2legged );
+        if(upgradeRes === null || upgradeRes.statusCode !== 200 ){
+            console.log('failed to upgrade the revit file');
+            res.status(500).end('failed to upgrade the revit file');
+            return;
+        }
+        console.log('Submitted the workitem: '+ upgradeRes.body.id);
+        const upgradeInfo = {
+            "fileName": fileItemName,
+            "workItemId": upgradeRes.body.id,
+            "workItemStatus": upgradeRes.body.status
+        };
+        res.status(200).end(JSON.stringify(upgradeInfo));
+
+    } catch (err) {
+        console.log('get exception while upgrading the file')
+        res.status(500).end(err);
+    }
+
+})
 
 
 
@@ -89,13 +239,18 @@ router.post('/da4revit/v1/upgrader/files', async (req, res, next) => {
 
     try {
         const items = new ItemsApi();
+        console.log('Getting parent item folder....')
+        console.log('projectId, resourceId, req.oauth_client, req.oauth_token', projectId, resourceId, req.oauth_client, req.oauth_token)
+
         const folder = await items.getItemParentFolder(projectId, resourceId, req.oauth_client, req.oauth_token);
         if(folder === null || folder.statusCode !== 200){
             console.log('failed to get the parent folder.');
             res.status(500).end('ailed to get the parent folder');
             return;
         }
-
+        console.log('Getting parent item folder.... success')
+        console.log('Checking file format ....')
+        
         const fileParams = fileItemName.split('.');
         const fileExtension = fileParams[fileParams.length-1].toLowerCase();
         if( fileExtension !== 'rvt' && fileExtension !== 'rfa' && fileExtension !== 'fte'){
@@ -103,7 +258,10 @@ router.post('/da4revit/v1/upgrader/files', async (req, res, next) => {
             res.status(500).end('the file format is not supported');
             return;
         }
+        console.log('Checking file format .... OK')
 
+        console.log('Creating storage.. ')
+        
         const storageInfo = await getNewCreatedStorageInfo(projectId, folder.body.data.id, fileItemName, req.oauth_client, req.oauth_token);
         if (storageInfo === null ) {
             console.log('failed to create the storage');
@@ -112,6 +270,8 @@ router.post('/da4revit/v1/upgrader/files', async (req, res, next) => {
         }
         const outputUrl = storageInfo.StorageUrl;
 
+        console.log('Creating storage..  OK')
+        console.log('Getting latest version info... ')
 
         // get the storage of the input item version
         const versionInfo = await getLatestVersionInfo(projectId, resourceId, req.oauth_client, req.oauth_token);
@@ -121,19 +281,28 @@ router.post('/da4revit/v1/upgrader/files', async (req, res, next) => {
             return;
         }
         const inputUrl = versionInfo.versionUrl;
+        console.log('Getting latest version info... success')
 
+        
+
+        console.log('Creating version body...')
         const createVersionBody = createBodyOfPostVersion(resourceId,fileItemName, storageInfo.StorageId, versionInfo.versionType);
         if (createVersionBody === null ) {
             console.log('failed to create body of Post Version');
             res.status(500).end('failed to create body of Post Version');
             return;
         }
-
+        console.log('Creating version body... OK')
+        
         ////////////////////////////////////////////////////////////////////////////////
         // use 2 legged token for design automation
+
+        console.log('Getting 2 legged authentication for Design Automation')
         const oauth = new OAuth(req.session);
         const oauth_client = oauth.get2LeggedClient();;
         const oauth_token = await oauth_client.authenticate();
+        console.log('Authenticated... ')
+        console.log('Sending upgrade request... ')
         let upgradeRes = await upgradeFile(inputUrl, outputUrl, projectId, createVersionBody, fileExtension, req.oauth_token, oauth_token );
         if(upgradeRes === null || upgradeRes.statusCode !== 200 ){
             console.log('failed to upgrade the revit file');

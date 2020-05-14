@@ -25,6 +25,18 @@ class OAuth {
         this._session = session;
     }
 
+    getClientOurWay(scopes = config.scopes.internal, credentials){
+        const { client_id, client_secret, callback_url } = credentials;
+        return new AuthClientThreeLegged(client_id, client_secret, callback_url, scopes);
+    }
+
+    
+
+    get2LeggedClientOurWay(scopes = config.scopes.internal_2legged, credentials){
+        const { client_id, client_secret } = credentials;
+        return new AuthClientTwoLegged(client_id, client_secret, scopes );
+    }
+
     getClient(scopes = config.scopes.internal) {
         const { client_id, client_secret, callback_url } = config.credentials;
         return new AuthClientThreeLegged(client_id, client_secret, callback_url, scopes);
