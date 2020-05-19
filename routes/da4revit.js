@@ -52,11 +52,15 @@ router.use(async (req, res, next) => {
     let oauth_client = oauth.getClient();
 
     let incomingCreds = {
-        "client_id" : req.client_id,
-        "client_secret" : req.client_secret,
+        "client_id" : req.body.client_id,
+        "client_secret" : req.body.client_secret,
 
     }
     console.log('credentials', credentials)
+    if (incomingCreds.client_id){
+        console.log("Using incomeing credentials...")
+        credentials = incomingCreds
+    }
     // let oauth_client2 = oauth.getClientOurWay(req.scopes, incomingCreds);
     console.log('oauth_client', oauth_client)
     req.oauth_client = oauth_client;
