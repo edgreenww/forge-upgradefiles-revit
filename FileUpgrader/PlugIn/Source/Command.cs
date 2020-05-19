@@ -43,6 +43,15 @@ namespace ADNPlugin.Revit.FileUpgrader
     {
         public ExternalDBApplicationResult OnStartup(ControlledApplication application)
         {
+            // we cannot use DialogBoxShowing event as this is part of UIApplication namespace
+            // see https://thebuildingcoder.typepad.com/blog/2009/06/autoconfirm-save-using-dialogboxshowing-event.html
+
+            // also - seems that the DialogBoxShowing event does not fire when model is opened
+            // https://forums.autodesk.com/t5/revit-api-forum/dialogboxshowing-event-not-firing-when-model-is-opened/td-p/5578594
+
+            //application.DialogBoxShowing += new EventHandler<DialogBoxShowingEventArgs>(
+            //    a_DialogBoxShowing);
+
             if (RuntimeValue.RunOnCloud)
             {
                 DesignAutomationBridge.DesignAutomationReadyEvent += HandleDesignAutomationReadyEvent;
@@ -66,6 +75,7 @@ namespace ADNPlugin.Revit.FileUpgrader
         public void HandleDesignAutomationReadyEvent( object sender, DesignAutomationReadyEventArgs e)
         {
             e.Succeeded = true;
+            
             UpgradeFile(e.DesignAutomationData);
         }
 
@@ -79,26 +89,39 @@ namespace ADNPlugin.Revit.FileUpgrader
             if (rvtApp == null)
                 throw new InvalidDataException(nameof(rvtApp));
 
-            string modelPath = data.FilePath;
-            if (String.IsNullOrWhiteSpace(modelPath))
-                throw new InvalidDataException(nameof(modelPath));
+            //string modelPath = data.FilePath;
+            //if (String.IsNullOrWhiteSpace(modelPath))
+            //    throw new InvalidDataException(nameof(modelPath));
 
-            Document doc = data.RevitDoc;
+            ModelPath path = ModelPathUtils.ConvertUserVisiblePathToModelPath("input.rvt");
+            //var opts = new OpenOptions
+            // Console.WriteLine("Ed");
+            // Console.WriteLine(path);
+            OpenOptions opts = new OpenOptions();
+            // opts.Audit = true; // will take longer to open but may avoid CorruptModelException errors
+            // opts.DetachFromCentralOption = DetachFromCentralOption.DetachAndPreserveWorksets;
+            opts.DetachFromCentralOption = DetachFromCentralOption.ClearTransmittedSaveAsNewCentral;
+
+            // Document doc = data.RevitDoc;
+            Document doc = rvtApp.OpenDocumentFile(path, opts);
+
+            // Document doc = data.RevitDoc; 
             if (doc == null)
                 throw new InvalidOperationException("Could not open document.");
 
-            BasicFileInfo fileInfo = BasicFileInfo.Extract(modelPath);
-            if (fileInfo.Format.Equals("2019"))
-                return;
+            //BasicFileInfo fileInfo = BasicFileInfo.Extract(modelPath);
+            //if (fileInfo.Format.Equals("2019"))
+            //    return;
 
             string pathName = doc.PathName;
             string[] pathParts = pathName.Split('\\');
             string[] nameParts = pathParts[pathParts.Length - 1].Split('.');
             string extension = nameParts[nameParts.Length - 1];
             string filePath = "revitupgrade." + extension;
-            ModelPath path = ModelPathUtils.ConvertUserVisiblePathToModelPath(filePath);
+            ModelPath outputPath = ModelPathUtils.ConvertUserVisiblePathToModelPath(filePath);
 
             SaveAsOptions saveOpts = new SaveAsOptions();
+
             // Check for permanent preview view
             if (doc
               .GetDocumentPreviewSettings()
@@ -118,8 +141,15 @@ namespace ADNPlugin.Revit.FileUpgrader
                 {
                     saveOpts.PreviewViewId = view.Id;
                 }
+
+                WorksharingSaveAsOptions wsOpts = new WorksharingSaveAsOptions();
+                wsOpts.SaveAsCentral = true;
+
+                saveOpts.SetWorksharingOptions(wsOpts);
+                saveOpts.OverwriteExistingFile = true;
+
             }
-            doc.SaveAs(path, saveOpts);
+            doc.SaveAs(outputPath, saveOpts);
         }
 
 
