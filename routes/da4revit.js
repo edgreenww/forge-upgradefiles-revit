@@ -73,7 +73,16 @@ router.use(async (req, res, next) => {
 /// for Revit API - python call version
 ///////////////////////////////////////////////////////////////////////
 
+const fs = require('fs');
+const zlib = require('zlib');
+
 router.get('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
+    
+
+    const fileContents = fs.createReadStream('routes/data/file1.txt.gz');
+
+    console.log(fileContents);
+
     res.status(200).end("unzip endpoint called");
 })
 
