@@ -162,6 +162,12 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     let downloadedFile = _downloadFile(inputFileUrl, downloadFilePath )
 
     console.log("downloadedFile: ", downloadedFile)
+    const dataFolder = 'routes/data'
+    fs.readdir(dataFolder, (err, files) => {
+        files.forEach(file => {
+          console.log(file);
+        });
+      });
 
     let unzipper = new DecompressZip( absoluteZipFilePath);
 
