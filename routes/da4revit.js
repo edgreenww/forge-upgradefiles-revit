@@ -77,6 +77,20 @@ const fs = require('fs');
 const zlib = require('zlib');
 const DecompressZip = require('decompress-zip');
 
+const http = require("http")
+
+const request = require("request")
+
+function _downloadFile(url, pathName) {
+    return new Promise((resolve, reject) => {
+      request.head(url, function(){
+        request(url).pipe(fs.createWriteStream(pathName))
+          .on('close', () => resolve(pathName))
+          .on('error', error =>  reject(error))
+      });
+    })
+  }
+
 router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     
     // gunzip
@@ -144,6 +158,11 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     // try using the inputurl of the file from the autodesk storage
     let inputFileUrl = inputUrl.replace('rvt', 'zip') // <-- this doesnt work - maybe we have to request / pipe from this url?
     console.log('Attempting to unzip from URL: ', inputFileUrl)
+    const downloadFilePath = 'routes/data/dowmnload.zip'
+    let downloadedFile = _downloadFile(inputFileUrl, downloadFilePath )
+
+    console.log("downloadedFile: ", downloadedFile)
+
     let unzipper = new DecompressZip( absoluteZipFilePath);
 
     let extractFilePath = 'routes/data'
