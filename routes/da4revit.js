@@ -75,16 +75,32 @@ router.use(async (req, res, next) => {
 
 const fs = require('fs');
 const zlib = require('zlib');
+const DecompressZip = require('decompress-zip');
 
 router.get('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     
-    const fileContents = fs.createReadStream('routes/data/revitfile.zip');
-    console.log(fileContents);
-    const unzippedFilePath = 'routes/data/revitfile.rvt'
-    const writeStream = fs.createWriteStream(unzippedFilePath);
-    const unzip = zlib.createGunzip();
-    fileContents.pipe(unzip).pipe(writeStream);
-    res.download(unzippedFilePath).end("unzip endpoint called");
+    // gunzip
+    // const fileContents = fs.createReadStream('routes/data/revitfile.zip');
+    // console.log(fileContents);
+    // const unzippedFilePath = 'routes/data/revitfile.rvt'
+    // const writeStream = fs.createWriteStream(unzippedFilePath);
+    // const unzip = zlib.createGunzip();
+    // fileContents.pipe(unzip).pipe(writeStream);
+    // res.download(unzippedFilePath).end("unzip endpoint called");
+    let absoluteZipFilePath = 'routes/data/revitfile.zip'
+
+    let unzipper = new DecompressZip( absoluteZipFilePath);
+
+    let extractFilePath = 'routes/data'
+
+    unzipper.extract({
+        path: extractFilePath
+    })
+    unzipper.on('extract', function (log) {
+        console.log('log es', log);
+    });
+
+
 })
 
 
