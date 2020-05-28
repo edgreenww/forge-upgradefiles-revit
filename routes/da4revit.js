@@ -68,6 +68,17 @@ router.use(async (req, res, next) => {
     next();
 });
 
+///////////////////////////////////////////////////////////////////////
+/// NEW ROUTE - upgrade revit file to specified version using Design Automation 
+/// for Revit API - python call version
+///////////////////////////////////////////////////////////////////////
+
+router.get('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
+    res.status(200).end("unzip endpoint called");
+})
+
+
+
 
 ///////////////////////////////////////////////////////////////////////
 /// NEW ROUTE - upgrade revit file to specified version using Design Automation 
