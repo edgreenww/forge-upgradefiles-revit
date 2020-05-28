@@ -98,7 +98,13 @@ router.get('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     })
     unzipper.on('extract', function (log) {
         console.log('log es', log);
+
+        let extractFilePath
+        
+        res.download(extractFilePath +'\\'+ log[0].deflated).end("unzip endpoint called");
     });
+
+    
 
 
 })
