@@ -178,6 +178,8 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
         });
       });
 
+    absoluteZipFilePath = downloadFilePath
+
     let unzipper = new DecompressZip( absoluteZipFilePath);
 
     let extractFilePath = 'routes/data'
