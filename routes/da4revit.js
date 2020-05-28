@@ -140,8 +140,10 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     /////////
     let absoluteZipFilePath = 'routes/data/revitfile.zip'
-    absoluteZipFilePath = inputUrl.replace('rvt', 'zip')
-    console.log('Attempting to unzip: ', absoluteZipFilePath)
+
+    // try using the inputurl of the file from the autodesk storage
+    let inputFileUrl = inputUrl.replace('rvt', 'zip') // <-- this doesnt work - maybe we have to request / pipe from this url?
+    console.log('Attempting to unzip from URL: ', inputFileUrl)
     let unzipper = new DecompressZip( absoluteZipFilePath);
 
     let extractFilePath = 'routes/data'
