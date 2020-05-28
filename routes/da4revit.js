@@ -141,7 +141,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     /////////
     let absoluteZipFilePath = 'routes/data/revitfile.zip'
     absoluteZipFilePath = inputUrl[0].replace('rvt', 'zip')
-
+    console.log('Attempting to unzip: ', absoluteZipFilePath)
     let unzipper = new DecompressZip( absoluteZipFilePath);
 
     let extractFilePath = 'routes/data'
