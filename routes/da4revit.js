@@ -163,6 +163,8 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     // let downloadedFile = _downloadFile(inputFileUrl, downloadFilePath )
     // console.log("downloadedFile: ", downloadedFile)
 
+    inoutFileUrl = "https://images.unsplash.com/photo-1494253109108-2e30c049369b"
+
     request(inputFileUrl).pipe(fs.createWriteStream(downloadFilePath))
 
     const dataFolder = 'routes/data'
