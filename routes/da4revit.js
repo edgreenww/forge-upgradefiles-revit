@@ -78,9 +78,9 @@ const zlib = require('zlib');
 
 router.get('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     
-    const fileContents = fs.createReadStream('routes/data/file1.txt.gz');
+    const fileContents = fs.createReadStream('routes/data/revitfile.zip');
     console.log(fileContents);
-    const unzippedFilePath = 'routes/data/file1.txt'
+    const unzippedFilePath = 'routes/data/revitfile.rvt'
     const writeStream = fs.createWriteStream(unzippedFilePath);
     const unzip = zlib.createGunzip();
     fileContents.pipe(unzip).pipe(writeStream);
