@@ -178,7 +178,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
         });
       });
 
-    absoluteZipFilePath = downloadFilePath
+    // absoluteZipFilePath = downloadFilePath  // didnt work... nice try
 
     let unzipper = new DecompressZip( absoluteZipFilePath);
 
