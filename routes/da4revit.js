@@ -173,12 +173,12 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
         files.forEach(file => {
 
             let f = file
-            let stats = fs.statSync(f)
+            let stats = fs.statSync(dataFolder+'/'+f)
             let sizeInBytes = stats["size"]
             let sizeInMB = sizeInBytes/1000000
 
-        //   console.log(file, sizeInMB+"MB");
-        console.log(file)
+         console.log(file, sizeInMB+"MB");
+       // console.log(file)
         });
       });
 
