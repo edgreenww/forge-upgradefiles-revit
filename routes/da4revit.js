@@ -77,7 +77,7 @@ const fs = require('fs');
 const zlib = require('zlib');
 const DecompressZip = require('decompress-zip');
 
-router.get('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
+router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     
     // gunzip
     // const fileContents = fs.createReadStream('routes/data/revitfile.zip');
@@ -87,6 +87,58 @@ router.get('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     // const unzip = zlib.createGunzip();
     // fileContents.pipe(unzip).pipe(writeStream);
     // res.download(unzippedFilePath).end("unzip endpoint called");
+
+    //////////
+
+    const fileItemId   = req.body.fileItemId;
+    const fileItemName = req.body.fileItemName;
+
+    if (fileItemId === '' || fileItemName === '') {
+        res.status(500).end();
+        return;
+    }
+
+    if (fileItemId === '#') {
+        res.status(500).end('not supported item');
+    } 
+
+    const params = fileItemId.split('/');
+    if( params.length < 3){
+        res.status(500).end('selected item id has problem');
+    }
+
+    const resourceName = params[params.length - 2];
+    if (resourceName !== 'items') {
+        res.status(500).end('not supported item');
+        return;
+    }
+
+    const resourceId = params[params.length - 1];
+    const projectId = params[params.length - 3];
+
+    const incoming_oauth_token = {
+        "access_token": req.body.oauth_token,
+        "expires_in" : 3600
+    }
+
+    const incoming_oauth_token_2legged = {
+        "access_token":  req.body.oauth2_token,
+        "expires_in" : 3600
+    }
+
+    // get the storage of the input item version
+
+
+    const versionInfo = await getLatestVersionInfo(projectId, resourceId, req.oauth_client, incoming_oauth_token);
+    if (versionInfo === null ) {
+        console.log('failed to get lastest version of the file');
+        res.status(500).end('failed to get lastest version of the file');
+        return;
+    }
+    const inputUrl = versionInfo.versionUrl;
+    console.log('inputUrl: ', inputUrl)
+
+    /////////
     let absoluteZipFilePath = 'routes/data/revitfile.zip'
 
     let unzipper = new DecompressZip( absoluteZipFilePath);
@@ -97,9 +149,10 @@ router.get('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
         path: extractFilePath
     })
     unzipper.on('extract', function (log) {
-        console.log('log es', log);
-        
-        res.download(extractFilePath +'/'+ log[0].deflated).end("unzip endpoint called");
+        console.log('extract log ', log);
+        // send the (first) file extracted as a download to the client
+        //res.download(extractFilePath +'/'+ log[0].deflated).end("unzip endpoint called");
+        res.status(200).end(inputUrl);
     });
 
     
