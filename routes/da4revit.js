@@ -158,7 +158,8 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     // try using the inputurl of the file from the autodesk storage
     let inputFileUrl = inputUrl.replace('rvt', 'zip') // <-- this doesnt work - maybe we have to request / pipe from this url?
     console.log('Attempting to unzip from URL: ', inputFileUrl)
-    const downloadFilePath = 'routes/data/streamedDownload.zip'
+    let timestamp = Date.now()
+    const downloadFilePath = `routes/data/streamedDownload_${timestamp}.zip`
     // let downloadedFile = _downloadFile(inputFileUrl, downloadFilePath )
     // console.log("downloadedFile: ", downloadedFile)
 
@@ -168,7 +169,11 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     console.log('Files in local file system: ')
     fs.readdir(dataFolder, (err, files) => {
         files.forEach(file => {
-          console.log(file);
+            let stats = fs.statSync(file)
+            let sizeInBytes = stats["size"]
+            let sizeInMB = sizeInBytes/1000000
+
+          console.log(file, sizeInMB+"MB");
         });
       });
 
