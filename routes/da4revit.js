@@ -80,17 +80,7 @@ const http = require("http")
 
 const request = require("request")
 
-function _downloadFile(url, pathName) {
-    return new Promise((resolve, reject) => {
-      request.head(url, function(){
-        request(url).pipe(fs.createWriteStream(pathName))
-          .on('close', () => resolve(pathName))
-          .on('error', error =>  reject(error))
-      });
-    })
-  }
-
-  const download = (url, dest, token, cb) => {
+const download = (url, dest, token, cb) => {
     const file = fs.createWriteStream(dest);
     console.log('Attempting download of: ', url)
 
