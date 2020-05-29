@@ -97,10 +97,10 @@ function _downloadFile(url, pathName) {
 
     const reqOptions = {
         url: url,
-        // headers: {
-        //     "Content-Type": "application/json",
-        //     "Authorization": "Bearer " + token,
-        // }
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+        }
     }
 
     console.log("reqOptions", reqOptions)
@@ -247,7 +247,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     let absoluteZipFilePath = 'routes/data/revitfile.zip'
 
     // try using the inputurl of the file from the autodesk storage
-    let inputFileUrl = inputUrl.replace('rvt', 'zip') // <-- this doesnt work - maybe we have to request / pipe from this url?
+    let inputFileUrl = inputUrl.replace('rvt', 'zip') 
     console.log('Attempting to unzip from URL: ', inputFileUrl)
     let timestamp = Date.now()
     const downloadFilePath = `routes/data/streamedDownload_${timestamp}.zip`
@@ -259,7 +259,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     const testZipUrl = "https://ww-emea-meptools.s3.eu-west-2.amazonaws.com/test/rac_advanced_sample_project.rvt+AWS+copy.zip"
     // request(inputFileUrl).pipe(fs.createWriteStream(downloadFilePath))
 
-    const url = testZipUrl
+    const url = inputUrl // testZipUrl
 
     let token = req.body.oauth_token
     console.log('Attempting to stream download from URL: ', url)
