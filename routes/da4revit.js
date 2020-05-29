@@ -231,8 +231,8 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     // request(inputFileUrl).pipe(fs.createWriteStream(downloadFilePath))
 
     let token = req.body.oauth_token
-
-    download(testUrl, downloadFilePath, token, listFiles)
+    console.log('Attempting to stream download from URL: ', inputUrl)
+    download(inputUrl, downloadFilePath, token, listFiles)
 
     // absoluteZipFilePath = downloadFilePath  // didnt work... nice try
 
