@@ -97,10 +97,10 @@ function _downloadFile(url, pathName) {
 
     const reqOptions = {
         url: url,
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token,
-        }
+        // headers: {
+        //     "Content-Type": "application/json",
+        //     "Authorization": "Bearer " + token,
+        // }
     }
 
     console.log("reqOptions", reqOptions)
