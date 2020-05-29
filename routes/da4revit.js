@@ -248,7 +248,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     // try using the inputurl of the file from the autodesk storage
     let bim360UrlZip = bim360Url.replace('rvt', 'zip') 
-    console.log('Attempting to unzip from URL: ', inputFileUrl)
+    console.log('Attempting to unzip from URL: ', bim360UrlZip)
     let timestamp = Date.now()
     const downloadFilePath = `routes/data/streamedDownload_${timestamp}.zip`
     // let downloadedFile = _downloadFile(inputFileUrl, downloadFilePath )
