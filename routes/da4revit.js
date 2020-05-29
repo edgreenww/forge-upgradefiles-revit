@@ -91,10 +91,22 @@ function _downloadFile(url, pathName) {
     })
   }
 
-  const download = (url, dest, cb) => {
+  const download = (url, dest, token, cb) => {
     const file = fs.createWriteStream(dest);
     console.log('Attempting download of: ', url)
-    const sendReq = request.get(url);
+
+    const reqOptions = {
+        url: url,
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+        }
+    }
+
+    console.log("reqOptions", reqOptions)
+
+    
+    const sendReq = request.get(reqOptions);
 
     // verify response code
     sendReq.on('response', (response) => {
@@ -218,9 +230,9 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     // request(inputFileUrl).pipe(fs.createWriteStream(downloadFilePath))
 
-   
+    let token = req.body.oauth_token
 
-    download(testUrl, downloadFilePath, listFiles)
+    download(testUrl, downloadFilePath, token, listFiles)
 
     // absoluteZipFilePath = downloadFilePath  // didnt work... nice try
 
