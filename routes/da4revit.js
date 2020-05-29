@@ -161,13 +161,16 @@ const listFiles = () => {
         files.forEach(file => {
 
             let f = file
-            let stats = fs.statSync(dataFolder+'/'+f)
+            let filePath = dataFolder+'/'+f
+            let stats = fs.statSync(filePath)
             let sizeInBytes = stats["size"]
             let sizeInMB = sizeInBytes/1000000
 
-         console.log(file, sizeInMB+"MB");
-
-         unzip(file)
+            console.log(file, sizeInMB+"MB");
+            if (filePath.includes(".zip")){
+                console.log('Unzipping ' + filePath )
+                unzip(filePath)
+            }
        
         });
       });
