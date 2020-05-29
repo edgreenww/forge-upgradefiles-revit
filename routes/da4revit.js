@@ -256,12 +256,13 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     const testImgUrl = "https://images.unsplash.com/photo-1494253109108-2e30c049369b"
 
-    const testZipUrl = "https://ww-emea-meptools.s3.eu-west-2.amazonaws.com/test/rac_advanced_sample_project.rvt+AWS+copy.zip"
+    // const testZipUrl = "https://ww-emea-meptools.s3.eu-west-2.amazonaws.com/test/rac_advanced_sample_project.rvt+AWS+copy.zip"
+    const testZipUrl = "https://ww-emea-meptools.s3.eu-west-2.amazonaws.com/test/LON_1+Fore+Street_Capital+Improvement_Citi.zip"
     // request(inputFileUrl).pipe(fs.createWriteStream(downloadFilePath))
 
     // unzip is successful using a zip file created locally (in MacOS -> compress file)
     // possibly unexpected 'zip' format when dealing with Autodesk CompositeDesign file
-    const url = bim360Url // testZipUrl
+    const url = testZipUrl // bim360Url // 
 
     let token = req.body.oauth_token
     console.log('Attempting to stream download from URL: ', url)
