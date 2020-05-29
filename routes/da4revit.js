@@ -99,7 +99,9 @@ function _downloadFile(url, pathName) {
     // verify response code
     sendReq.on('response', (response) => {
         if (response.statusCode !== 200) {
-            return cb('Response status was ' + response.statusCode);
+            console.log("response status " + response.statusCode)
+            // return cb('Response status was ' + response.statusCode);
+            return
         }
 
         sendReq.pipe(file);
