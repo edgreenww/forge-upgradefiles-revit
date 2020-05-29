@@ -98,10 +98,10 @@ function _downloadFile(url, pathName) {
     const reqOptions = {
         url: url,
         // omit headers when retrieving a file from AWS without requiring authentication
-        // headers: {
-        //     "Content-Type": "application/json",
-        //     "Authorization": "Bearer " + token,
-        // }
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+        }
     }
 
     console.log("reqOptions", reqOptions)
@@ -263,7 +263,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     // unzip is successful using a zip file created locally (in MacOS -> compress file)
     // possibly unexpected 'zip' format when dealing with Autodesk CompositeDesign file
-    const url = testZipUrl // bim360Url // 
+    const url = bim360Url // testZipUrl // 
 
     let token = req.body.oauth_token
     console.log('Attempting to stream download from URL: ', url)
