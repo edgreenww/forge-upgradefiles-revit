@@ -134,6 +134,23 @@ function _downloadFile(url, pathName) {
     });
 };
 
+const unzip = (file) => {
+
+    let unzipper = new DecompressZip( file);
+
+    let extractFilePath = 'routes/data'
+
+    unzipper.extract({
+        path: extractFilePath
+    })
+    unzipper.on('extract', function (log) {
+        console.log('extract log ', log);
+        // send the (first) file extracted as a download to the client
+        //res.download(extractFilePath +'/'+ log[0].deflated).end("unzip endpoint called");
+        res.status(200).end(inputUrl);
+    });
+}
+
 
 
 const listFiles = () => {
@@ -149,6 +166,8 @@ const listFiles = () => {
             let sizeInMB = sizeInBytes/1000000
 
          console.log(file, sizeInMB+"MB");
+
+         unzip(file)
        
         });
       });
@@ -236,19 +255,8 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     // absoluteZipFilePath = downloadFilePath  // didnt work... nice try
 
-    let unzipper = new DecompressZip( absoluteZipFilePath);
+    
 
-    let extractFilePath = 'routes/data'
-
-    unzipper.extract({
-        path: extractFilePath
-    })
-    unzipper.on('extract', function (log) {
-        console.log('extract log ', log);
-        // send the (first) file extracted as a download to the client
-        //res.download(extractFilePath +'/'+ log[0].deflated).end("unzip endpoint called");
-        res.status(200).end(inputUrl);
-    });
 
     
 
