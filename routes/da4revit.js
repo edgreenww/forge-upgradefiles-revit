@@ -240,14 +240,14 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
         res.status(500).end('failed to get lastest version of the file');
         return;
     }
-    const inputUrl = versionInfo.versionUrl;
-    console.log('inputUrl: ', inputUrl)
+    const bim360Url = versionInfo.versionUrl;
+    console.log('inputUrl: ', bim360Url)
 
     /////////
     let absoluteZipFilePath = 'routes/data/revitfile.zip'
 
     // try using the inputurl of the file from the autodesk storage
-    let inputFileUrl = inputUrl.replace('rvt', 'zip') 
+    let bim360UrlZip = bim360Url.replace('rvt', 'zip') 
     console.log('Attempting to unzip from URL: ', inputFileUrl)
     let timestamp = Date.now()
     const downloadFilePath = `routes/data/streamedDownload_${timestamp}.zip`
@@ -259,7 +259,9 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     const testZipUrl = "https://ww-emea-meptools.s3.eu-west-2.amazonaws.com/test/rac_advanced_sample_project.rvt+AWS+copy.zip"
     // request(inputFileUrl).pipe(fs.createWriteStream(downloadFilePath))
 
-    const url = inputUrl // testZipUrl
+    // unzip is successful using a zip file created locally (in MacOS -> compress file)
+    // possibly unexpected 'zip' format when dealing with Autodesk CompositeDesign file
+    const url = bim360Url // testZipUrl
 
     let token = req.body.oauth_token
     console.log('Attempting to stream download from URL: ', url)
