@@ -254,13 +254,16 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     // let downloadedFile = _downloadFile(inputFileUrl, downloadFilePath )
     // console.log("downloadedFile: ", downloadedFile)
 
-    const testUrl = "https://images.unsplash.com/photo-1494253109108-2e30c049369b"
+    const testImgUrl = "https://images.unsplash.com/photo-1494253109108-2e30c049369b"
 
+    const testZipUrl = "https://ww-emea-meptools.s3.eu-west-2.amazonaws.com/test/rac_advanced_sample_project.rvt+AWS+copy.zip"
     // request(inputFileUrl).pipe(fs.createWriteStream(downloadFilePath))
 
+    const url = testZipUrl
+
     let token = req.body.oauth_token
-    console.log('Attempting to stream download from URL: ', inputUrl)
-    download(inputUrl, downloadFilePath, token, listFiles)
+    console.log('Attempting to stream download from URL: ', url)
+    download(url, downloadFilePath, token, listFiles)
 
     // absoluteZipFilePath = downloadFilePath  // didnt work... nice try
 
