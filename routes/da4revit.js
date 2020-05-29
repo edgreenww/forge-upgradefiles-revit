@@ -167,13 +167,19 @@ const listFiles = () => {
             let sizeInMB = sizeInBytes/1000000
 
             console.log(file, sizeInMB+"MB");
+        });  
+        
+        files.forEach(file => {
+            
+            let filePath = dataFolder+'/'+file
             if (filePath.includes(".zip")){
                 console.log('Unzipping ' + filePath )
                 unzip(filePath)
             }
-       
-        });
-      });
+
+        })
+
+    });
 }
 
 router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
