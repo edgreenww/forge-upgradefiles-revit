@@ -91,6 +91,55 @@ function _downloadFile(url, pathName) {
     })
   }
 
+  const download = (url, dest, cb) => {
+    const file = fs.createWriteStream(dest);
+    console.log('Attempting download of: ', url)
+    const sendReq = request.get(url);
+
+    // verify response code
+    sendReq.on('response', (response) => {
+        if (response.statusCode !== 200) {
+            return cb('Response status was ' + response.statusCode);
+        }
+
+        sendReq.pipe(file);
+    });
+
+    // close() is async, call cb after close completes
+    file.on('finish', () => file.close(cb));
+
+    // check for request errors
+    sendReq.on('error', (err) => {
+        fs.unlink(dest);
+        return cb(err.message);
+    });
+
+    file.on('error', (err) => { // Handle errors
+        fs.unlink(dest); // Delete the file async. (But we don't check the result)
+        return cb(err.message);
+    });
+};
+
+
+
+const listFiles = () => {
+
+    const dataFolder = 'routes/data'
+    console.log('Files in local file system: ')
+    fs.readdir(dataFolder, (err, files) => {
+        files.forEach(file => {
+
+            let f = file
+            let stats = fs.statSync(dataFolder+'/'+f)
+            let sizeInBytes = stats["size"]
+            let sizeInMB = sizeInBytes/1000000
+
+         console.log(file, sizeInMB+"MB");
+       
+        });
+      });
+}
+
 router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     
     // gunzip
@@ -165,22 +214,11 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     inoutFileUrl = "https://images.unsplash.com/photo-1494253109108-2e30c049369b"
 
-    request(inputFileUrl).pipe(fs.createWriteStream(downloadFilePath))
+    // request(inputFileUrl).pipe(fs.createWriteStream(downloadFilePath))
 
-    const dataFolder = 'routes/data'
-    console.log('Files in local file system: ')
-    fs.readdir(dataFolder, (err, files) => {
-        files.forEach(file => {
+   
 
-            let f = file
-            let stats = fs.statSync(dataFolder+'/'+f)
-            let sizeInBytes = stats["size"]
-            let sizeInMB = sizeInBytes/1000000
-
-         console.log(file, sizeInMB+"MB");
-       // console.log(file)
-        });
-      });
+    download(inputFileUrl, downloadFilePath, listFiles)
 
     // absoluteZipFilePath = downloadFilePath  // didnt work... nice try
 
