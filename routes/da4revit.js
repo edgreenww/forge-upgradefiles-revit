@@ -69,8 +69,7 @@ router.use(async (req, res, next) => {
 });
 
 ///////////////////////////////////////////////////////////////////////
-/// NEW ROUTE - upgrade revit file to specified version using Design Automation 
-/// for Revit API - python call version
+/// NEW ROUTE - unzip zip file from CompositeDesign
 ///////////////////////////////////////////////////////////////////////
 
 const fs = require('fs');
@@ -106,7 +105,6 @@ function _downloadFile(url, pathName) {
 
     console.log("reqOptions", reqOptions)
 
-    
     const sendReq = request.get(reqOptions);
 
     // verify response code
@@ -138,15 +136,13 @@ function _downloadFile(url, pathName) {
 const unzip = (file) => {
 
     let unzipper = new DecompressZip( file);
-
     let extractFilePath = 'routes/data'
-
     unzipper.extract({
         path: extractFilePath
     })
     unzipper.on('extract', function (log) {
         console.log('extract log ', log);
-        // send the (first) file extracted as a download to the client
+        // send the (first) file extracted as a download to the client (not working yet)
         //res.download(extractFilePath +'/'+ log[0].deflated).end("unzip endpoint called");
         res.status(200).end(inputUrl);
     });
@@ -185,17 +181,6 @@ const listFiles = () => {
 
 router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     
-    // gunzip
-    // const fileContents = fs.createReadStream('routes/data/revitfile.zip');
-    // console.log(fileContents);
-    // const unzippedFilePath = 'routes/data/revitfile.rvt'
-    // const writeStream = fs.createWriteStream(unzippedFilePath);
-    // const unzip = zlib.createGunzip();
-    // fileContents.pipe(unzip).pipe(writeStream);
-    // res.download(unzippedFilePath).end("unzip endpoint called");
-
-    //////////
-
     const fileItemId   = req.body.fileItemId;
     const fileItemName = req.body.fileItemName;
 
@@ -234,48 +219,26 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     // get the storage of the input item version
 
-
     const versionInfo = await getLatestVersionInfo(projectId, resourceId, req.oauth_client, incoming_oauth_token);
     if (versionInfo === null ) {
         console.log('failed to get lastest version of the file');
         res.status(500).end('failed to get lastest version of the file');
         return;
     }
-    const bim360Url = versionInfo.versionUrl;
+    const bim360Url = versionInfo.versionUrl; // aka. inputUrl 
     console.log('inputUrl: ', bim360Url)
-
-    /////////
-    let absoluteZipFilePath = 'routes/data/revitfile.zip'
 
     // try using the inputurl of the file from the autodesk storage
     let bim360UrlZip = bim360Url.replace('rvt', 'zip') 
     console.log('Attempting to unzip from URL: ', bim360UrlZip)
+    
     let timestamp = Date.now()
     const downloadFilePath = `routes/data/streamedDownload_${timestamp}.zip`
-    // let downloadedFile = _downloadFile(inputFileUrl, downloadFilePath )
-    // console.log("downloadedFile: ", downloadedFile)
-
-    const testImgUrl = "https://images.unsplash.com/photo-1494253109108-2e30c049369b"
-
-    // const testZipUrl = "https://ww-emea-meptools.s3.eu-west-2.amazonaws.com/test/rac_advanced_sample_project.rvt+AWS+copy.zip"
-    const testZipUrl = "https://ww-emea-meptools.s3.eu-west-2.amazonaws.com/test/LON_1+Fore+Street_Capital+Improvement_Citi.zip"
-    // request(inputFileUrl).pipe(fs.createWriteStream(downloadFilePath))
-
-    // unzip is successful using a zip file created locally (in MacOS -> compress file)
-    // possibly unexpected 'zip' format when dealing with Autodesk CompositeDesign file
-    const url = bim360Url // testZipUrl // 
+    const url = bim360Url 
 
     let token = req.body.oauth_token
     console.log('Attempting to stream download from URL: ', url)
     download(url, downloadFilePath, token, listFiles)
-
-    // absoluteZipFilePath = downloadFilePath  // didnt work... nice try
-
-    
-
-
-    
-
 
 })
 
