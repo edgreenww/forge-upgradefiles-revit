@@ -276,7 +276,12 @@ uploadUnzippedFile = ( ( unzippedFilePath, req) => {
 
         const token = 'Bearer ' + req.body.oauth_token
 
-        console.log('token', token)
+        // console.log('token', token)
+
+        const oauth = new OAuth(req.session);
+        const credentials = await oauth.getInternalToken();
+
+        console.log('credentials', credentials )
         
         const data = {
             bucketKey: "wip.dm.prod",
@@ -285,7 +290,7 @@ uploadUnzippedFile = ( ( unzippedFilePath, req) => {
             body: fileBuffer, // buffer /  stream of bytes from open file path?
             options: {},
             oauth2client: req.oauth_client, // req undefined.... why?
-            credentials: token
+            credentials: credentials
     
         }
         return uploadFile(data)
