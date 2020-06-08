@@ -214,10 +214,10 @@ const uploadFile = (data) => {
     uploadPromise.then( function(result){
         console.log('Upload promise resolved')
         console.log(result)
-        
+
     }, function(result){
         console.log("Upload promise rejected")
-        console.err(result)
+        console.log(result)
     })
 
     
