@@ -190,7 +190,7 @@ const uploadFile = (data) => {
         
     } = data
     
-    console.log(`Uploading file: ${objecName}...`)
+    console.log(`Uploading file: ${objectName}...`)
 
     const result = objects.uploadObject(
         bucketKey,
