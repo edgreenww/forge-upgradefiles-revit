@@ -231,10 +231,13 @@ const uploadFile = (data) => {
  * @param {Object} req the request object (with authentication info) from the API call from the python upgrade/unzip script
  * 
  */
-uploadUnzippedFile = (  async ( unzippedFilePath, req) => {
+uploadUnzippedFile = (  ( unzippedFilePath, req) => {
 
-    const oauth = new OAuth(req.session);
-    const credentials = await oauth.getInternalToken();
+
+    const credentials = {
+        "access_token": req.body.oauth_token,
+        "expires_in" : 3600
+    }
     console.log('credentials', credentials )
 
 
