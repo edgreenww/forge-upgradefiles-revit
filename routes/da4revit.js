@@ -133,7 +133,7 @@ const unzip = (file, uploadCallback, req) => {
     unzipper.extract({
         path: extractFilePath
     })
-    unzipper.on('extract', function (log) {
+    unzipper.on('extract', function (log, req) {
         console.log('extract log ', log);
         const unzippedFileToUpload = extractFilePath +'/'+ log[0].deflated
         uploadCallback(unzippedFileToUpload, req)
