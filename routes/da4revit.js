@@ -328,16 +328,16 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     console.log('Attempting to stream download from URL: ', url)
     download(url, downloadFilePath, token, extractFiles, req)
 
-    const uploadData = {
-        bucketKey : "wip.dm.prod",
-        objectName : "sample_upload.rvt",
-        contentLength : 1000 ,
-        body : downloadFilePath,
-        options : {},
-        oauth2client : req.oauth_client,
-        credentials : token
+    // const uploadData = {
+    //     bucketKey : "wip.dm.prod",
+    //     objectName : "sample_upload.rvt",
+    //     contentLength : 1000 ,
+    //     body : downloadFilePath,
+    //     options : {},
+    //     oauth2client : req.oauth_client,
+    //     credentials : token
 
-    }
+    // }
 
     // console.log('Attempting to upload file from location : ', downloadFilePath)
 
