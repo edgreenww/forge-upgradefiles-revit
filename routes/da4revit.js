@@ -21,6 +21,7 @@ const express = require('express');
 const {
     ItemsApi,
     VersionsApi,
+    ObjectsApi
 } = require('forge-apis');
 
 const { OAuth } = require('./common/oauthImp');
@@ -140,7 +141,7 @@ const unzip = (file) => {
 
 
 
-const listFiles = () => {
+const extractFiles = () => {
 
     const dataFolder = 'routes/data'
     console.log('Files in local file system: ')
@@ -167,6 +168,35 @@ const listFiles = () => {
         })
 
     });
+}
+
+const uploadFile = (data) => {
+    const objects = new ObjectsApi()
+
+    const {
+        bucketKey ,
+        objectName ,
+        contentLength ,
+        body,
+        options,
+        oauth2client,
+        credentials 
+
+    } = data
+        
+
+    const result = objects.uploadObject(
+        bucketKey,
+        objectName,
+        contentLength,
+        body,
+        options,
+        oauth2client,
+        credentials
+
+    )
+
+    return result
 }
 
 router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
@@ -228,7 +258,24 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     let token = req.body.oauth_token
     console.log('Attempting to stream download from URL: ', url)
-    download(url, downloadFilePath, token, listFiles)
+    download(url, downloadFilePath, token, extractFiles)
+
+    const uploadData = {
+        bucketKey : "wip.dm.prod",
+        objectName : "sample_upload.rvt",
+        contentLength : 1000 ,
+        body : downloadFilePath,
+        options : {},
+        oauth2client : req.oauth_client,
+        credentials : token
+
+    }
+
+    console.log('Attempting to upload file from location : ', downloadFilePath)
+
+    const uploadResult = uploadFile( uploadData )
+
+    console.log(uploadResult)
 
 })
 
