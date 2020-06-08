@@ -231,7 +231,12 @@ const uploadFile = (data) => {
  * @param {Object} req the request object (with authentication info) from the API call from the python upgrade/unzip script
  * 
  */
-uploadUnzippedFile = ( async ( unzippedFilePath, req) => {
+uploadUnzippedFile = (  async ( unzippedFilePath, req) => {
+
+    const oauth = new OAuth(req.session);
+    const credentials = await oauth.getInternalToken();
+    console.log('credentials', credentials )
+
 
     console.log(`Ready to upload ${unzippedFilePath}...`)
     // console.log("req", req.body)
@@ -278,10 +283,9 @@ uploadUnzippedFile = ( async ( unzippedFilePath, req) => {
 
         // console.log('token', token)
 
-        const oauth = new OAuth(req.session);
-        const credentials = await oauth.getInternalToken();
+        
 
-        console.log('credentials', credentials )
+        
         
         const data = {
             bucketKey: "wip.dm.prod",
