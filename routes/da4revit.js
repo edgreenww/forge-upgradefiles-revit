@@ -41,6 +41,8 @@ const SOCKET_TOPIC_WORKITEM = 'Workitem-Notification';
 
 let router = express.Router();
 
+const fs = require('fs')
+
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -81,7 +83,7 @@ const http = require("http")
 
 const request = require("request")
 
-const download = (url, dest, token, cb) => {
+const download = (url, dest, token, cb, req) => {
     const file = fs.createWriteStream(dest);
     console.log('Attempting download of: ', url)
 
@@ -124,7 +126,7 @@ const download = (url, dest, token, cb) => {
     });
 };
 
-const unzip = (file) => {
+const unzip = (file, uploadCallback, req) => {
 
     let unzipper = new DecompressZip( file);
     let extractFilePath = 'routes/data'
@@ -133,6 +135,9 @@ const unzip = (file) => {
     })
     unzipper.on('extract', function (log) {
         console.log('extract log ', log);
+        const unzippedFileToUpload = extractFilePath +'/'+ log[0].deflated
+        uploadCallback(unzippedFileToUpload, req)
+
         // send the (first) file extracted as a download to the client (not working yet)
         //res.download(extractFilePath +'/'+ log[0].deflated).end("unzip endpoint called");
         res.status(200).end(inputUrl);
@@ -141,7 +146,7 @@ const unzip = (file) => {
 
 
 
-const extractFiles = () => {
+const extractFiles = (req) => {
 
     const dataFolder = 'routes/data'
     console.log('Files in local file system: ')
@@ -162,7 +167,7 @@ const extractFiles = () => {
             let filePath = dataFolder+'/'+file
             if (filePath.includes(".zip")){
                 console.log('Unzipping ' + filePath )
-                unzip(filePath)
+                unzip(filePath, uploadUnzippedFile, req)
             }
 
         })
@@ -198,6 +203,45 @@ const uploadFile = (data) => {
 
     return result
 }
+// pass this to unzip as callback function
+uploadUnzippedFile = (( unzippedFilePath, req) => {
+
+    console.log(`Ready to upload ${unzippedFilePath}...`)
+    // Store file data chunks in this array
+    let chunks = [];
+    // Read file into stream.Readable
+    let fileStream = fs.createReadStream(unzippedFilePath);
+    // An error occurred with the stream
+    fileStream.once('error', (err) => {
+        // Be sure to handle this properly!
+        console.log("Error reading fileStream...")
+        console.error(err); 
+    });
+
+    // File is done being read
+    fileStream.once('end', () => {
+        // create the final data Buffer from data chunks;
+        fileBuffer = Buffer.concat(chunks);
+        
+        
+        const filePathParts = unzippedFilePath.split('/')
+        const fileName = filePathParts[filePathParts.length-1]
+        const contentLength = 10000 // file size in bytes?
+        
+        const data = {
+            bucketKey: "wip.dm.prod",
+            objectName: fileName,
+            contentLength:  contentLength,
+            body: fileBuffer, // buffer /  stream of bytes from open file path?
+            options: {},
+            oauth2client: req.oauth_client,
+            credentials: req.body.oauth_token
+    
+        }
+        return uploadFile(data)
+    });
+
+})
 
 router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     
@@ -258,7 +302,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     let token = req.body.oauth_token
     console.log('Attempting to stream download from URL: ', url)
-    download(url, downloadFilePath, token, extractFiles)
+    download(url, downloadFilePath, token, extractFiles, req)
 
     const uploadData = {
         bucketKey : "wip.dm.prod",
@@ -271,11 +315,11 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     }
 
-    console.log('Attempting to upload file from location : ', downloadFilePath)
+    // console.log('Attempting to upload file from location : ', downloadFilePath)
 
-    const uploadResult = uploadFile( uploadData )
+    // const uploadResult = uploadFile( uploadData )
 
-    console.log(uploadResult)
+    // console.log(uploadResult)
 
 })
 
