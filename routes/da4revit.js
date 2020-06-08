@@ -200,7 +200,7 @@ const uploadFile = (data) => {
     
     console.log(`Uploading file: ${objectName}...`)
 
-    const result = objects.uploadObject(
+    const uploadPromise = objects.uploadObject(
         bucketKey,
         objectName,
         contentLength,
@@ -211,9 +211,16 @@ const uploadFile = (data) => {
 
     )
 
-    console.log('Upload Result: ', result)
+    uploadPromise.then( function(result){
+        console.log('Upload promise resolved')
+        console.log(result)
+        
+    }, function(result){
+        console.log("Upload promise rejected")
+        console.err(result)
+    })
 
-    return result
+    
 }
 
 /**
