@@ -235,7 +235,7 @@ uploadUnzippedFile = (  ( unzippedFilePath, req) => {
 
 
     const credentials = {
-        "access_token": req.body.oauth_token,
+        "access_token": 'Bearer ' + req.body.oauth_token,
         "expires_in" : 3600
     }
     console.log('credentials', credentials )
