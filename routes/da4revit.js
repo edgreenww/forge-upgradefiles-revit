@@ -271,6 +271,8 @@ uploadUnzippedFile = ( ( unzippedFilePath, req) => {
         console.log('content-length', contentLength )
 
         // console.log("req", req.body)
+
+        console.log('token', req.body.oauth_token)
         
         const data = {
             bucketKey: "wip.dm.prod",
