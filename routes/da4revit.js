@@ -235,7 +235,7 @@ uploadUnzippedFile = (  ( unzippedFilePath, req) => {
 
 
     const credentials = {
-        "access_token": req.body.oauth_token,
+        "access_token": req.body.oauth2_token,
         "expires_in" : 3600
     }
     console.log('credentials', credentials )
@@ -272,32 +272,19 @@ uploadUnzippedFile = (  ( unzippedFilePath, req) => {
 
         console.log('fileBuffer', fileBuffer)
         
-        
         const filePathParts = unzippedFilePath.split('/')
         const fileName = filePathParts[filePathParts.length-1]
         const contentLength = fileBuffer.length // file size in bytes?
 
         console.log('content-length', contentLength )
 
-        // console.log("req", req.body)
-
-        
-
-        const token = 'Bearer ' + req.body.oauth_token
-
-        // console.log('token', token)
-
-        
-
-        
-        
         const data = {
             bucketKey: "wip.dm.prod",
             objectName: fileName,
             contentLength:  contentLength,
-            body: fileBuffer, // buffer /  stream of bytes from open file path?
+            body: fileBuffer, 
             options: {},
-            oauth2client: req.oauth_client, // req undefined.... why?
+            oauth2client: req.oauth_client, 
             credentials: credentials
     
         }
