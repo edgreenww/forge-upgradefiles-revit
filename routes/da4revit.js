@@ -241,7 +241,7 @@ uploadUnzippedFile = ( ( unzippedFilePath, req) => {
     });
 
     // File is done being read
-    fileStream.once('end', () => {
+    fileStream.once('end', (req) => {
         // create the final data Buffer from data chunks;
         fileBuffer = Buffer.concat(chunks);
 
@@ -251,6 +251,8 @@ uploadUnzippedFile = ( ( unzippedFilePath, req) => {
         const filePathParts = unzippedFilePath.split('/')
         const fileName = filePathParts[filePathParts.length-1]
         const contentLength = 10000 // file size in bytes?
+
+        console.log("req", req)
         
         const data = {
             bucketKey: "wip.dm.prod",
