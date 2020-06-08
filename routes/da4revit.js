@@ -154,7 +154,9 @@ const extractFiles = (req) => {
 
     const dataFolder = 'routes/data'
     console.log('Files in local file system: ')
-    fs.readdir(dataFolder, (err, files) => {
+
+    console.log('req from "extractFiles"', req)
+    fs.readdir(dataFolder, (err, files, req) => {
         files.forEach(file => {
 
             let f = file
@@ -165,6 +167,8 @@ const extractFiles = (req) => {
 
             console.log(file, sizeInMB+"MB");
         });  
+
+        console.log('req from "fs.readdir"', req)
         
         files.forEach(file => {
             
