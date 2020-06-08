@@ -156,7 +156,7 @@ const extractFiles = (req) => {
     console.log('Files in local file system: ')
 
     console.log('req from "extractFiles"', req)
-    fs.readdir(dataFolder, (err, files, req) => {
+    fs.readdir(dataFolder, (err, files) => {
         files.forEach(file => {
 
             let f = file
