@@ -176,8 +176,9 @@ const extractFiles = (req) => {
 }
 
 const uploadFile = (data) => {
-    const objects = new ObjectsApi()
 
+    const objects = new ObjectsApi()
+    
     const {
         bucketKey ,
         objectName ,
@@ -186,9 +187,10 @@ const uploadFile = (data) => {
         options,
         oauth2client,
         credentials 
-
-    } = data
         
+    } = data
+    
+    console.log(`Uploading file: ${objecName}...`)
 
     const result = objects.uploadObject(
         bucketKey,
@@ -222,6 +224,8 @@ uploadUnzippedFile = (( unzippedFilePath, req) => {
     fileStream.once('end', () => {
         // create the final data Buffer from data chunks;
         fileBuffer = Buffer.concat(chunks);
+
+        console.log('fileBuffer', fileBuffer)
         
         
         const filePathParts = unzippedFilePath.split('/')
