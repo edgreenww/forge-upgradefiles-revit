@@ -135,7 +135,7 @@ const unzip = (file, uploadCallback, req) => {
     unzipper.extract({
         path: extractFilePath
     })
-    console.log('req from "unzip"', req)
+    console.log('req from "unzip"', req.body)
     
     unzipper.on('extract', function (log) {
         console.log('extract log ', log);
@@ -155,7 +155,7 @@ const extractFiles = (req) => {
     const dataFolder = 'routes/data'
     console.log('Files in local file system: ')
 
-    console.log('req from "extractFiles"', req.oauth_client)
+    console.log('req from "extractFiles"', req.body)
     fs.readdir(dataFolder, (err, files) => {
         files.forEach(file => {
 
@@ -168,7 +168,7 @@ const extractFiles = (req) => {
             console.log(file, sizeInMB+"MB");
         });  
 
-        console.log('req from "fs.readdir"', req.oauth_client)
+        console.log('req from "fs.readdir"', req.body)
         
         files.forEach(file => {
             
@@ -227,7 +227,7 @@ const uploadFile = (data) => {
 uploadUnzippedFile = ( ( unzippedFilePath, req) => {
 
     console.log(`Ready to upload ${unzippedFilePath}...`)
-    console.log("req", req)
+    console.log("req", req.body)
     // Store file data chunks in this array
     let chunks = [];
     // Read file into stream.Readable
@@ -250,7 +250,7 @@ uploadUnzippedFile = ( ( unzippedFilePath, req) => {
     });
 
     // File is done being read
-    fileStream.once('end', (req) => {
+    fileStream.once('end', () => {
         // create the final data Buffer from data chunks;
         fileBuffer = Buffer.concat(chunks);
 
@@ -261,7 +261,7 @@ uploadUnzippedFile = ( ( unzippedFilePath, req) => {
         const fileName = filePathParts[filePathParts.length-1]
         const contentLength = 10000 // file size in bytes?
 
-        console.log("req", req)
+        console.log("req", req.body)
         
         const data = {
             bucketKey: "wip.dm.prod",
