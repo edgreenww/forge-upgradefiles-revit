@@ -135,11 +135,12 @@ const unzip = (file, uploadCallback, req) => {
     unzipper.extract({
         path: extractFilePath
     })
-    let _req = req
+    console.log('req from "unzip"', req)
+    
     unzipper.on('extract', function (log) {
         console.log('extract log ', log);
         const unzippedFileToUpload = extractFilePath +'/'+ log[0].deflated
-        uploadCallback(unzippedFileToUpload, _req)
+        uploadCallback(unzippedFileToUpload, req)
 
         // send the (first) file extracted as a download to the client (not working yet)
         //res.download(extractFilePath +'/'+ log[0].deflated).end("unzip endpoint called");
