@@ -207,14 +207,23 @@ const uploadFile = (data) => {
 
     return result
 }
-// pass this to unzip as callback function
-uploadUnzippedFile = (( unzippedFilePath, req) => {
+
+/**
+ * Upload Unzipped File. 
+ * Callback function to upload the unzipped file to the bucket storage, 
+ * once the unzip operation has completed
+ * @param {String} unzippedFilePath path of file once unzipped in local filesystem
+ * @param {Object} req the request object (with authentication info) from the API call from the python upgrade/unzip script
+ * 
+ */
+uploadUnzippedFile = ( ( unzippedFilePath, req) => {
 
     console.log(`Ready to upload ${unzippedFilePath}...`)
     // Store file data chunks in this array
     let chunks = [];
     // Read file into stream.Readable
     let fileStream = fs.createReadStream(unzippedFilePath);
+    console.log("fileStream", fileStream)
     // An error occurred with the stream
     fileStream.once('error', (err) => {
         // Be sure to handle this properly!
