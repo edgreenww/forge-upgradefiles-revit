@@ -229,9 +229,9 @@ uploadUnzippedFile = ( ( unzippedFilePath, req) => {
     });
 
     fileStream.on('data', chunk => {
-        console.log('---------------------------------');
-        console.log(chunk);
-        console.log('---------------------------------');
+        // console.log('---------------------------------');
+        // console.log(chunk);
+        // console.log('---------------------------------');
     });
     
     // An error occurred with the stream
