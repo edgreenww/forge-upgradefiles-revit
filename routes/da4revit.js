@@ -155,7 +155,7 @@ const extractFiles = (req) => {
     const dataFolder = 'routes/data'
     console.log('Files in local file system: ')
 
-    console.log('req from "extractFiles"', req)
+    console.log('req from "extractFiles"', req.oauth_client)
     fs.readdir(dataFolder, (err, files) => {
         files.forEach(file => {
 
@@ -168,7 +168,7 @@ const extractFiles = (req) => {
             console.log(file, sizeInMB+"MB");
         });  
 
-        console.log('req from "fs.readdir"', req)
+        console.log('req from "fs.readdir"', req.oauth_client)
         
         files.forEach(file => {
             
