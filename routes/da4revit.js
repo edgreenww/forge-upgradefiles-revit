@@ -231,7 +231,7 @@ const uploadFile = (data) => {
  * @param {Object} req the request object (with authentication info) from the API call from the python upgrade/unzip script
  * 
  */
-uploadUnzippedFile = ( ( unzippedFilePath, req) => {
+uploadUnzippedFile = ( async ( unzippedFilePath, req) => {
 
     console.log(`Ready to upload ${unzippedFilePath}...`)
     // console.log("req", req.body)
