@@ -255,6 +255,7 @@ uploadUnzippedFile = (  ( unzippedFilePath, req) => {
         // console.log('---------------------------------');
         // console.log(chunk);
         // console.log('---------------------------------');
+        chunks.push(chunk)
     });
     
     // An error occurred with the stream
