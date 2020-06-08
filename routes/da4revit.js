@@ -85,7 +85,7 @@ const request = require("request")
 
 const download = (url, dest, token, cb, req) => {
     const file = fs.createWriteStream(dest);
-    console.log('req (in "download" method): ', req)
+    // console.log('req (in "download" method): ', req)
 
     console.log('Attempting download of: ', url)
 
@@ -114,7 +114,7 @@ const download = (url, dest, token, cb, req) => {
     });
 
     // close() is async, call cb after close completes
-    file.on('finish', () => file.close(cb(req)));
+    file.on('finish', (req) => file.close(cb(req)));
 
     // check for request errors
     sendReq.on('error', (err) => {
