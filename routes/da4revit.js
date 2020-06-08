@@ -114,7 +114,7 @@ const download = (url, dest, token, cb, req) => {
     });
 
     // close() is async, call cb after close completes
-    file.on('finish', (req) => file.close(cb(req)));
+    file.on('finish', () => file.close(cb(req)));
 
     // check for request errors
     sendReq.on('error', (err) => {
