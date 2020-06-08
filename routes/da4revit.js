@@ -266,7 +266,9 @@ uploadUnzippedFile = ( ( unzippedFilePath, req) => {
         
         const filePathParts = unzippedFilePath.split('/')
         const fileName = filePathParts[filePathParts.length-1]
-        const contentLength = 10000 // file size in bytes?
+        const contentLength = fileBuffer.length // file size in bytes?
+
+        console.log('content-length', contentLength )
 
         // console.log("req", req.body)
         
