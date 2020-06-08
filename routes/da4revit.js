@@ -219,6 +219,7 @@ const uploadFile = (data) => {
 uploadUnzippedFile = ( ( unzippedFilePath, req) => {
 
     console.log(`Ready to upload ${unzippedFilePath}...`)
+    console.log("req", req)
     // Store file data chunks in this array
     let chunks = [];
     // Read file into stream.Readable
@@ -260,7 +261,7 @@ uploadUnzippedFile = ( ( unzippedFilePath, req) => {
             contentLength:  contentLength,
             body: fileBuffer, // buffer /  stream of bytes from open file path?
             options: {},
-            oauth2client: req.oauth_client,
+            oauth2client: req.oauth_client, // req undefined.... why?
             credentials: req.body.oauth_token
     
         }
