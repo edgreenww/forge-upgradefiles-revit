@@ -203,6 +203,8 @@ const uploadFile = (data) => {
 
     )
 
+    console.log('Upload Result: ', result)
+
     return result
 }
 // pass this to unzip as callback function
