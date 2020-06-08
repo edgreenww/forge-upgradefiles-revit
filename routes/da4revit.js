@@ -85,6 +85,8 @@ const request = require("request")
 
 const download = (url, dest, token, cb, req) => {
     const file = fs.createWriteStream(dest);
+    console.log('req (in "download" method): ', req)
+
     console.log('Attempting download of: ', url)
 
     const reqOptions = {
