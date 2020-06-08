@@ -223,7 +223,16 @@ uploadUnzippedFile = ( ( unzippedFilePath, req) => {
     let chunks = [];
     // Read file into stream.Readable
     let fileStream = fs.createReadStream(unzippedFilePath);
-    console.log("fileStream", fileStream)
+    fileStream.on('open', () => {
+        console.log('Stream opened...');
+    });
+
+    fileStream.on('data', chunk => {
+        console.log('---------------------------------');
+        console.log(chunk);
+        console.log('---------------------------------');
+    });
+    
     // An error occurred with the stream
     fileStream.once('error', (err) => {
         // Be sure to handle this properly!
