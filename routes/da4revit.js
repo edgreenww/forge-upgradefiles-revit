@@ -146,7 +146,9 @@ const unzip = (file, uploadCallback, req) => {
     unzipper.on('extract', function (log) {
         console.log('extract log ', log);
         const unzippedFileToUpload = extractFilePath +'/'+ log[0].deflated
-        uploadCallback(unzippedFileToUpload, req)
+        // uploadCallback(unzippedFileToUpload, req)
+
+        createStorageForFile(unzippedFileToUpload, req, uploadCallback)
 
         // send the (first) file extracted as a download to the client (not working yet)
         //res.download(extractFilePath +'/'+ log[0].deflated).end("unzip endpoint called");
@@ -154,7 +156,7 @@ const unzip = (file, uploadCallback, req) => {
     });
 }
 
-const createStorageForFile = (file, req) => {
+const createStorageForFile = (file, req, uploadCallback) => {
     const dataFolder = 'routes/data'
     let filePath = dataFolder+'/'+file
     if (filePath.includes(".zip")){
@@ -163,6 +165,8 @@ const createStorageForFile = (file, req) => {
         createStorage(req, filePath)
 
     }
+    console.log('Storage created for ' + filePath)
+    uploadCallback(file, req)
 }
 
 // const createStorageForEachFile = async (files, req) => {
@@ -206,7 +210,7 @@ const extractFiles =  (req) => {
         // console.log('req from "fs.readdir"', req.body)
         // createStorages promise
 
-        createStorageForEachFile(files, req)
+        //  createStorageForEachFile(files, req)
 
         
         
