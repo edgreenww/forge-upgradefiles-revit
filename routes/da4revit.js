@@ -183,6 +183,45 @@ const extractFiles = (req) => {
     });
 }
 
+const createStorage = (req) => {
+
+    const projectId = req.body.project_id
+    const url = `https://developer.api.autodesk.com/data/v1/projects/${projectId}/storage`
+
+    const x_user_id = ''
+    const token = req.body.oauth_token
+    const headers = {
+        // "x-user-id": x_user_id, 
+        "Content-Type": "application/vnd.api+json", 
+        "Authorization": `Bearer ${token}`
+    }
+
+    const data = {
+        "jsonapi": {"version": "1.0"},
+        "data": {
+            "type": "objects",
+            "attributes": {"name": name},
+            "relationships": {
+                "target": {"data": {"type": host_type, "id": host_id}}
+            },
+        },
+    }
+
+    const requestParams = {
+        headers: headers,
+        uri: url,
+        method: 'POST',
+        body: data
+    }
+
+    console.log('Ready to create storage...')
+    res = request(requestParams, function (error, response, body) {
+        console.log('Response ', response)
+        console.log('body: ', body)
+    })
+
+}
+
 const uploadFile = (data) => {
 
     const objects = new ObjectsApi()
@@ -241,6 +280,9 @@ uploadUnzippedFile = (  ( unzippedFilePath, req) => {
     }
     console.log('credentials', credentials )
 
+    console.log('Creating storage...')
+    
+    createStorage(req)
 
     console.log(`Ready to upload ${unzippedFilePath}...`)
     // console.log("req", req.body)
