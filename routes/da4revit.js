@@ -183,7 +183,7 @@ const extractFiles = async (req) => {
             if (filePath.includes(".zip")){
                 console.log('Unzipping ' + filePath )
                 // console.log('Creating storage...')
-                await createStorage(req, hostId)
+                await createStorage(req, filePath, hostId)
     
                 // createStorage(req, filePath, unzip)
                 unzip(filePath, uploadUnzippedFile, req)
@@ -201,6 +201,60 @@ const createStorage = (req, unzippedFilePath, hostId) => {
     const filePathParts = unzippedFilePath.split('/')
     const fileName = filePathParts[filePathParts.length-1]
 
+    
+
+    const fileItemId   = req.body.fileItemId;
+    const fileItemName = fileName;
+
+    if (fileItemId === '' || fileItemName === '') {
+        res.status(500).end();
+        return;
+    }
+
+    if (fileItemId === '#') {
+        res.status(500).end('not supported item');
+    } 
+
+    const params = fileItemId.split('/');
+    if( params.length < 3){
+        res.status(500).end('selected item id has problem');
+    }
+
+    const resourceName = params[params.length - 2];
+    if (resourceName !== 'items') {
+        res.status(500).end('not supported item');
+        return;
+    }
+
+    const resourceId = params[params.length - 1];
+    const projectId = params[params.length - 3];
+
+    console.log(`Creating storage for ${fileName}... `)
+    console.log(`resourceId: ${resourceId}... `)
+    console.log(`projectId: ${projectId}... `)
+
+    const incoming_oauth_token = {
+        "access_token": req.body.oauth_token,
+        "expires_in" : 3600
+    }
+
+    const incoming_oauth_token_2legged = {
+        "access_token":  req.body.oauth2_token,
+        "expires_in" : 3600
+    }
+
+
+    const items = new ItemsApi()
+
+    const folder = await items.getItemParentFolder(projectId, resourceId, req.oauth_client, incoming_oauth_token);
+    if(folder === null || folder.statusCode !== 200){
+        console.log('failed to get the parent folder.');
+        res.status(500).end('ailed to get the parent folder');
+        return;
+    }
+    console.log('Getting parent item folder.... success')
+    console.log('folder', folder)
+
 
     const projectId = req.body.project_id
     const url = `https://developer.api.autodesk.com/data/v1/projects/${projectId}/storage`
@@ -214,7 +268,7 @@ const createStorage = (req, unzippedFilePath, hostId) => {
     }
     const name = fileName // req.body.fileItemName
     const hostType = 'folders'
-    // const hostId = '12345' // folder id
+    const hostId = folder.body.id
     const data = {
         "jsonapi": {"version": "1.0"},
         "data": {
@@ -266,9 +320,9 @@ const uploadFile = async (data) => {
 
     // create storage for upload
 
-    await createStorage(req, objectName, hostId)  
+    // await createStorage(req, objectName, hostId)  
     
-    console.log(`Uploading file: ${objectName} to bucketKey: ${bucketKey} ... folder : ${hostId} `)
+    console.log(`Uploading file: ${objectName} to bucketKey: ${bucketKey} ...  `)
 
     const uploadPromise = objects.uploadObject(
         bucketKey,
