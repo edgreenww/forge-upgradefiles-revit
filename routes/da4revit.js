@@ -154,7 +154,7 @@ const unzip = (file, uploadCallback, req) => {
     });
 }
 
-const createStorageForFile = (file) => {
+const createStorageForFile = (file, req) => {
     const dataFolder = 'routes/data'
     let filePath = dataFolder+'/'+file
     if (filePath.includes(".zip")){
