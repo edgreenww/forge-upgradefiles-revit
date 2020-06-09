@@ -164,7 +164,7 @@ const extractFiles = async (req) => {
 
     // console.log('req from "extractFiles"', req.body)
     fs.readdir(dataFolder, async (err, files) => {
-        files.forEach(async file => {
+        files.forEach( file => {
 
             let f = file
             let filePath = dataFolder+'/'+f
@@ -177,15 +177,29 @@ const extractFiles = async (req) => {
 
         // console.log('req from "fs.readdir"', req.body)
 
+        files.forEach( file => {
+            
+            let filePath = dataFolder+'/'+file
+            if (filePath.includes(".zip")){
+                console.log('Creating storage for ' + filePath )
+                // console.log('Creating storage...')
+                createStorage(req, filePath)
+    
+                // createStorage(req, filePath, unzip)
+                
+            }
+
+        })
+
         
         
-        files.forEach(async file => {
+        files.forEach( file => {
             
             let filePath = dataFolder+'/'+file
             if (filePath.includes(".zip")){
                 console.log('Unzipping ' + filePath )
                 // console.log('Creating storage...')
-                await createStorage(req, filePath)
+                
     
                 // createStorage(req, filePath, unzip)
                 unzip(filePath, uploadUnzippedFile, req)
