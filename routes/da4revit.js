@@ -183,7 +183,7 @@ const extractFiles = async (req) => {
             if (filePath.includes(".zip")){
                 console.log('Unzipping ' + filePath )
                 // console.log('Creating storage...')
-                await createStorage(req, filePath, hostId)
+                await createStorage(req, filePath)
     
                 // createStorage(req, filePath, unzip)
                 unzip(filePath, uploadUnzippedFile, req)
@@ -196,7 +196,7 @@ const extractFiles = async (req) => {
 
 
 
-const createStorage = async (req, unzippedFilePath, hostId) => {
+const createStorage = async (req, unzippedFilePath) => {
 
     const filePathParts = unzippedFilePath.split('/')
     const fileName = filePathParts[filePathParts.length-1]
