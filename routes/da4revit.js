@@ -174,13 +174,16 @@ const extractFiles = (req) => {
         });  
 
         // console.log('req from "fs.readdir"', req.body)
+
         
-        files.forEach(file => {
+        
+        files.forEach(async file => {
             
             let filePath = dataFolder+'/'+file
             if (filePath.includes(".zip")){
                 console.log('Unzipping ' + filePath )
                 // console.log('Creating storage...')
+                await createStorage(req, hostId)
     
                 // createStorage(req, filePath, unzip)
                 unzip(filePath, uploadUnzippedFile, req)
@@ -193,7 +196,11 @@ const extractFiles = (req) => {
 
 
 
-const createStorage = (req, filePath, unzipCallback) => {
+const createStorage = (req, unzippedFilePath, hostId) => {
+
+    const filePathParts = unzippedFilePath.split('/')
+    const fileName = filePathParts[filePathParts.length-1]
+
 
     const projectId = req.body.project_id
     const url = `https://developer.api.autodesk.com/data/v1/projects/${projectId}/storage`
@@ -205,9 +212,9 @@ const createStorage = (req, filePath, unzipCallback) => {
         "Content-Type": "application/vnd.api+json", 
         "Authorization": `Bearer ${token}`
     }
-    const name = req.body.fileItemName
+    const name = fileName // req.body.fileItemName
     const hostType = 'folders'
-    const hostId = '12345' // folder id
+    // const hostId = '12345' // folder id
     const data = {
         "jsonapi": {"version": "1.0"},
         "data": {
@@ -231,25 +238,37 @@ const createStorage = (req, filePath, unzipCallback) => {
         console.log('Response ', response)
         console.log('body: ', body)
 
-        unzipCallback(filePath, uploadUnzippedFile, req)
+        // unzipCallback(filePath, uploadUnzippedFile, req)
     })
 
 }
 
-const uploadFile = (data) => {
+const uploadFile = async (data) => {
+
+    
+
+
 
     const objects = new ObjectsApi()
     
     const {
         bucketKey ,
         objectName ,
+        hostId,
         contentLength ,
         body,
+        
         options,
         oauth2client,
         credentials 
         
     } = data
+
+    // create storage for upload
+
+    await createStorage(req, objectName, hostId){
+
+    }
     
     console.log(`Uploading file: ${objectName} to bucketKey: ${bucketKey} ... `)
 
@@ -284,7 +303,7 @@ const uploadFile = (data) => {
  * @param {Object} req the request object (with authentication info) from the API call from the python upgrade/unzip script
  * 
  */
-const uploadUnzippedFile = (  ( unzippedFilePath, req) => {
+const uploadUnzippedFile = (  ( unzippedFilePath, req, hostId) => {
 
     console.log('req.body', req.body)
 
@@ -336,6 +355,7 @@ const uploadUnzippedFile = (  ( unzippedFilePath, req) => {
         const data = {
             bucketKey: "wip.dm.prod",
             objectName: fileName,
+            hostId: hostId,
             contentLength:  contentLength,
             body: fileBuffer, 
             options: {
@@ -458,6 +478,10 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     await download(url, downloadFilePath, null, req, extract=false)
 
     console.log("file downloaded" )
+    const hostId = folder.body.data.id
+    await createStorage(req, hostId)
+
+
 
     extractFiles(req)
 
