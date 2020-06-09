@@ -266,11 +266,9 @@ const uploadFile = async (data) => {
 
     // create storage for upload
 
-    await createStorage(req, objectName, hostId){
-
-    }
+    await createStorage(req, objectName, hostId)  
     
-    console.log(`Uploading file: ${objectName} to bucketKey: ${bucketKey} ... `)
+    console.log(`Uploading file: ${objectName} to bucketKey: ${bucketKey} ... folder : ${hostId} `)
 
     const uploadPromise = objects.uploadObject(
         bucketKey,
