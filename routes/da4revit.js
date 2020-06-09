@@ -154,7 +154,21 @@ const unzip = (file, uploadCallback, req) => {
     });
 }
 
+const createStorageForFile = (file) => {
+    let filePath = dataFolder+'/'+file
+    if (filePath.includes(".zip")){
+        console.log('Creating storage for ' + filePath )
+        // console.log('Creating storage...')
+        createStorage(req, filePath)
 
+}
+
+const createStorageForEachFile = async (files) => {
+    const promises = files.map(createStorageForFile)
+    await Promise.all(promises)
+    console.log('All storages created!')
+
+}
 
 const extractFiles =  (req) => {
 
@@ -177,20 +191,9 @@ const extractFiles =  (req) => {
         });  
 
         // console.log('req from "fs.readdir"', req.body)
+        // createStorages promise
 
-        files.forEach( file => {
-            
-            let filePath = dataFolder+'/'+file
-            if (filePath.includes(".zip")){
-                console.log('Creating storage for ' + filePath )
-                // console.log('Creating storage...')
-                createStorage(req, filePath)
-    
-                // createStorage(req, filePath, unzip)
-                
-            }
-
-        })
+        createStorageForEachFile(files)
 
         
         
