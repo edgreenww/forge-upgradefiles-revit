@@ -457,7 +457,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     await download(url, downloadFilePath, null, req, extract=false)
 
-    console.log("file downloaded", downloadedZip )
+    console.log("file downloaded" )
 
     extractFiles(req)
 
