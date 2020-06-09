@@ -198,7 +198,7 @@ const uploadFile = (data) => {
         
     } = data
     
-    console.log(`Uploading file: ${objectName}...`)
+    console.log(`Uploading file: ${objectName} to bucketKey: ${bucketKey} ... `)
 
     const uploadPromise = objects.uploadObject(
         bucketKey,
@@ -233,6 +233,7 @@ const uploadFile = (data) => {
  */
 uploadUnzippedFile = (  ( unzippedFilePath, req) => {
 
+    console.log('req.body', req.body)
 
     const credentials = {
         "access_token": req.body.oauth_token,
