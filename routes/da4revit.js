@@ -292,62 +292,62 @@ const createStorage = async (req, unzippedFilePath) => {
     console.log('Getting parent item folder.... success')
     console.log('folder', folder)
 
-    // console.log(`Creating storage based on ${fileItemName} `)
+    console.log(`Creating storage based on ${fileItemName} `)
 
-    // const storageInfo = await getNewCreatedStorageInfo(
-    //     projectId, 
-    //     folder.body.data.id, 
-    //     fileItemName, 
-    //     req.oauth_client, 
-    //     incoming_oauth_token
-    //     );
-    // if (storageInfo === null ) {
-    //     console.log('failed to create the storage');
-    //     res.status(500).end('failed to create the storage');
-    //     return;
-    // }
-    // const outputUrl = storageInfo.StorageUrl;
-    // console.log('Creating storage..  OK')
+    const storageInfo = await getNewCreatedStorageInfo(
+        projectId, 
+        folder.body.data.id, 
+        fileName, 
+        req.oauth_client, 
+        incoming_oauth_token
+        );
+    if (storageInfo === null ) {
+        console.log('failed to create the storage');
+        res.status(500).end('failed to create the storage');
+        return;
+    }
+    const outputUrl = storageInfo.StorageUrl;
+    console.log('Creating storage..  OK')
 
 
     
-    const url = `https://developer.api.autodesk.com/data/v1/projects/${projectId}/storage`
+    // const url = `https://developer.api.autodesk.com/data/v1/projects/${projectId}/storage`
 
-    const x_user_id = ''
-    const token = req.body.oauth_token
-    const headers = {
-        // "x-user-id": x_user_id, 
-        "Content-Type": "application/vnd.api+json", 
-        "Authorization": `Bearer ${token}`
-    }
-    const name = fileName // req.body.fileItemName
-    const hostType = 'folders'
-    const hostId = folder.body.data.id
-    const data = {
-        "jsonapi": {"version": "1.0"},
-        "data": {
-            "type": "objects",
-            "attributes": {"name": name},
-            "relationships": {
-                "target": {"data": {"type": hostType, "id": hostId}}
-            },
-        },
-    }
+    // const x_user_id = ''
+    // const token = req.body.oauth_token
+    // const headers = {
+    //     // "x-user-id": x_user_id, 
+    //     "Content-Type": "application/vnd.api+json", 
+    //     "Authorization": `Bearer ${token}`
+    // }
+    // const name = fileName // req.body.fileItemName
+    // const hostType = 'folders'
+    // const hostId = folder.body.data.id
+    // const data = {
+    //     "jsonapi": {"version": "1.0"},
+    //     "data": {
+    //         "type": "objects",
+    //         "attributes": {"name": name},
+    //         "relationships": {
+    //             "target": {"data": {"type": hostType, "id": hostId}}
+    //         },
+    //     },
+    // }
 
-    const requestParams = {
-        headers: headers,
-        uri: url,
-        method: 'POST',
-        body: data
-    }
+    // const requestParams = {
+    //     headers: headers,
+    //     uri: url,
+    //     method: 'POST',
+    //     body: data
+    // }
 
-    console.log('Ready to create storage...')
-    const storageResult = request(requestParams, function (error, response, body) {
-        console.log('Response ', response)
-        console.log('body: ', body)
+    // console.log('Ready to create storage...')
+    // const storageResult = request(requestParams, function (error, response, body) {
+    //     console.log('Response ', response)
+    //     console.log('body: ', body)
 
-        // unzipCallback(filePath, uploadUnzippedFile, req)
-    })
+    //     // unzipCallback(filePath, uploadUnzippedFile, req)
+    // })
 
 }
 
