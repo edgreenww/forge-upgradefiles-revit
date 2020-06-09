@@ -175,7 +175,7 @@ const createStorageForFile = (file) => {
 const createStorageForEachFile = async (files, req) => {
     const allAsyncResults = []
   
-    for (const item of array) {
+    for (const file of files) {
       const asyncResult = await createStorageForFile(file, req)
       allAsyncResults.push(asyncResult)
     }
@@ -206,7 +206,7 @@ const extractFiles =  (req) => {
         // console.log('req from "fs.readdir"', req.body)
         // createStorages promise
 
-        createStorageForEachFile(files)
+        createStorageForEachFile(files, req)
 
         
         
