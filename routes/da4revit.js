@@ -118,7 +118,9 @@ const download = (url, dest, token, extractFilesCallback, req, extract=true) => 
         file.on('finish', () => file.close(extractFilesCallback(req)));
         
     }else{
-        file.on('finish', () => file.close());
+        file.on('finish', () => file.close( () => {
+            console.log('Finished...')
+        }));
     }
 
     // check for request errors
