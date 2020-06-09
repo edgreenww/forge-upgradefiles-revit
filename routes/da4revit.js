@@ -159,12 +159,12 @@ const unzip = (file, uploadCallback, req) => {
 const createStorageForFile = async (file, req, uploadCallback) => {
     const dataFolder = 'routes/data'
     let filePath = dataFolder+'/'+file
-    if (filePath.includes(".zip")){
-        console.log('Creating storage for ' + filePath )
-        // console.log('Creating storage...')
-        await createStorage(req, filePath)
+    
+    console.log('Creating storage for ' + filePath )
+    // console.log('Creating storage...')
+    await createStorage(req, filePath)
 
-    }
+    
     console.log('Storage created for ' + filePath)
     uploadCallback(file, req)
 }
