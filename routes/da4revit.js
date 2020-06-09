@@ -124,12 +124,14 @@ const download = (url, dest, token, extractFilesCallback, req, extract=true) => 
     // check for request errors
     sendReq.on('error', (err) => {
         fs.unlink(dest);
-        return extractFilesCallback(err.message);
+        console.log(err.message)
+        return err.message;
     });
 
     file.on('error', (err) => { // Handle errors
         fs.unlink(dest); // Delete the file async. (But we don't check the result)
-        return extractFilesCallback(err.message);
+        console.log(err.message)
+        return err.message;
     });
 };
 
