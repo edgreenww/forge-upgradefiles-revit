@@ -175,7 +175,10 @@ const extractFiles = (req) => {
             let filePath = dataFolder+'/'+file
             if (filePath.includes(".zip")){
                 console.log('Unzipping ' + filePath )
-                unzip(filePath, uploadUnzippedFile, req)
+                console.log('Creating storage...')
+    
+                createStorage(req, filePath, unzip)
+                // unzip(filePath, uploadUnzippedFile, req)
             }
 
         })
@@ -183,7 +186,7 @@ const extractFiles = (req) => {
     });
 }
 
-const createStorage = (req) => {
+const createStorage = (req, filePath, unzipCallback) => {
 
     const projectId = req.body.project_id
     const url = `https://developer.api.autodesk.com/data/v1/projects/${projectId}/storage`
@@ -218,6 +221,8 @@ const createStorage = (req) => {
     res = request(requestParams, function (error, response, body) {
         console.log('Response ', response)
         console.log('body: ', body)
+        
+        unzipCallback(filePath, uploadUnzippedFile, req)
     })
 
 }
@@ -280,9 +285,7 @@ uploadUnzippedFile = (  ( unzippedFilePath, req) => {
     }
     console.log('credentials', credentials )
 
-    console.log('Creating storage...')
     
-    createStorage(req)
 
     console.log(`Ready to upload ${unzippedFilePath}...`)
     // console.log("req", req.body)
