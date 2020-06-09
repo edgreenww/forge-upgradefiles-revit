@@ -201,9 +201,9 @@ const createStorage = async (req, unzippedFilePath) => {
     const filePathParts = unzippedFilePath.split('/')
     const fileName = filePathParts[filePathParts.length-1]
 
-    
-
+    const projectId = req.body.project_id
     const fileItemId   = req.body.fileItemId;
+    
     const fileItemName = fileName;
 
     if (fileItemId === '' || fileItemName === '') {
@@ -256,7 +256,7 @@ const createStorage = async (req, unzippedFilePath) => {
     console.log('folder', folder)
 
 
-    const projectId = req.body.project_id
+    
     const url = `https://developer.api.autodesk.com/data/v1/projects/${projectId}/storage`
 
     const x_user_id = ''
