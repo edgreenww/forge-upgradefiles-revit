@@ -283,20 +283,28 @@ const createStorage = async (req, unzippedFilePath) => {
 
     const items = new ItemsApi()
     console.log('Getting parent item folder.... ')
-    const folder = await items.getItemParentFolder(
-        projectId, 
-        resourceId, 
-        req.oauth_client, 
-        incoming_oauth_token
-        );
+
+    try{
+
+            const folder = await items.getItemParentFolder(
+                projectId, 
+                resourceId, 
+                req.oauth_client, 
+                incoming_oauth_token
+                );
         
-    if(folder === null || folder.statusCode !== 200){
-        console.log('failed to get the parent folder.');
-        res.status(500).end('ailed to get the parent folder');
-        return;
-    }
-    console.log('Getting parent item folder.... success')
-    console.log('folder', folder)
+            if(folder === null || folder.statusCode !== 200){
+                console.log('failed to get the parent folder.');
+                res.status(500).end('ailed to get the parent folder');
+                return;
+            }
+            console.log('Getting parent item folder.... success')
+            console.log('folder', folder)
+        } catch (err) {
+    console.log('error getting parent item')
+    console.log(err)
+    res.status(500).end(err);
+}
 
     console.log(`Creating storage based on ${fileItemName} `)
 
