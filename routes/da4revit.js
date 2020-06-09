@@ -227,7 +227,7 @@ const createStorage = async (req, unzippedFilePath, hostId) => {
     }
 
     const resourceId = params[params.length - 1];
-    const projectId = params[params.length - 3];
+    //const projectId = params[params.length - 3];
 
     console.log(`Creating storage for ${fileName}... `)
     console.log(`resourceId: ${resourceId}... `)
