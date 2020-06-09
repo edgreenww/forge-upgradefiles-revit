@@ -159,7 +159,7 @@ const unzip = (file, uploadCallback, req) => {
 
 
 
-const extractFiles = async (req) => {
+const extractFiles =  (req) => {
 
     const dataFolder = 'routes/data'
     console.log('Files in local file system: ')
