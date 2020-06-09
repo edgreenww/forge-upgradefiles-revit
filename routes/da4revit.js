@@ -83,7 +83,7 @@ const http = require("http")
 
 const request = require("request")
 
-const download = (url, dest, token, cb, req) => {
+const download = (url, dest, token, extractFilesCallback, req, extract=true) => {
     const file = fs.createWriteStream(dest);
     // console.log('req (in "download" method): ', req)
 
@@ -113,18 +113,23 @@ const download = (url, dest, token, cb, req) => {
         sendReq.pipe(file);
     });
 
-    // close() is async, call cb after close completes
-    file.on('finish', () => file.close(cb(req)));
+    // close() is async, call extractFilesCallback after close completes
+    if (extract){
+        file.on('finish', () => file.close(extractFilesCallback(req)));
+        
+    }else{
+        file.on('finish', () => file.close();
+    }
 
     // check for request errors
     sendReq.on('error', (err) => {
         fs.unlink(dest);
-        return cb(err.message);
+        return extractFilesCallback(err.message);
     });
 
     file.on('error', (err) => { // Handle errors
         fs.unlink(dest); // Delete the file async. (But we don't check the result)
-        return cb(err.message);
+        return extractFilesCallback(err.message);
     });
 };
 
@@ -175,10 +180,10 @@ const extractFiles = (req) => {
             let filePath = dataFolder+'/'+file
             if (filePath.includes(".zip")){
                 console.log('Unzipping ' + filePath )
-                console.log('Creating storage...')
+                // console.log('Creating storage...')
     
-                createStorage(req, filePath, unzip)
-                // unzip(filePath, uploadUnzippedFile, req)
+                // createStorage(req, filePath, unzip)
+                unzip(filePath, uploadUnzippedFile, req)
             }
 
         })
@@ -202,7 +207,7 @@ const createStorage = (req, filePath, unzipCallback) => {
     }
     const name = req.body.fileItemName
     const hostType = 'folders'
-    const hostId = '12345' // foler id
+    const hostId = '12345' // folder id
     const data = {
         "jsonapi": {"version": "1.0"},
         "data": {
@@ -279,7 +284,7 @@ const uploadFile = (data) => {
  * @param {Object} req the request object (with authentication info) from the API call from the python upgrade/unzip script
  * 
  */
-uploadUnzippedFile = (  ( unzippedFilePath, req) => {
+const uploadUnzippedFile = (  ( unzippedFilePath, req) => {
 
     console.log('req.body', req.body)
 
@@ -409,9 +414,15 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     console.log('Checking file format .... OK')
 
-    console.log('Creating storage.. ')
+    console.log(`Creating storage based on ${fileItemName} `)
 
-    const storageInfo = await getNewCreatedStorageInfo(projectId, folder.body.data.id, fileItemName, req.oauth_client, incoming_oauth_token);
+    const storageInfo = await getNewCreatedStorageInfo(
+        projectId, 
+        folder.body.data.id, 
+        fileItemName, 
+        req.oauth_client, 
+        incoming_oauth_token
+        );
     if (storageInfo === null ) {
         console.log('failed to create the storage');
         res.status(500).end('failed to create the storage');
@@ -442,7 +453,13 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     let token = req.body.oauth_token
     console.log('Attempting to stream download from URL: ', url)
-    download(url, downloadFilePath, token, extractFiles, req)
+    // download(url, downloadFilePath, token, extractFiles, req)
+
+    await download(url, downloadFilePath, null, req, extract=false)
+
+    console.log("file downloaded", downloadedZip )
+
+    extractFiles(req)
 
     // const uploadData = {
     //     bucketKey : "wip.dm.prod",
