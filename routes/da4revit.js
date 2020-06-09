@@ -196,7 +196,7 @@ const extractFiles = async (req) => {
 
 
 
-const createStorage = (req, unzippedFilePath, hostId) => {
+const createStorage = async (req, unzippedFilePath, hostId) => {
 
     const filePathParts = unzippedFilePath.split('/')
     const fileName = filePathParts[filePathParts.length-1]
