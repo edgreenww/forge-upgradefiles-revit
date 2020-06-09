@@ -186,6 +186,8 @@ const extractFiles = (req) => {
     });
 }
 
+
+
 const createStorage = (req, filePath, unzipCallback) => {
 
     const projectId = req.body.project_id
@@ -198,14 +200,16 @@ const createStorage = (req, filePath, unzipCallback) => {
         "Content-Type": "application/vnd.api+json", 
         "Authorization": `Bearer ${token}`
     }
-
+    const name = req.body.fileItemName
+    const hostType = 'folders'
+    const hostId = '12345' // foler id
     const data = {
         "jsonapi": {"version": "1.0"},
         "data": {
             "type": "objects",
             "attributes": {"name": name},
             "relationships": {
-                "target": {"data": {"type": host_type, "id": host_id}}
+                "target": {"data": {"type": hostType, "id": hostId}}
             },
         },
     }
@@ -221,7 +225,7 @@ const createStorage = (req, filePath, unzipCallback) => {
     res = request(requestParams, function (error, response, body) {
         console.log('Response ', response)
         console.log('body: ', body)
-        
+
         unzipCallback(filePath, uploadUnzippedFile, req)
     })
 
@@ -378,6 +382,43 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
         "access_token":  req.body.oauth2_token,
         "expires_in" : 3600
     }
+
+    // adding here... 
+
+    const items = new ItemsApi();
+    console.log('Getting parent item folder....')
+    
+
+    const folder = await items.getItemParentFolder(projectId, resourceId, req.oauth_client, incoming_oauth_token);
+    if(folder === null || folder.statusCode !== 200){
+        console.log('failed to get the parent folder.');
+        res.status(500).end('ailed to get the parent folder');
+        return;
+    }
+    console.log('Getting parent item folder.... success')
+    console.log('Checking file format ....')
+    
+    const fileParams = fileItemName.split('.');
+    const fileExtension = fileParams[fileParams.length-1].toLowerCase();
+    if( fileExtension !== 'rvt' && fileExtension !== 'rfa' && fileExtension !== 'fte'){
+        console.log('info: the file format is not supported');
+        res.status(500).end('the file format is not supported');
+        return;
+    }
+
+    console.log('Checking file format .... OK')
+
+    console.log('Creating storage.. ')
+
+    const storageInfo = await getNewCreatedStorageInfo(projectId, folder.body.data.id, fileItemName, req.oauth_client, incoming_oauth_token);
+    if (storageInfo === null ) {
+        console.log('failed to create the storage');
+        res.status(500).end('failed to create the storage');
+        return;
+    }
+    const outputUrl = storageInfo.StorageUrl;
+    console.log('Creating storage..  OK')
+    console.log('Getting latest version info... ')
 
     // get the storage of the input item version
 
