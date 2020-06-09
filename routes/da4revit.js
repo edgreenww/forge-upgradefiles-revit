@@ -544,7 +544,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     console.log('Attempting to stream download from URL: ', url)
     // download(url, downloadFilePath, token, extractFiles, req)
 
-    await download(url, downloadFilePath, token, null, req, extract=false)
+    await download(url, downloadFilePath, token, extractFiles, req, extract=true)
 
     console.log("file downloaded" )
     // const hostId = folder.body.data.id
