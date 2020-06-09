@@ -394,10 +394,10 @@ const uploadFile = async (data) => {
  */
 const uploadUnzippedFile = (  ( unzippedFilePath, req, hostId) => {
 
-    console.log('req.body', req.body)
+    // console.log('req.body', req.body)
 
     const credentials = {
-        "access_token": req.body.oauth_token,
+        "access_token": 'Bearer ' + req.body.oauth_token,
         "expires_in" : 3600
     }
     console.log('credentials', credentials )
