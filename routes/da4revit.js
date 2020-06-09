@@ -554,7 +554,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     
 
-    await extractFiles(req)
+    extractFiles(req)
 
     // const uploadData = {
     //     bucketKey : "wip.dm.prod",
