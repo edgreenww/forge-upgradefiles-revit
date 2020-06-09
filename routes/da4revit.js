@@ -283,7 +283,9 @@ uploadUnzippedFile = (  ( unzippedFilePath, req) => {
             objectName: fileName,
             contentLength:  contentLength,
             body: fileBuffer, 
-            options: {},
+            options: {
+                access: readwrite
+            },
             oauth2client: req.oauth_client, 
             credentials: credentials
     
