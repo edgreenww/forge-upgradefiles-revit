@@ -342,7 +342,7 @@ const createStorage = async (req, unzippedFilePath) => {
     }
 
     console.log('Ready to create storage...')
-    res = request(requestParams, function (error, response, body) {
+    const storageResult = request(requestParams, function (error, response, body) {
         console.log('Response ', response)
         console.log('body: ', body)
 
