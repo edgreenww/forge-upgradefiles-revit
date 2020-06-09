@@ -78,9 +78,6 @@ router.use(async (req, res, next) => {
 const fs = require('fs');
 const zlib = require('zlib');
 const DecompressZip = require('decompress-zip');
-
-const http = require("http")
-
 const request = require("request")
 
 const download = (url, dest, token, extractFilesCallback, req, extract=true) => {
@@ -547,15 +544,15 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     console.log('Attempting to stream download from URL: ', url)
     // download(url, downloadFilePath, token, extractFiles, req)
 
-    await download(url, downloadFilePath, null, req, extract=false)
+    download(url, downloadFilePath, extractFiles, req, extract=true)
 
-    console.log("file downloaded" )
+    // console.log("file downloaded" )
     // const hostId = folder.body.data.id
     // await createStorage(req, hostId)
 
     
 
-    extractFiles(req)
+    
 
     // const uploadData = {
     //     bucketKey : "wip.dm.prod",
