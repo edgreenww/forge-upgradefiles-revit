@@ -161,6 +161,7 @@ const createStorageForFile = (file) => {
         // console.log('Creating storage...')
         createStorage(req, filePath)
 
+    }
 }
 
 const createStorageForEachFile = async (files) => {
