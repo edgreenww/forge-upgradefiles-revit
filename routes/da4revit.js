@@ -131,8 +131,8 @@ const download = (url, dest, token, extractFilesCallback, req, extract=true) => 
     });
 
     file.on('error', (err) => { // Handle errors
-        fs.unlink(dest); // Delete the file async. (But we don't check the result)
         console.log(err.message)
+        fs.unlink(dest); // Delete the file async. (But we don't check the result)
         return err.message;
     });
 };
