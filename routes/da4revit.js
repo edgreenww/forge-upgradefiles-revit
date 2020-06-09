@@ -155,14 +155,14 @@ const unzip = (file, uploadCallback, req) => {
 
 
 
-const extractFiles = (req) => {
+const extractFiles = async (req) => {
 
     const dataFolder = 'routes/data'
     console.log('Files in local file system: ')
 
     // console.log('req from "extractFiles"', req.body)
     fs.readdir(dataFolder, (err, files) => {
-        files.forEach(file => {
+        files.forEach(async file => {
 
             let f = file
             let filePath = dataFolder+'/'+f
