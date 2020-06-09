@@ -397,10 +397,11 @@ const uploadUnzippedFile = (  ( unzippedFilePath, req, hostId) => {
     // console.log('req.body', req.body)
 
     const credentials = {
-        "access_token": 'Bearer ' + req.body.oauth_token,
+        // with Bearer we get the error:faultstring: 'Failed to Decode Token: policy(jwt-decode-HS256)',
+        "access_token": req.body.oauth_token, 
         "expires_in" : 3600
     }
-    console.log('credentials', credentials )
+    // console.log('credentials', credentials )
 
     
 
