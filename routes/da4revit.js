@@ -165,12 +165,23 @@ const createStorageForFile = (file) => {
     }
 }
 
-const createStorageForEachFile = async (files) => {
-    const promises = files.map(createStorageForFile)
-    await Promise.all(promises)
-    console.log('All storages created!')
+// const createStorageForEachFile = async (files, req) => {
+//     const promises = files.map(createStorageForFile)
+//     await Promise.all(promises)
+//     console.log('All storages created!')
 
-}
+// }
+
+const createStorageForEachFile = async (files, req) => {
+    const allAsyncResults = []
+  
+    for (const item of array) {
+      const asyncResult = await createStorageForFile(file, req)
+      allAsyncResults.push(asyncResult)
+    }
+    console.log('All storages created!')
+    return allAsyncResults
+  }
 
 const extractFiles =  (req) => {
 
