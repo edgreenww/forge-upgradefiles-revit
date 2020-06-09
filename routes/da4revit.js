@@ -156,13 +156,13 @@ const unzip = (file, uploadCallback, req) => {
     });
 }
 
-const createStorageForFile = (file, req, uploadCallback) => {
+const createStorageForFile = async (file, req, uploadCallback) => {
     const dataFolder = 'routes/data'
     let filePath = dataFolder+'/'+file
     if (filePath.includes(".zip")){
         console.log('Creating storage for ' + filePath )
         // console.log('Creating storage...')
-        createStorage(req, filePath)
+        await createStorage(req, filePath)
 
     }
     console.log('Storage created for ' + filePath)
@@ -282,7 +282,7 @@ const createStorage = async (req, unzippedFilePath) => {
 
 
     const items = new ItemsApi()
-
+    console.log('Getting parent item folder.... ')
     const folder = await items.getItemParentFolder(projectId, resourceId, req.oauth_client, incoming_oauth_token);
     if(folder === null || folder.statusCode !== 200){
         console.log('failed to get the parent folder.');
