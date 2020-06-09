@@ -166,6 +166,7 @@ const extractFiles =  (req) => {
 
     // console.log('req from "extractFiles"', req.body)
     fs.readdir(dataFolder, (err, files) => {
+        console.log('reading directory...')
         files.forEach( file => {
 
             let f = file
