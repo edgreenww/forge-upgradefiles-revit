@@ -396,15 +396,16 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
         return;
     }
     console.log('Getting parent item folder.... success')
+    console.log('folder', folder)
     console.log('Checking file format ....')
     
     const fileParams = fileItemName.split('.');
     const fileExtension = fileParams[fileParams.length-1].toLowerCase();
-    if( fileExtension !== 'rvt' && fileExtension !== 'rfa' && fileExtension !== 'fte'){
-        console.log('info: the file format is not supported');
-        res.status(500).end('the file format is not supported');
-        return;
-    }
+    // if( fileExtension !== 'rvt' && fileExtension !== 'rfa' && fileExtension !== 'fte'){
+    //     console.log('info: the file format is not supported');
+    //     res.status(500).end('the file format is not supported');
+    //     return;
+    // }
 
     console.log('Checking file format .... OK')
 
