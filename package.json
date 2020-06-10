@@ -13,6 +13,7 @@
     "decompress-zip": "^0.2.2",
     "express": "^4.17.1",
     "forge-apis": "^0.4.5",
+    "request-promise": "^4.2.5",
     "socket.io": "^2.2.0"
   }
 }
