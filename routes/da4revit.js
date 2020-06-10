@@ -168,6 +168,7 @@ const createStorageForFile = async (file, req, uploadCallback) => {
     const storageId = storageForFilePromise.then(
         (result) => {
             console.log("storageForFilePromise resolved")
+            console.log('result', result)
             return result
         },
         (result) => {
@@ -176,6 +177,8 @@ const createStorageForFile = async (file, req, uploadCallback) => {
         }
 
     )
+
+    console.log("storageId", storageId)
     
     const objectName = storageId.split('/')[1]
 
