@@ -284,7 +284,7 @@ const betterCreateStorage = async (req, fileName) => {
         console.log('Error: ', error)
         // console.log('Response ', response)
         console.log('body: ', body)
-        console.log('Storage created... ')
+        // console.log('Storage created... ')
 
         // unzipCallback(filePath, uploadUnzippedFile, req)
     })
