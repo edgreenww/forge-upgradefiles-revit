@@ -59,13 +59,13 @@ router.use(async (req, res, next) => {
         "client_secret" : req.body.client_secret,
 
     }
-    console.log('credentials', credentials)
+    // console.log('credentials', credentials)
     if (incomingCreds.client_id){
         console.log("Using incomeing credentials...")
         credentials = incomingCreds
     }
     // let oauth_client2 = oauth.getClientOurWay(req.scopes, incomingCreds);
-    console.log('oauth_client', oauth_client)
+    // console.log('oauth_client', oauth_client)
     req.oauth_client = oauth_client;
     req.oauth_token = credentials;
     next();
@@ -95,7 +95,7 @@ const download = (url, dest, token, extractFilesCallback, req, extract=true) => 
         }
     }
 
-    console.log("reqOptions", reqOptions)
+    // console.log("reqOptions", reqOptions)
 
     const sendReq = request.get(reqOptions);
 
@@ -193,9 +193,9 @@ const extractFiles =  (req) => {
     console.log('Files in local file system: ')
 
     // console.log('req from "extractFiles"', req.body)
-    console.log('reading directory... (before fs.readdir)')
+    // console.log('reading directory... (before fs.readdir)')
     fs.readdir(dataFolder, (err, files) => {
-        console.log('reading directory... (inside fs.readdir)')
+        // console.log('reading directory... (inside fs.readdir)')
         files.forEach( file => {
 
             let f = file
@@ -238,7 +238,7 @@ const extractFiles =  (req) => {
  * see https://stackoverflow.com/questions/50109167/autodesk-forge-api-uploading-file-fails
  */
 const betterCreateStorage = async (req, fileName) => {
-    console.log('In betterCreateStorage...')
+    // console.log('In betterCreateStorage...')
     const projectId = req.body.project_id
     const folder = req.folder
     const url = `https://developer.api.autodesk.com/data/v1/projects/b.${projectId}/storage`
@@ -296,7 +296,7 @@ const betterCreateStorage = async (req, fileName) => {
 
 
     })
-    console.log("storageResult", storageResult)
+    // console.log("storageResult", storageResult)
     return storageResult
     // unzipCallback(filePath, uploadUnzippedFile, req)
 }
@@ -339,15 +339,7 @@ const createStorage = async (req, unzippedFilePath) => {
     console.log(`resourceId: ${resourceId} `)
     console.log(`projectId: ${projectId} `)
 
-    const incoming_oauth_token = {
-        "access_token": req.body.oauth_token,
-        "expires_in" : 3600
-    }
-
-    const incoming_oauth_token_2legged = {
-        "access_token":  req.body.oauth2_token,
-        "expires_in" : 3600
-    }
+  
 
     // getting the folder containing the zip file from the original api request
     const folder = req.folder
@@ -437,9 +429,7 @@ const uploadUnzippedFile = (  ( unzippedFilePath, req, hostId) => {
     });
 
     fileStream.on('data', chunk => {
-        // console.log('---------------------------------');
-        // console.log(chunk);
-        // console.log('---------------------------------');
+        
         chunks.push(chunk)
     });
     
