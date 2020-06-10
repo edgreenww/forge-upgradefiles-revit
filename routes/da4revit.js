@@ -304,7 +304,7 @@ const betterCreateStorage = async (req, fileName) => {
 
         req.objectName = objectName
 
-        return response
+        return body
 
 
        
