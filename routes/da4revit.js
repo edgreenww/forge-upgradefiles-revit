@@ -367,7 +367,7 @@ const uploadFile = async (data) => {
     
     const {
         bucketKey ,
-        filename,
+        fileName,
         objectName ,
         hostId,
         contentLength ,
