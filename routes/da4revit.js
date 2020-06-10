@@ -241,7 +241,7 @@ const betterCreateStorage = async (req, fileName) => {
     console.log('In betterCreateStorage...')
     const projectId = req.body.project_id
     const folder = req.folder
-    const url = `https://developer.api.autodesk.com/data/v1/projects/${projectId}/storage`
+    const url = `https://developer.api.autodesk.com/data/v1/projects/b.${projectId}/storage`
 
     const x_user_id = ''
     const token = req.body.oauth_token
@@ -284,7 +284,9 @@ const betterCreateStorage = async (req, fileName) => {
         console.log('Error: ', error)
         // console.log('Response ', response)
         console.log('body: ', body)
-        // console.log('Storage created... ')
+        // 
+        
+        console.log('Storage created... ')
 
         // unzipCallback(filePath, uploadUnzippedFile, req)
     })
