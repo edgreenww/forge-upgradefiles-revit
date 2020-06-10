@@ -305,9 +305,9 @@ const betterCreateStorage = async (req, fileName) => {
         req.objectName = objectName
 
 
+        return storageId
     })
 
-    return storageId
     // unzipCallback(filePath, uploadUnzippedFile, req)
 }
 
