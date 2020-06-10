@@ -280,37 +280,6 @@ const createStorage = async (req, unzippedFilePath) => {
         "expires_in" : 3600
     }
 
-
-//    const items = new ItemsApi()
-//   console.log('Getting parent item folder.... ')
-
-//     console.log("projectId", projectId)
-//     console.log("resourceId", resourceId)
-//     console.log("req.oauth_client", req.oauth_client)
-//     console.log("incoming_oauth_token", incoming_oauth_token)
-
-
-//     try{
-
-//             const folder = await items.getItemParentFolder(
-//                 projectId, 
-//                 resourceId, 
-//                 req.oauth_client, 
-//                 incoming_oauth_token
-//                 );
-        
-//             if(folder === null || folder.statusCode !== 200){
-//                 console.log('failed to get the parent folder.');
-//                 res.status(500).end('ailed to get the parent folder');
-//                 return;
-//             }
-//             console.log('Getting parent item folder.... success')
-//             console.log('folder', folder)
-//         } catch (err) {
-//     console.log('error getting parent item')
-//     console.log(err)
-//     // res.status(500).end(err);
-// }
     // getting the folder containing the zip file from the original api request
     const folder = req.folder
 
@@ -334,10 +303,7 @@ const createStorage = async (req, unzippedFilePath) => {
     } catch (err) {
         console.log('Error creating storage.. ')
         console.log(err)
-        // log the error object by key / value?
-        // Object.keys(err.statusBody.errors).forEach(key => {
-        //     console.log(`${key} : ${ err.statusBody.errors[key]}`)
-        // })
+        console.log("err.statusBody")
         console.log(JSON.stringify(err.statusBody))
     }
 
