@@ -162,11 +162,11 @@ const createStorageForFile = async (file, req, uploadCallback) => {
     
     console.log('Creating storage for ' + filePath )
     // console.log('Creating storage...')
-    await createStorage(req, filePath)
+    await createStorage(req, filePath, uploadCallback )
 
     
     console.log('Storage created for ' + filePath)
-    uploadCallback(file, req)
+    // uploadCallback(file, req)
 }
 
 // const createStorageForEachFile = async (files, req) => {
@@ -237,7 +237,7 @@ const extractFiles =  (req) => {
  * 
  * see https://stackoverflow.com/questions/50109167/autodesk-forge-api-uploading-file-fails
  */
-const betterCreateStorage = async (req, fileName) => {
+const betterCreateStorage = async (req, fileName, uploadCallback) => {
     console.log('In betterCreateStorage...')
     const projectId = req.body.project_id
     const folder = req.folder
@@ -296,11 +296,11 @@ const betterCreateStorage = async (req, fileName) => {
 
 
     })
-    // unzipCallback(filePath, uploadUnzippedFile, req)
+    uploadCallback(filePath, uploadUnzippedFile, req)
 }
 
 
-const createStorage = async (req, unzippedFilePath) => {
+const createStorage = async (req, unzippedFilePath, uploadCallback) => {
 
     const filePathParts = unzippedFilePath.split('/')
     const fileName = filePathParts[filePathParts.length-1]
@@ -353,7 +353,7 @@ const createStorage = async (req, unzippedFilePath) => {
     console.log(`Creating storage based on ${fileItemName} `)
 
 
-    await betterCreateStorage(req, fileName )
+    await betterCreateStorage(req, fileName , uploadCallback)
 
 
 
