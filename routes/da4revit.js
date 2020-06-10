@@ -308,7 +308,9 @@ const betterCreateStorage = async (req, fileName) => {
        
     })
 
-    console.log("storageResult", storageResult)
+    // console.log("storageResult", storageResult)
+
+    return storageResult
 
     // unzipCallback(filePath, uploadUnzippedFile, req)
 }
@@ -367,7 +369,11 @@ const createStorage = async (req, unzippedFilePath) => {
     console.log(`Creating storage based on ${fileItemName} `)
 
 
-    return await betterCreateStorage(req, fileName )
+    const storageResult =  await betterCreateStorage(req, fileName )
+
+    const storageId = storageResult.body.data.id
+
+    return storageId
 
     
 
