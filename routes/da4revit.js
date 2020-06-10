@@ -533,8 +533,8 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     console.log(folder.body)
     const folderContents = folder.body.contents
 
-    // console.log('Folder contents:') 
-    // console.log(folder.body.data.contents)
+    console.log('Folder contents:') 
+    console.log(folder.body.data.relationships.contents)
     
     // console.log('Checking file format ....')
 
