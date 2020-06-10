@@ -162,7 +162,14 @@ const createStorageForFile = async (file, req, uploadCallback) => {
     
     console.log('Creating storage for ' + filePath )
     // console.log('Creating storage...')
-    await createStorage(req, filePath)
+    const storageId = await createStorage(req, filePath)
+
+    const storageId = body.data.id
+    const objectName = storageId.split('/')[1]
+
+    req.objectName = objectName
+
+    
 
     
     console.log('Storage created for ' + filePath)
@@ -299,6 +306,8 @@ const betterCreateStorage = async (req, fileName) => {
 
 
     })
+
+    return storageId
     // unzipCallback(filePath, uploadUnzippedFile, req)
 }
 
@@ -356,7 +365,9 @@ const createStorage = async (req, unzippedFilePath) => {
     console.log(`Creating storage based on ${fileItemName} `)
 
 
-    await betterCreateStorage(req, fileName )
+    const storageId = await betterCreateStorage(req, fileName )
+
+    return storageId
 
 
 
