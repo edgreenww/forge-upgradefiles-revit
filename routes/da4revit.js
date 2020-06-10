@@ -524,53 +524,24 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     console.log("projectId", projectId)
     console.log("resourceId", resourceId)
-    console.log("req.oauth_client", req.oauth_client)
-    console.log("incoming_oauth_token", incoming_oauth_token)
+    // console.log("req.oauth_client", req.oauth_client)
+    // console.log("incoming_oauth_token", incoming_oauth_token)
     
 
     const folder = await items.getItemParentFolder(projectId, resourceId, req.oauth_client, incoming_oauth_token);
     if(folder === null || folder.statusCode !== 200){
         console.log('failed to get the parent folder.');
-        res.status(500).end('ailed to get the parent folder');
+        res.status(500).end('failed to get the parent folder');
         return;
     }
     console.log('Getting parent item folder.... success')
-    console.log('folder - of zip file... ', folder)
+    console.log('Parent folder - of zip file... ', folder.body)
     console.log('Checking file format ....')
 
     // add the folder to the req object (?) for convenience
 
     req.folder = folder
     
-    // const fileParams = fileItemName.split('.');
-    // const fileExtension = fileParams[fileParams.length-1].toLowerCase();
-    // // if( fileExtension !== 'rvt' && fileExtension !== 'rfa' && fileExtension !== 'fte'){
-    // //     console.log('info: the file format is not supported');
-    // //     res.status(500).end('the file format is not supported');
-    // //     return;
-    // // }
-
-    // console.log('Checking file format .... OK')
-
-    // console.log(`Creating storage based on ${fileItemName} `)
-
-    // const storageInfo = await getNewCreatedStorageInfo(
-    //     projectId, 
-    //     folder.body.data.id, 
-    //     fileItemName, 
-    //     req.oauth_client, 
-    //     incoming_oauth_token
-    //     );
-    // if (storageInfo === null ) {
-    //     console.log('failed to create the storage');
-    //     res.status(500).end('failed to create the storage');
-    //     return;
-    // }
-    // const outputUrl = storageInfo.StorageUrl;
-    // console.log('Creating storage..  OK')
-    // console.log('Getting latest version info... ')
-
-    // get the storage of the input item version
 
     const versionInfo = await getLatestVersionInfo(projectId, resourceId, req.oauth_client, incoming_oauth_token);
     if (versionInfo === null ) {
@@ -581,7 +552,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     const bim360Url = versionInfo.versionUrl; // aka. inputUrl 
     console.log('inputUrl: ', bim360Url)
 
-    // try using the inputurl of the file from the autodesk storage
+    // try using the input url of the file from the autodesk storage
     let bim360UrlZip = bim360Url.replace('rvt', 'zip') 
     console.log('Attempting to unzip from URL: ', bim360UrlZip)
     
@@ -595,30 +566,8 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     await download(url, downloadFilePath, token, extractFiles, req, extract=true)
 
-    console.log("file downloaded" )
-    // const hostId = folder.body.data.id
-    // await createStorage(req, hostId)
-
+    console.log("Composite (zip) file downloaded.... " )
     
-
-    
-
-    // const uploadData = {
-    //     bucketKey : "wip.dm.prod",
-    //     objectName : "sample_upload.rvt",
-    //     contentLength : 1000 ,
-    //     body : downloadFilePath,
-    //     options : {},
-    //     oauth2client : req.oauth_client,
-    //     credentials : token
-
-    // }
-
-    // console.log('Attempting to upload file from location : ', downloadFilePath)
-
-    // const uploadResult = uploadFile( uploadData )
-
-    // console.log(uploadResult)
 
 })
 
