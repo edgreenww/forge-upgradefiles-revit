@@ -315,21 +315,26 @@ const createStorage = async (req, unzippedFilePath) => {
     const folder = req.folder
 
     console.log(`Creating storage based on ${fileItemName} `)
+    try{
 
-    const storageInfo = await getNewCreatedStorageInfo(
-        projectId, 
-        folder.body.data.id, 
-        fileName, 
-        req.oauth_client, 
-        incoming_oauth_token
-        );
-    if (storageInfo === null ) {
-        console.log('failed to create the storage');
-        // res.status(500).end('failed to create the storage');
-        return;
+        const storageInfo = await getNewCreatedStorageInfo(
+            projectId, 
+            folder.body.data.id, 
+            fileName, 
+            req.oauth_client, 
+            incoming_oauth_token
+            );
+        if (storageInfo === null ) {
+            console.log('failed to create the storage');
+            // res.status(500).end('failed to create the storage');
+            return;
+        }
+        const outputUrl = storageInfo.StorageUrl;
+        console.log('Creating storage..  OK')
+    } catch (err) {
+        console.log('Error creating storage.. ')
+        console.log(err)
     }
-    const outputUrl = storageInfo.StorageUrl;
-    console.log('Creating storage..  OK')
 
 
     
