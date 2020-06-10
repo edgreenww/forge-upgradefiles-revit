@@ -537,19 +537,24 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     // // adding here... 
 
-    // const items = new ItemsApi();
-    // console.log('Getting parent item folder....')
+    const items = new ItemsApi();
+    console.log('Getting parent item folder.... (of zipped file)')
+
+    console.log("projectId", projectId)
+    console.log("resourceId", resourceId)
+    console.log("req.oauth_client", req.oauth_client)
+    console.log("incoming_oauth_token", incoming_oauth_token)
     
 
-    // const folder = await items.getItemParentFolder(projectId, resourceId, req.oauth_client, incoming_oauth_token);
-    // if(folder === null || folder.statusCode !== 200){
-    //     console.log('failed to get the parent folder.');
-    //     res.status(500).end('ailed to get the parent folder');
-    //     return;
-    // }
-    // console.log('Getting parent item folder.... success')
-    // console.log('folder', folder)
-    // console.log('Checking file format ....')
+    const folder = await items.getItemParentFolder(projectId, resourceId, req.oauth_client, incoming_oauth_token);
+    if(folder === null || folder.statusCode !== 200){
+        console.log('failed to get the parent folder.');
+        res.status(500).end('ailed to get the parent folder');
+        return;
+    }
+    console.log('Getting parent item folder.... success')
+    console.log('folder - of zip file... ', folder)
+    console.log('Checking file format ....')
     
     // const fileParams = fileItemName.split('.');
     // const fileExtension = fileParams[fileParams.length-1].toLowerCase();

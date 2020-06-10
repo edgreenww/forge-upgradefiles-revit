@@ -37,6 +37,7 @@ const {
 
     StorageRelationshipsTargetData,
     BaseAttributesExtensionObject,
+    ObjectsApi
 } = require('forge-apis');
 
 const AUTODESK_HUB_BUCKET_KEY = 'wip.dm.prod';
