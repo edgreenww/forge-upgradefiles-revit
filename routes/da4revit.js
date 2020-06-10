@@ -390,7 +390,6 @@ const uploadFile = async (data) => {
         hostId,
         contentLength ,
         body,
-        
         options,
         oauth2client,
         credentials 
@@ -524,7 +523,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     }
 
     const resourceId = params[params.length - 1];
-    const projectId = params[params.length - 3];
+    const projectId = params[params.length - 3]; 
 
     const incoming_oauth_token = {
         "access_token": req.body.oauth_token,
