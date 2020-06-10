@@ -257,7 +257,14 @@ const betterCreateStorage = async (req, fileName) => {
         "jsonapi": {"version": "1.0"},
         "data": {
             "type": "objects",
-            "attributes": {"name": name},
+            "attributes": {
+                "name": name,
+                "extension": {
+                    "type": "versions:autodesk.bim360:File",
+                        "version": "1.0"
+                    }
+            
+            },
             "relationships": {
                 "target": {"data": {"type": hostType, "id": hostId}}
             },
