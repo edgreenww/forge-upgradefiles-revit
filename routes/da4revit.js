@@ -268,7 +268,8 @@ const betterCreateStorage = async (req, fileName) => {
         headers: headers,
         uri: url,
         method: 'POST',
-        body: data
+        body: data,
+        json: true,
     }
 
     console.log('Ready to create storage...')
