@@ -162,8 +162,20 @@ const createStorageForFile = async (file, req, uploadCallback) => {
     
     console.log('Creating storage for ' + filePath )
     // console.log('Creating storage...')
-    const storageId = await createStorage(req, filePath)
+    // const storageId = await createStorage(req, filePath)
+    const storageForFilePromise = createStorage(req, filePath)
 
+    const storageId = storageForFilePromise.then(
+        (result) => {
+            console.log("storageForFilePromise resolved")
+            return result
+        },
+        (result) => {
+            console.log("storageForFilePromise rejected")
+            return result
+        }
+
+    )
     
     const objectName = storageId.split('/')[1]
 
