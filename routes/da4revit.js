@@ -164,7 +164,7 @@ const createStorageForFile = async (file, req, uploadCallback) => {
     // console.log('Creating storage...')
     const storageId = await createStorage(req, filePath)
 
-    const storageId = body.data.id
+    
     const objectName = storageId.split('/')[1]
 
     req.objectName = objectName
