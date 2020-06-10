@@ -230,7 +230,13 @@ const extractFiles =  (req) => {
 
     });
 }
-
+/**
+ * Better verion of create storage
+ * @param {Object} req The request object
+ * @param {String} fileName The name of the unzipped file
+ * 
+ * see https://stackoverflow.com/questions/50109167/autodesk-forge-api-uploading-file-fails
+ */
 const betterCreateStorage = async (req, fileName) => {
     console.log('In betterCreateStorage...')
     const projectId = req.body.project_id
