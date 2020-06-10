@@ -286,15 +286,12 @@ const betterCreateStorage = async (req, fileName) => {
         json: true,
     }
 
-    console.log('Folder info:')
-    console.log(JSON.stringify(folder.body, null, 4))
-
     console.log('Ready to create storage...')
     const storageResult = await request(requestParams, function (error, response, body) {
         console.log('Error: ', error)
         // console.log('Response ', response)
         console.log('Storage info (body)...')
-        console.log('body: ', JSON.stringify(body, null, 4) )
+        console.log('body: ', body)
         // 
         
         console.log('Storage created... ')
