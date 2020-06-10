@@ -372,7 +372,7 @@ const uploadFile = async (data) => {
         hostId,
         contentLength ,
         body,
-        
+        folderId,
         options,
         oauth2client,
         credentials 
@@ -380,6 +380,7 @@ const uploadFile = async (data) => {
     } = data
     
     console.log(`Uploading file: ${fileName} to storage : ${objectName} ...  `)
+    console.log(`Destination folder: ${folderId}`)
 
     const uploadPromise = objects.uploadObject(
         bucketKey,
@@ -465,6 +466,7 @@ const uploadUnzippedFile = (  ( unzippedFilePath, req, hostId) => {
         const data = {
             bucketKey: "wip.dm.prod",
             fileName: fileName,
+            folderId: req.folder.body.data.id,
             objectName: req.objectName,
             hostId: hostId,
             contentLength:  contentLength,
