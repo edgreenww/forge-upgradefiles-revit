@@ -308,7 +308,7 @@ const betterCreateStorage = async (req, fileName) => {
        
     })
 
-    // console.log("storageResult", storageResult)
+    console.log("storageResult.body", storageResult.body)
 
     return storageResult
 
