@@ -283,6 +283,7 @@ const betterCreateStorage = async (req, fileName) => {
     const storageResult = await request(requestParams, function (error, response, body) {
         console.log('Error: ', error)
         // console.log('Response ', response)
+        console.log('Storage info (body)...')
         console.log('body: ', body)
         // 
         
@@ -412,10 +413,6 @@ const createStorage = async (req, unzippedFilePath) => {
 
 const uploadFile = async (data) => {
 
-    
-
-
-
     const objects = new ObjectsApi()
     
     const {
@@ -430,10 +427,6 @@ const uploadFile = async (data) => {
         credentials 
         
     } = data
-
-    // create storage for upload
-
-    // await createStorage(req, objectName, hostId)  
     
     console.log(`Uploading file: ${objectName} to bucketKey: ${bucketKey} ...  `)
 
