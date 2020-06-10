@@ -530,11 +530,11 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     }
     console.log('Getting parent item folder.... success')
     console.log('Parent folder - of zip file... ')
-    console.log(JSON.stringify(folder.body))
+    console.log(folder.body)
     const folderContents = folder.body.contents
 
-    console.log('Folder contents:') 
-    console.log(JSON.stringify(folder.body.data.contents) )
+    // console.log('Folder contents:') 
+    // console.log(folder.body.data.contents)
     
     // console.log('Checking file format ....')
 
