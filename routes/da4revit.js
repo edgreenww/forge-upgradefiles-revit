@@ -335,9 +335,10 @@ const createStorage = async (req, unzippedFilePath) => {
         console.log('Error creating storage.. ')
         console.log(err)
         // log the error object by key / value?
-        Object.keys(err.statusBody.errors).forEach(key => {
-            console.log(`${key} : ${ err.statusBody.errors[key]}`)
-        })
+        // Object.keys(err.statusBody.errors).forEach(key => {
+        //     console.log(`${key} : ${ err.statusBody.errors[key]}`)
+        // })
+        console.log(JSON.stringify(err.statusBody))
     }
 
 
