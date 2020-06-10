@@ -284,6 +284,12 @@ const createStorage = async (req, unzippedFilePath) => {
     const items = new ItemsApi()
     console.log('Getting parent item folder.... ')
 
+    console.log("projectId", projectId)
+    console.log("resourceId", resourceId)
+    console.log("req.oauth_client", req.oauth_client)
+    console.log("incoming_oauth_token", incoming_oauth_token)
+
+
     try{
 
             const folder = await items.getItemParentFolder(
@@ -687,6 +693,11 @@ router.post('/da4revit/v1/upgrader/files/api', async (req, res, next) => {
     try {
         const items = new ItemsApi();
         console.log('Getting parent item folder....')
+
+        console.log("projectId", projectId)
+        console.log("resourceId", resourceId)
+        console.log("req.oauth_client", req.oauth_client)
+        console.log("incoming_oauth_token", incoming_oauth_token)
         
 
         const folder = await items.getItemParentFolder(projectId, resourceId, req.oauth_client, incoming_oauth_token);
