@@ -303,7 +303,7 @@ const createStorage = async (req, unzippedFilePath) => {
         } catch (err) {
     console.log('error getting parent item')
     console.log(err)
-    res.status(500).end(err);
+    // res.status(500).end(err);
 }
 
     console.log(`Creating storage based on ${fileItemName} `)
@@ -317,7 +317,7 @@ const createStorage = async (req, unzippedFilePath) => {
         );
     if (storageInfo === null ) {
         console.log('failed to create the storage');
-        res.status(500).end('failed to create the storage');
+        // res.status(500).end('failed to create the storage');
         return;
     }
     const outputUrl = storageInfo.StorageUrl;
