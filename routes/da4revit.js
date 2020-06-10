@@ -389,11 +389,9 @@ const createStorage = async (req, unzippedFilePath) => {
     //     console.log(JSON.stringify(err.statusBody, null, 4))
     // }
 
-    const storageResult =  await betterCreateStorage(req, fileName )
+    await betterCreateStorage(req, fileName )
 
-    const storageId = storageResult.body.data.id
-
-    return storageId
+    
 
     
 
