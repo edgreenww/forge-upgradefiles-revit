@@ -392,7 +392,7 @@ const uploadFile = async (data) => {
     )
 
     uploadPromise.then( function(result){
-        console.log('Upload promise resolved')
+        console.log('\x1b[32m', 'Upload promise resolved')
         console.log(result)
 
     }, function(result){
