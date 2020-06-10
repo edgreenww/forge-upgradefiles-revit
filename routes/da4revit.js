@@ -304,7 +304,7 @@ const createStorage = async (req, unzippedFilePath) => {
         console.log('Error creating storage.. ')
         console.log(err)
         console.log("err.statusBody")
-        console.log(JSON.stringify(err.statusBody))
+        console.log(JSON.stringify(err.statusBody, null, 4))
     }
 
 
