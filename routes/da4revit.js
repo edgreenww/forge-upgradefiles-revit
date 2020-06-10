@@ -78,7 +78,7 @@ router.use(async (req, res, next) => {
 const fs = require('fs');
 const zlib = require('zlib');
 const DecompressZip = require('decompress-zip');
-const request = require("request")
+const request = require("request-promise")
 
 const download = (url, dest, token, extractFilesCallback, req, extract=true) => {
     const file = fs.createWriteStream(dest);
@@ -296,6 +296,8 @@ const betterCreateStorage = async (req, fileName) => {
 
 
     })
+    console.log("storageResult", storageResult)
+    return storageResult
     // unzipCallback(filePath, uploadUnzippedFile, req)
 }
 
