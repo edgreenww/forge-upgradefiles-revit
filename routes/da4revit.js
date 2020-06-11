@@ -597,16 +597,24 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
         ) 
 
     const folderObjects = folderContents.body.data
+    let matchingItems = []
     folderObjects.forEach(obj => {
-        console.log(JSON.stringify(obj, null, "----"))
+        // console.log(JSON.stringify(obj, null, "----"))
 
         const summary = {
             id: obj.id,
             fileName: obj.attributes.displayName,
             attributes: obj.attributes
         }
-        console.log(JSON.stringify(summary, null, "----"))
+        // console.log(JSON.stringify(summary, null, "----"))
+
+        if (obj.attributes.displayName === req.body.fileItemName.replace('.zip', '.rvt')){
+            matchingItems.push(obj)
+        }
     })
+
+    console.log('Matching Items found:'.cyan)
+    console.log(JSON.stringify(matchingItems, null, "----".grey))
 
     // add the folder to the req object (?) for convenience
 
