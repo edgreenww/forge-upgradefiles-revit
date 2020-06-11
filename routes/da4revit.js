@@ -88,7 +88,7 @@ const request = require("request-promise")
  * @param {String} url Url of file to download
  * @param {String} dest file path of local folder to store downloaded files
  * @param {Object} token authentication token from the client request
- * @param {Function} extractFilesCallback extractFiles passed as callback function to unip the zip file once downloaded
+ * @param {Function} extractFilesCallback extractFiles callback function to unip the zip file once downloaded
  * @param {Object} req the request object from the client
  * @param {Object} res the response object to be sent back to the client
  * @param {Boolean} extract set to false to prevent the unzip operation
@@ -170,6 +170,14 @@ const findFileByName = (extractLogList, fileName) => {
 
 }
 
+/**
+ * Unzip file. 
+ * 
+ * @param {String} file File path to zip archive in local file system
+ * @param {*} uploadCallback Callback function to upload the unzipped file
+ * @param {*} req Request object - containing details of file to unzip 
+ * @param {*} res Response object - to send back status message to client
+ */
 const unzip = (file, uploadCallback, req, res) => {
 
     let unzipper = new DecompressZip( file);
@@ -177,7 +185,6 @@ const unzip = (file, uploadCallback, req, res) => {
     unzipper.extract({
         path: extractFilePath
     })
-    // console.log('req from "unzip"', req.body)
     
     unzipper.on('extract', function (log) {
         console.log('extract log ', log);
@@ -198,9 +205,9 @@ const unzip = (file, uploadCallback, req, res) => {
  * Creates a storage based on a specific file
  * 
  * @param {String} file File name of the file to be uploaded to storage
- * @param {*} req Request object from the client
- * @param {*} res Response object to be sent to the client
- * @param {*} uploadCallback Callback function to upload the file once storage has been created
+ * @param {Object} req Request object from the client
+ * @param {Object} res Response object to be sent to the client
+ * @param {Function} uploadCallback Callback function to upload the file once storage has been created
  */
 const createStorageForFile = async (file, req, res, uploadCallback) => {
     const dataFolder = 'routes/data'
