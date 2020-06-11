@@ -82,6 +82,17 @@ const zlib = require('zlib');
 const DecompressZip = require('decompress-zip');
 const request = require("request-promise")
 
+/**
+ * Download file from url to local file system, in preparation for re-uploading to the target
+ * 
+ * @param {String} url Url of file to download
+ * @param {String} dest file path of local folder to store downloaded files
+ * @param {Object} token authentication token from the client request
+ * @param {Function} extractFilesCallback extractFiles passed as callback function to unip the zip file once downloaded
+ * @param {Object} req the request object from the client
+ * @param {Object} res the response object to be sent back to the client
+ * @param {Boolean} extract set to false to prevent the unzip operation
+ */
 const download = (url, dest, token, extractFilesCallback, req, res, extract=true) => {
     const file = fs.createWriteStream(dest);
     // console.log('req (in "download" method): ', req)
@@ -96,8 +107,6 @@ const download = (url, dest, token, extractFilesCallback, req, res, extract=true
             "Authorization": "Bearer " + token,
         }
     }
-
-    // console.log("reqOptions", reqOptions)
 
     const sendReq = request.get(reqOptions);
 
@@ -135,8 +144,11 @@ const download = (url, dest, token, extractFilesCallback, req, res, extract=true
         return err.message;
     });
 };
+
+
 /**
  * Find the 'host' .rvt file in the .zip by matching the file names.
+ * 
  * @param {Array} extractLogList The extract file log containing file names unzipped from the archive
  * @param {String} fileName The filename of the zip file we are unzipping
  */
@@ -182,46 +194,44 @@ const unzip = (file, uploadCallback, req, res) => {
     });
 }
 
+/**
+ * Creates a storage based on a specific file
+ * 
+ * @param {String} file File name of the file to be uploaded to storage
+ * @param {*} req Request object from the client
+ * @param {*} res Response object to be sent to the client
+ * @param {*} uploadCallback Callback function to upload the file once storage has been created
+ */
 const createStorageForFile = async (file, req, res, uploadCallback) => {
     const dataFolder = 'routes/data'
-    let filePath = dataFolder+'/'+file
-    
-    // console.log('Creating storage for ' + filePath )
-    // console.log('Creating storage...')
+    const filePath = dataFolder+'/'+file
     const storage = await createStorage(req, res, filePath)
-
     console.log('storageResult'.magenta, JSON.stringify(storage, null, "----"))
-
     req.storageId = storage.data.id
-    
     console.log(`Storage created for ${file}`.brightGreen.bold, storage.data.id.yellow)
     uploadCallback(file, req)
 }
 
-// const createStorageForEachFile = async (files, req) => {
-//     const promises = files.map(createStorageForFile)
-//     await Promise.all(promises)
-//     console.log('All storages created!')
 
-// }
-
-const createStorageForEachFile = async (files, req) => {
-    const allAsyncResults = []
-  
-    for (const file of files) {
-      const asyncResult = await createStorageForFile(file, req, res)
-      allAsyncResults.push(asyncResult)
-    }
-    console.log('All storages created!')
-    return allAsyncResults
-  }
-
+/**
+ * Extract files. This is the main function that calls other operations. 
+ * 
+ * 'extractFiles' calls the 'unzip' function.
+ * 'unzip' calls 'createStorageForFile' (which calls 'createStorage') for the unzipped file
+ * once unzip operation is complete, 'unzip' calls the 'uploadUnzippedFile' as a callback
+ * 'uploadUnzippedFile' calls 'uploadFile' - which uploads the file to the created storage
+ * on successful upload, 'uploadFile' calls 'createVersion' to create a new version from the uploaded unzipped file
+ * 
+ * phew! that was a lot to explain... 
+ * 
+ * @param {Object} req - the request sent from the client
+ * @param {Object} res - the response sent back to the client
+ */
 const extractFiles =  (req, res) => {
 
     const dataFolder = 'routes/data'
     console.log('Files in local file system: '.cyan)
 
-    
     fs.readdir(dataFolder, (err, files) => {
         
         files.forEach( file => {
@@ -235,7 +245,6 @@ const extractFiles =  (req, res) => {
             console.log(`${file} : ${sizeInMB}MB`.yellow);
         });  
 
-        
         files.forEach( file => {
             
             let filePath = dataFolder+'/'+file
@@ -249,6 +258,8 @@ const extractFiles =  (req, res) => {
 
     });
 }
+
+
 /**
  * Better verion of create storage
  * @param {Object} req The request object
@@ -321,8 +332,10 @@ const betterCreateStorage = async (req, fileName) => {
     
 }
 
+
 /**
  * Create version from unzipped file.
+ * 
  * @param {String} projectId The itemId sent in the original api request
  * @param {String} itemId The itemId sent in the original api request
  * @param {String} storageId The storageId of the storage object created to host the unzipped file
@@ -398,6 +411,7 @@ const createVersion = async (req) => {
 
 /**
  * Unpack file data from the request. Returns resourceId and projectId
+ * 
  * @param {Object} req request object, containing incoming project_id and fileItemId
  * @param {Object} res response
  */
@@ -442,35 +456,36 @@ const unpackFileData = (req, res, fileItemName) => {
 
 }
 
-
-
+/**
+ * Create storage object in bucket to receive file uploaded bytes.
+ * 
+ * @param {Object} req request object from the client
+ * @param {Object} res response object to the client
+ * @param {String} unzippedFilePath path to unzipped file in local file system
+ */
 const createStorage = async (req, res, unzippedFilePath) => {
-
+    
+    const projectId = req.body.project_id
     const filePathParts = unzippedFilePath.split('/')
     const fileName = filePathParts[filePathParts.length-1]
-
-    const projectId = req.body.project_id
-    const fileItemId   = req.body.fileItemId;
-    
     const fileItemName = fileName;
-
+    
     const resourceId = unpackFileData(req, res, fileItemName).resourceId
 
     console.log(`Creating storage for ${fileName}... `.magenta.bold)
     console.log(`resourceId:`, `${resourceId}`.yellow)
     console.log(`projectId:`,`${projectId}`.yellow)
 
-    // getting the folder containing the zip file from the original api request
-    const folder = req.folder
-
-    // console.log(`Creating storage based on ${fileItemName} `)
-
     const storageResult = await betterCreateStorage(req, fileName )
 
     return storageResult
-
 }
 
+/**
+ * Upload a file to the storage object, and create a new version in the stack.
+ * @param {Object} req The request sent to the API endpoint (needed for createVersion)
+ * @param {Object} data Object containing data prepared by the caller function uploadUnzippedFile
+ */
 const uploadFile = async (req, data) => {
 
     const objects = new ObjectsApi()
@@ -512,8 +527,6 @@ const uploadFile = async (req, data) => {
 
     )
 
-    
-
     uploadPromise.then( async (result) => {
         console.log('Upload promise resolved'.brightGreen.bold)
         console.log(JSON.stringify(result, null, "----"))
@@ -521,15 +534,12 @@ const uploadFile = async (req, data) => {
         const version =  await createVersion(req)
         console.log('Version created'.green.bold)
         // console.log(JSON.stringify(version, null, "----"))
-        
-
 
     }, function(result){
         console.log("Upload promise rejected".red.bold)
         console.log(JSON.stringify(result, null, "----"))
     })
 
-    
 }
 
 /**
@@ -542,16 +552,11 @@ const uploadFile = async (req, data) => {
  */
 const uploadUnzippedFile = (  ( unzippedFilePath, req, hostId) => {
 
-    // console.log('req.body', req.body)
-
     const credentials = {
         // with Bearer we get the error:faultstring: 'Failed to Decode Token: policy(jwt-decode-HS256)',
         "access_token": req.body.oauth_token, 
         "expires_in" : 3600
     }
-    // console.log('credentials', credentials )
-
-    
 
     console.log(`Ready to upload ${unzippedFilePath}...`)
     // console.log("req", req.body)
@@ -609,6 +614,11 @@ const uploadUnzippedFile = (  ( unzippedFilePath, req, hostId) => {
 
 })
 
+/**
+ * The unzip AIP endpoint route
+ * This is called by the python script on the client side.
+ * request object contains fileItemId and fileItemName
+ */
 router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     
     const fileItemId   = req.body.fileItemId;
@@ -659,10 +669,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     console.log("projectId", projectId.yellow)
     console.log("resourceId", resourceId.yellow)
-    // console.log("req.oauth_client", req.oauth_client)
-    // console.log("incoming_oauth_token", incoming_oauth_token)
     
-
     const folder = await items.getItemParentFolder(
         projectId, resourceId, req.oauth_client, incoming_oauth_token
         );
@@ -742,7 +749,6 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     console.log("Composite (zip) file downloaded.... ".green.bold )
     console.log("Local file path: ".brightCyan, downloadFilePath.yellow  )
-    
 
 })
 
