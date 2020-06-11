@@ -85,7 +85,7 @@ const download = (url, dest, token, extractFilesCallback, req, res, extract=true
     const file = fs.createWriteStream(dest);
     // console.log('req (in "download" method): ', req)
 
-    console.log('Attempting download of: ', url)
+    console.log('Attempting download of: '.magenta.bold, url.yellow)
 
     const reqOptions = {
         url: url,
@@ -301,6 +301,9 @@ const unpackFileData = (req, res, fileItemName) => {
 
     const projectId = req.body.project_id
     const fileItemId   = req.body.fileItemId;
+    if (!fileItemName){
+        fileItemName = req.body.fileItemName
+    }
 
     if (fileItemId === '' || fileItemName === '') {
         res.status(500).end();
@@ -350,8 +353,8 @@ const createStorage = async (req, res, unzippedFilePath) => {
     const resourceId = unpackFileData(req, res, fileItemName).resourceId
 
     console.log(`Creating storage for ${fileName}... `.magenta.bold)
-    console.log(`resourceId: ${resourceId} `)
-    console.log(`projectId: ${projectId} `)
+    console.log(`resourceId:`, `${resourceId}`.yellow)
+    console.log(`projectId:`,`${projectId}`.yellow)
 
     // getting the folder containing the zip file from the original api request
     const folder = req.folder
@@ -487,28 +490,33 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     const fileItemId   = req.body.fileItemId;
     const fileItemName = req.body.fileItemName;
 
-    if (fileItemId === '' || fileItemName === '') {
-        res.status(500).end();
-        return;
-    }
+    const unpacked = unpackFileData(req,res)
+    const resourceId = unpacked.reseourceId
+    const projectId = unpacked.projectId
 
-    if (fileItemId === '#') {
-        res.status(500).end('not supported item');
-    } 
 
-    const params = fileItemId.split('/');
-    if( params.length < 3){
-        res.status(500).end('selected item id has problem');
-    }
+    // if (fileItemId === '' || fileItemName === '') {
+    //     res.status(500).end();
+    //     return;
+    // }
 
-    const resourceName = params[params.length - 2];
-    if (resourceName !== 'items') {
-        res.status(500).end('not supported item');
-        return;
-    }
+    // if (fileItemId === '#') {
+    //     res.status(500).end('not supported item');
+    // } 
 
-    const resourceId = params[params.length - 1];
-    const projectId = params[params.length - 3];
+    // const params = fileItemId.split('/');
+    // if( params.length < 3){
+    //     res.status(500).end('selected item id has problem');
+    // }
+
+    // const resourceName = params[params.length - 2];
+    // if (resourceName !== 'items') {
+    //     res.status(500).end('not supported item');
+    //     return;
+    // }
+
+    // const resourceId = params[params.length - 1];
+    // const projectId = params[params.length - 3];
 
     const incoming_oauth_token = {
         "access_token": req.body.oauth_token,
@@ -523,10 +531,10 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     // // adding here... 
 
     const items = new ItemsApi();
-    console.log('Getting parent item folder.... (of zipped file)')
+    console.log('Getting parent item folder.... (of zipped file)'.cyan)
 
-    console.log("projectId", projectId)
-    console.log("resourceId", resourceId)
+    console.log("projectId", projectId.yellow)
+    console.log("resourceId", resourceId.yellow)
     // console.log("req.oauth_client", req.oauth_client)
     // console.log("incoming_oauth_token", incoming_oauth_token)
     
@@ -537,23 +545,18 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
         res.status(500).end('failed to get the parent folder');
         return;
     }
-    console.log('Getting parent item folder.... success')
-    console.log('Parent folder - of zip file... ')
+    console.log('Getting parent item folder.... success'.green)
+    console.log('Parent folder - of zip file... '.cyan)
     console.log(folder.body)
-    const folderContents = folder.body.contents
-
-    console.log('Folder contents:') 
-    console.log(folder.body.data.relationships.contents)
     
-    // console.log('Checking file format ....')
 
-
+    console.log('Folder contents:'.cyan) 
+    console.log(folder.body.data.relationships.contents)
 
     // add the folder to the req object (?) for convenience
 
     req.folder = folder
     
-
     const versionInfo = await getLatestVersionInfo(projectId, resourceId, req.oauth_client, incoming_oauth_token);
     if (versionInfo === null ) {
         console.log('failed to get lastest version of the file');
@@ -561,23 +564,24 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
         return;
     }
     const bim360Url = versionInfo.versionUrl; // aka. inputUrl 
-    console.log('inputUrl: ', bim360Url)
+    console.log('inputUrl: ', bim360Url.yellow)
 
     // try using the input url of the file from the autodesk storage
     let bim360UrlZip = bim360Url.replace('rvt', 'zip') 
-    console.log('Attempting to unzip from URL: ', bim360UrlZip)
+    // console.log('Attempting to unzip from URL: '.magenta, bim360UrlZip.yellow)
     
     let timestamp = Date.now()
     const downloadFilePath = `routes/data/streamedDownload_${timestamp}.zip`
     const url = bim360Url 
 
     let token = req.body.oauth_token
-    console.log('Attempting to stream download from URL: ', url)
+    console.log('Attempting to stream download from URL: '.magenta, url.yellow)
     // download(url, downloadFilePath, token, extractFiles, req)
 
     await download(url, downloadFilePath, token, extractFiles, req, res, extract=true)
 
-    console.log("Composite (zip) file downloaded.... " )
+    console.log("Composite (zip) file downloaded.... ".green.bold )
+    console.log("Local file path: ".cyan, downloadFilePath.yellow  )
     
 
 })
