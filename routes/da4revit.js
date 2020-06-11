@@ -284,7 +284,7 @@ const betterCreateStorage = async (req, fileName) => {
         console.log('Error: ', error)
         // console.log('Response ', response)
         console.log('Storage info (body)...')
-        console.log('body: ', JSON.stringify(body, null, 4))
+        console.log('body: ', JSON.stringify(body, null, '\t'))
         // 
         
         console.log('Storage created... ')
@@ -301,11 +301,12 @@ const betterCreateStorage = async (req, fileName) => {
     // unzipCallback(filePath, uploadUnzippedFile, req)
 }
 
-
-const createStorage = async (req, unzippedFilePath) => {
-
-    const filePathParts = unzippedFilePath.split('/')
-    const fileName = filePathParts[filePathParts.length-1]
+/**
+ * Unpack file data from the request. Returns resourceId and projectId
+ * @param {Object} req request object, containing incoming project_id and fileItemId
+ * @param {Object} res response
+ */
+const unpackFileData = (req, res) => {
 
     const projectId = req.body.project_id
     const fileItemId   = req.body.fileItemId;
@@ -333,7 +334,53 @@ const createStorage = async (req, unzippedFilePath) => {
     }
 
     const resourceId = params[params.length - 1];
-    //const projectId = params[params.length - 3];
+    // if no projectId in request, try to extract it from the fileItemId
+    if (!projectId){
+        const projectId = params[params.length - 3];
+    }
+
+    return {
+        "resourceId" : resourceId,
+        "projectId" : projectId
+    }    
+
+}
+
+
+const createStorage = async (req, unzippedFilePath) => {
+
+    const filePathParts = unzippedFilePath.split('/')
+    const fileName = filePathParts[filePathParts.length-1]
+
+    const projectId = req.body.project_id
+    const fileItemId   = req.body.fileItemId;
+    
+    const fileItemName = fileName;
+
+    // if (fileItemId === '' || fileItemName === '') {
+    //     res.status(500).end();
+    //     return;
+    // }
+
+    // if (fileItemId === '#') {
+    //     res.status(500).end('not supported item');
+    // } 
+
+    // const params = fileItemId.split('/');
+    // if( params.length < 3){
+    //     res.status(500).end('selected item id has problem');
+    // }
+
+    // const resourceName = params[params.length - 2];
+    // if (resourceName !== 'items') {
+    //     res.status(500).end('not supported item');
+    //     return;
+    // }
+
+    // const resourceId = params[params.length - 1];
+    // //const projectId = params[params.length - 3];
+
+    const resourceId = unpackFileData(req, res).resourceId
 
     console.log(`Creating storage for ${fileName}... `)
     console.log(`resourceId: ${resourceId} `)
