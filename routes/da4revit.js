@@ -42,7 +42,7 @@ const SOCKET_TOPIC_WORKITEM = 'Workitem-Notification';
 let router = express.Router();
 
 
-
+const colors = require('colors')
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -345,6 +345,7 @@ const unpackFileData = (req, res, fileItemName) => {
 }
 
 
+
 const createStorage = async (req, res, unzippedFilePath) => {
 
     const filePathParts = unzippedFilePath.split('/')
@@ -355,46 +356,18 @@ const createStorage = async (req, res, unzippedFilePath) => {
     
     const fileItemName = fileName;
 
-    // if (fileItemId === '' || fileItemName === '') {
-    //     res.status(500).end();
-    //     return;
-    // }
-
-    // if (fileItemId === '#') {
-    //     res.status(500).end('not supported item');
-    // } 
-
-    // const params = fileItemId.split('/');
-    // if( params.length < 3){
-    //     res.status(500).end('selected item id has problem');
-    // }
-
-    // const resourceName = params[params.length - 2];
-    // if (resourceName !== 'items') {
-    //     res.status(500).end('not supported item');
-    //     return;
-    // }
-
-    // const resourceId = params[params.length - 1];
-    // //const projectId = params[params.length - 3];
-
     const resourceId = unpackFileData(req, res, fileItemName).resourceId
 
-    console.log(`Creating storage for ${fileName}... `)
+    console.log(colors.magenta(`Creating storage for ${fileName}... `))
     console.log(`resourceId: ${resourceId} `)
     console.log(`projectId: ${projectId} `)
-
-  
 
     // getting the folder containing the zip file from the original api request
     const folder = req.folder
 
-    console.log(`Creating storage based on ${fileItemName} `)
-
+    // console.log(`Creating storage based on ${fileItemName} `)
 
     await betterCreateStorage(req, fileName )
-
-
 
 }
 
