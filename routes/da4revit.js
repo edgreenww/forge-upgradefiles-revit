@@ -364,6 +364,11 @@ const createVersion = async (req) => {
         },
     }
 
+    console.log(
+        'Create Version Data'.cyan, 
+        JSON.stringify(data, null, "----")
+        )
+
     const requestParams = {
         headers: headers,
         uri: url,
