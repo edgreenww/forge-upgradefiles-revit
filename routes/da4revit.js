@@ -520,7 +520,7 @@ const uploadFile = async (req, data) => {
 
         const version =  await createVersion(req)
         console.log('Version created'.green.bold)
-        console.log(JSON.stringify(version, null, "----"))
+        // console.log(JSON.stringify(version, null, "----"))
         
 
 
