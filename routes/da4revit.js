@@ -43,6 +43,7 @@ let router = express.Router();
 
 
 const colors = require('colors')
+colors.enable()
 
 
 ///////////////////////////////////////////////////////////////////////
