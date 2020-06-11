@@ -161,12 +161,12 @@ const createStorageForFile = async (file, req, res, uploadCallback) => {
     const dataFolder = 'routes/data'
     let filePath = dataFolder+'/'+file
     
-    console.log('Creating storage for ' + filePath )
+    // console.log('Creating storage for ' + filePath )
     // console.log('Creating storage...')
     await createStorage(req, res, filePath)
 
     
-    console.log('Storage created for ' + filePath)
+    console.log(`Storage created for ${file}`.brightGreen.bold)
     uploadCallback(file, req)
 }
 
@@ -191,12 +191,11 @@ const createStorageForEachFile = async (files, req) => {
 const extractFiles =  (req, res) => {
 
     const dataFolder = 'routes/data'
-    console.log('Files in local file system: ')
+    console.log('Files in local file system: '.cyan)
 
-    // console.log('req from "extractFiles"', req.body)
-    // console.log('reading directory... (before fs.readdir)')
+    
     fs.readdir(dataFolder, (err, files) => {
-        // console.log('reading directory... (inside fs.readdir)')
+        
         files.forEach( file => {
 
             let f = file
@@ -205,25 +204,16 @@ const extractFiles =  (req, res) => {
             let sizeInBytes = stats["size"]
             let sizeInMB = sizeInBytes/1000000
 
-            console.log(file, sizeInMB+"MB");
+            console.log(`${file} : ${sizeInMB}MB`.yellow);
         });  
 
-        // console.log('req from "fs.readdir"', req.body)
-        // createStorages promise
-
-        //  createStorageForEachFile(files, req)
-
-        
         
         files.forEach( file => {
             
             let filePath = dataFolder+'/'+file
             if (filePath.includes(".zip")){
-                console.log('Unzipping ' + filePath )
-                // console.log('Creating storage...')
-                
-    
-                // createStorage(req, filePath, unzip)
+                console.log(`Unzipping ${filePath}`.magenta.bold )
+
                 unzip(filePath, uploadUnzippedFile, req, res)
             }
 
@@ -280,15 +270,15 @@ const betterCreateStorage = async (req, fileName) => {
         json: true,
     }
 
-    console.log('Ready to create storage...')
+    console.log('Ready to create storage...'.cyan)
     const storageResult = await request(requestParams, function (error, response, body) {
-        console.log('Error: ', error)
-        // console.log('Response ', response)
-        console.log('Storage info (body)...')
-        console.log('body: ', JSON.stringify(body, null, '\t'))
-        // 
+        if (error) {
+            console.log(`Error: ${error}`.red)
+        }
         
-        console.log('Storage created... ')
+        console.log('Storage info (body)...'.cyan)
+        console.log('body: ', JSON.stringify(body, null, '\t'))
+        console.log('Storage created... '.cyan)
 
         const storageId = body.data.id
         const objectName = storageId.split('/')[1]
@@ -297,9 +287,9 @@ const betterCreateStorage = async (req, fileName) => {
 
 
     })
-    // console.log("storageResult", storageResult)
+    
     return storageResult
-    // unzipCallback(filePath, uploadUnzippedFile, req)
+    
 }
 
 /**
