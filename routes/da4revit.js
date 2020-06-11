@@ -598,8 +598,8 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     const folderObjects = folderContents.body.data
     folderObjects.forEach(obj => {
-        // console.log(JSON.stringify(obj, null, '----'))
-        console.log(obj)
+        console.log(JSON.stringify(obj, null, '----'))
+        //console.log(obj.attdisplayName, obj.id)
     })
 
     // add the folder to the req object (?) for convenience
