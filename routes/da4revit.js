@@ -407,8 +407,16 @@ const uploadFile = async (data) => {
         
     } = data
     
-    console.log(`Uploading file: ${fileName} to storage : ${objectName} ...  `.magenta.bold)
-    console.log(`Destination folder: ${folderId}`.magenta.bold)
+    console.log(
+        `Uploading file:`.magenta.bold , 
+        fileName.yellow,  
+        `to storage:`.magenta.bold,  
+        objectName.yellow
+        )
+    console.log(
+        `Destination folder:`.magenta.bold, 
+        folderId.yellow
+        )
 
     const uploadPromise = objects.uploadObject(
         bucketKey,
