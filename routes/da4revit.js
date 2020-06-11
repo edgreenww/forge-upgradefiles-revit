@@ -306,7 +306,7 @@ const betterCreateStorage = async (req, fileName) => {
  * @param {Object} req request object, containing incoming project_id and fileItemId
  * @param {Object} res response
  */
-const unpackFileData = (req, res) => {
+const unpackFileData = (req, res, fileItemName) => {
 
     const projectId = req.body.project_id
     const fileItemId   = req.body.fileItemId;
@@ -378,7 +378,7 @@ const createStorage = async (req, res, unzippedFilePath) => {
     // const resourceId = params[params.length - 1];
     // //const projectId = params[params.length - 3];
 
-    const resourceId = unpackFileData(req, res).resourceId
+    const resourceId = unpackFileData(req, res, fileItemName).resourceId
 
     console.log(`Creating storage for ${fileName}... `)
     console.log(`resourceId: ${resourceId} `)
