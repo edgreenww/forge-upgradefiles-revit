@@ -134,6 +134,20 @@ const download = (url, dest, token, extractFilesCallback, req, res, extract=true
         return err.message;
     });
 };
+/**
+ * Find the 'host' .rvt file in the .zip by matching the file names.
+ * @param {Array} extractLogList The extract file log containing file names unzipped from the archive
+ * @param {String} fileName The filename of the zip file we are unzipping
+ */
+const findFileByName = (extractLogList, fileName) => {
+    extractLogList.forEach(log => {
+        
+        if (log.deflated === fileName.replace('.zip', '.rvt')) {
+            return log.deflated
+        }
+    })
+
+}
 
 const unzip = (file, uploadCallback, req, res) => {
 
@@ -146,7 +160,9 @@ const unzip = (file, uploadCallback, req, res) => {
     
     unzipper.on('extract', function (log) {
         console.log('extract log ', log);
-        const unzippedFileToUpload = extractFilePath +'/'+ log[0].deflated
+        
+        // const unzippedFileToUpload = extractFilePath +'/'+ log[0].deflated
+        const unzippedFileToUpload = extractFilePath +'/'+ findFileByName(log, req.file_name)
         // uploadCallback(unzippedFileToUpload, req)
 
         createStorageForFile(unzippedFileToUpload, req, res, uploadCallback)
@@ -572,6 +588,9 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     
     let timestamp = Date.now()
     const downloadFilePath = `routes/data/streamedDownload_${timestamp}.zip`
+    if (req.file_name){
+        downloadFilePath = `routes/data/${req_filename}.zip`
+    }
     const url = bim360Url 
 
     let token = req.body.oauth_token
