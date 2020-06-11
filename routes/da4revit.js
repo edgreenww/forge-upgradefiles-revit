@@ -140,12 +140,14 @@ const download = (url, dest, token, extractFilesCallback, req, res, extract=true
  * @param {String} fileName The filename of the zip file we are unzipping
  */
 const findFileByName = (extractLogList, fileName) => {
-    extractLogList.forEach(log => {
+    const result = extractLogList.forEach(log => {
         
         if (log.deflated === fileName.replace('.zip', '.rvt')) {
             return log.deflated
         }
     })
+
+    return result
 
 }
 
