@@ -589,7 +589,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     // console.log('Attempting to unzip from URL: '.magenta, bim360UrlZip.yellow)
     
     let timestamp = Date.now()
-    const downloadFilePath = `routes/data/streamedDownload_${timestamp}.zip`
+    let downloadFilePath = `routes/data/streamedDownload_${timestamp}.zip`
     if (req.body.fileItemName){
         downloadFilePath = `routes/data/${req.fileItemName}`
     }
