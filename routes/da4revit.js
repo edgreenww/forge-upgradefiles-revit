@@ -188,7 +188,9 @@ const createStorageForFile = async (file, req, res, uploadCallback) => {
     
     // console.log('Creating storage for ' + filePath )
     // console.log('Creating storage...')
-    await createStorage(req, res, filePath)
+    const storageResult = await createStorage(req, res, filePath)
+
+    console.log('storageResult'.magenta, JSON.stringify(storageResult, null, "----"))
 
     
     console.log(`Storage created for ${file}`.brightGreen.bold)
@@ -309,6 +311,7 @@ const betterCreateStorage = async (req, fileName) => {
         const objectName = storageId.split('/')[1]
 
         req.objectName = objectName
+        req.storageId = storageId
 
 
     })
@@ -316,6 +319,73 @@ const betterCreateStorage = async (req, fileName) => {
     return storageResult
     
 }
+
+/**
+ * Create version from unzipped file.
+ * @param {*} req The request object containing the project info to unzip/upgraded
+ * @param {*} storageId The storageId of the storage object created to host the unzipped file
+ */
+const createVersion = async (req, fileName, itemId, storageId) => {
+    const projectId = req.body.project_id
+
+    const url = `https://developer.api.autodesk.com/data/v1/projects/b.${projectId}/versions`
+
+    const token = req.body.oauth_token
+    const headers = {
+        // "x-user-id": x_user_id, 
+        "Content-Type": "application/vnd.api+json", 
+        "Authorization": `Bearer ${token}`
+    }
+
+    const data = {
+        "jsonapi": {"version": "1.0"},
+        "data": {
+            "type": "versions",
+            "attributes": {
+                "name": req.body.fileItemName,
+                "extension": {
+                    "version": "1.0",
+                    "type": "versions:autodesk.bim360:File",
+                },
+            
+            },
+            "relationships": {
+                "item": {"data": {"type": "items", "id": req.body.fileItemId}},
+                "storage": {
+                    "data": {"type": "objects", "id": storageId}
+                },
+            },
+        },
+    }
+
+    const requestParams = {
+        headers: headers,
+        uri: url,
+        method: 'POST',
+        body: data,
+        json: true,
+    }
+
+    console.log('Ready to create version...'.cyan)
+    const versionResult = await request(requestParams, function (error, response, body) {
+        if (error) {
+            console.log(`Error: ${error}`.red)
+        }
+        
+        console.log('Version info (body)...'.cyan)
+        console.log('body: ', JSON.stringify(body, null, '----'))
+        console.log('Version created... '.cyan)
+
+        
+
+
+    })
+    
+    return versionResult
+    
+
+}
+
 
 /**
  * Unpack file data from the request. Returns resourceId and projectId
@@ -386,7 +456,9 @@ const createStorage = async (req, res, unzippedFilePath) => {
 
     // console.log(`Creating storage based on ${fileItemName} `)
 
-    await betterCreateStorage(req, fileName )
+    const storageResult = await betterCreateStorage(req, fileName )
+
+    return storageResult
 
 }
 
@@ -398,6 +470,7 @@ const uploadFile = async (data) => {
         bucketKey ,
         fileName,
         objectName ,
+        storageId,
         hostId,
         contentLength ,
         body,
@@ -433,6 +506,8 @@ const uploadFile = async (data) => {
     uploadPromise.then( function(result){
         console.log('Upload promise resolved'.brightGreen.bold)
         console.log(JSON.stringify(result, null, "----"))
+
+
 
     }, function(result){
         console.log("Upload promise rejected".red.bold)
@@ -503,6 +578,7 @@ const uploadUnzippedFile = (  ( unzippedFilePath, req, hostId) => {
             fileName: fileName,
             folderId: req.folder.body.data.id,
             objectName: req.objectName,
+            storageId: req.storageId,
             hostId: hostId,
             contentLength:  contentLength,
             body: fileBuffer, 
