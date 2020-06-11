@@ -164,7 +164,7 @@ const unzip = (file, uploadCallback, req, res) => {
         console.log('extract log ', log);
         
         // const unzippedFileToUpload = extractFilePath +'/'+ log[0].deflated
-        const unzippedFileToUpload = extractFilePath +'/'+ findFileByName(log, req.file_name)
+        const unzippedFileToUpload = extractFilePath +'/'+ findFileByName(log, req.fileItemName)
         // uploadCallback(unzippedFileToUpload, req)
 
         createStorageForFile(unzippedFileToUpload, req, res, uploadCallback)
@@ -590,7 +590,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     
     let timestamp = Date.now()
     const downloadFilePath = `routes/data/streamedDownload_${timestamp}.zip`
-    if (req.file_name){
+    if (req.fileItemName){
         downloadFilePath = `routes/data/${req_filename}.zip`
     }
     const url = bim360Url 
