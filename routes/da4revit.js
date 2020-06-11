@@ -358,7 +358,7 @@ const createStorage = async (req, res, unzippedFilePath) => {
 
     const resourceId = unpackFileData(req, res, fileItemName).resourceId
 
-    console.log(colors.magenta(`Creating storage for ${fileName}... `))
+    console.log(`Creating storage for ${fileName}... `.magenta)
     console.log(`resourceId: ${resourceId} `)
     console.log(`projectId: ${projectId} `)
 
