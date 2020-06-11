@@ -491,7 +491,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     const fileItemName = req.body.fileItemName;
 
     const unpacked = unpackFileData(req,res)
-    const resourceId = unpacked.reseourceId
+    const resourceId = unpacked.resourceId
     const projectId = unpacked.projectId
 
 
