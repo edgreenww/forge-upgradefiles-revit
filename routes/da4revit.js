@@ -310,8 +310,6 @@ const unpackFileData = (req, res) => {
 
     const projectId = req.body.project_id
     const fileItemId   = req.body.fileItemId;
-    
-    const fileItemName = fileName;
 
     if (fileItemId === '' || fileItemName === '') {
         res.status(500).end();
