@@ -21,7 +21,8 @@ const express = require('express');
 const {
     ItemsApi,
     VersionsApi,
-    ObjectsApi
+    ObjectsApi,
+    FoldersApi
 } = require('forge-apis');
 
 const { OAuth } = require('./common/oauthImp');
