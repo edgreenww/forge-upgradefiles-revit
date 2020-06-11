@@ -188,12 +188,13 @@ const createStorageForFile = async (file, req, res, uploadCallback) => {
     
     // console.log('Creating storage for ' + filePath )
     // console.log('Creating storage...')
-    const storageResult = await createStorage(req, res, filePath)
+    const storage = await createStorage(req, res, filePath)
 
-    console.log('storageResult'.magenta, JSON.stringify(storageResult, null, "----"))
+    console.log('storageResult'.magenta, JSON.stringify(storage, null, "----"))
 
+    req.storageId = storage.data.id
     
-    console.log(`Storage created for ${file}`.brightGreen.bold)
+    console.log(`Storage created for ${file}`.brightGreen.bold, storage.data.id.yellow)
     uploadCallback(file, req)
 }
 
@@ -322,11 +323,16 @@ const betterCreateStorage = async (req, fileName) => {
 
 /**
  * Create version from unzipped file.
- * @param {*} req The request object containing the project info to unzip/upgraded
- * @param {*} storageId The storageId of the storage object created to host the unzipped file
+ * @param {String} projectId The itemId sent in the original api request
+ * @param {String} itemId The itemId sent in the original api request
+ * @param {String} storageId The storageId of the storage object created to host the unzipped file
+ * @param {String} fileName The itemId sent in the original api request
+ * 
  */
-const createVersion = async (req, fileName, itemId, storageId) => {
-    const projectId = req.body.project_id
+const createVersion = async (req) => {
+
+    const projectId = req.body.projectId
+    
 
     const url = `https://developer.api.autodesk.com/data/v1/projects/b.${projectId}/versions`
 
@@ -352,7 +358,7 @@ const createVersion = async (req, fileName, itemId, storageId) => {
             "relationships": {
                 "item": {"data": {"type": "items", "id": req.body.fileItemId}},
                 "storage": {
-                    "data": {"type": "objects", "id": storageId}
+                    "data": {"type": "objects", "id": req.storageId}
                 },
             },
         },
@@ -462,7 +468,7 @@ const createStorage = async (req, res, unzippedFilePath) => {
 
 }
 
-const uploadFile = async (data) => {
+const uploadFile = async (req, data) => {
 
     const objects = new ObjectsApi()
     
@@ -503,10 +509,15 @@ const uploadFile = async (data) => {
 
     )
 
+    
+
     uploadPromise.then( function(result){
         console.log('Upload promise resolved'.brightGreen.bold)
         console.log(JSON.stringify(result, null, "----"))
-
+        const version =  await createVersion(itemId, storageId, fileName)
+        console.log('Version created'.green.bold)
+        console.log(JSON.stringify(version, null, "----"))
+        
 
 
     }, function(result){
@@ -589,7 +600,7 @@ const uploadUnzippedFile = (  ( unzippedFilePath, req, hostId) => {
             credentials: credentials
     
         }
-        return uploadFile(data)
+        return uploadFile(req, data)
     });
 
 })
