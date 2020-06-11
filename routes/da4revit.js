@@ -590,7 +590,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     
     let timestamp = Date.now()
     const downloadFilePath = `routes/data/streamedDownload_${timestamp}.zip`
-    if (req.fileItemName){
+    if (req.body.fileItemName){
         downloadFilePath = `routes/data/${req.fileItemName}`
     }
     const url = bim360Url 
