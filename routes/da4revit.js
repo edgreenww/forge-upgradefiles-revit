@@ -302,7 +302,7 @@ const betterCreateStorage = async (req, fileName) => {
         }
         
         console.log('Storage info (body)...'.cyan)
-        console.log('body: ', JSON.stringify(body, null, '    '))
+        console.log('body: ', JSON.stringify(body, null, '----'))
         console.log('Storage created... '.cyan)
 
         const storageId = body.data.id
@@ -432,11 +432,11 @@ const uploadFile = async (data) => {
 
     uploadPromise.then( function(result){
         console.log('Upload promise resolved'.brightGreen.bold)
-        console.log(result)
+        console.log(JSON.stringify(result, null, "----"))
 
     }, function(result){
         console.log("Upload promise rejected".red.bold)
-        console.log(result)
+        console.log(JSON.stringify(result, null, "----"))
     })
 
     
