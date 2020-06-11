@@ -490,33 +490,33 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     const fileItemId   = req.body.fileItemId;
     const fileItemName = req.body.fileItemName;
 
-    const unpacked = unpackFileData(req,res)
-    const resourceId = unpacked.resourceId
-    const projectId = unpacked.projectId
+    // const unpacked = unpackFileData(req,res)
+    // const resourceId = unpacked.resourceId
+    // const projectId = unpacked.projectId
 
 
-    // if (fileItemId === '' || fileItemName === '') {
-    //     res.status(500).end();
-    //     return;
-    // }
+    if (fileItemId === '' || fileItemName === '') {
+        res.status(500).end();
+        return;
+    }
 
-    // if (fileItemId === '#') {
-    //     res.status(500).end('not supported item');
-    // } 
+    if (fileItemId === '#') {
+        res.status(500).end('not supported item');
+    } 
 
-    // const params = fileItemId.split('/');
-    // if( params.length < 3){
-    //     res.status(500).end('selected item id has problem');
-    // }
+    const params = fileItemId.split('/');
+    if( params.length < 3){
+        res.status(500).end('selected item id has problem');
+    }
 
-    // const resourceName = params[params.length - 2];
-    // if (resourceName !== 'items') {
-    //     res.status(500).end('not supported item');
-    //     return;
-    // }
+    const resourceName = params[params.length - 2];
+    if (resourceName !== 'items') {
+        res.status(500).end('not supported item');
+        return;
+    }
 
-    // const resourceId = params[params.length - 1];
-    // const projectId = params[params.length - 3];
+    const resourceId = params[params.length - 1];
+    const projectId = params[params.length - 3];
 
     const incoming_oauth_token = {
         "access_token": req.body.oauth_token,
