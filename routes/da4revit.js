@@ -348,7 +348,7 @@ const createVersion = async (req) => {
         "data": {
             "type": "versions",
             "attributes": {
-                "name": req.body.fileItemName,
+                "name": req.body.fileItemName.replace('.zip', '.rvt'),
                 "extension": {
                     "version": "1.0",
                     "type": "versions:autodesk.bim360:File",
@@ -387,13 +387,10 @@ const createVersion = async (req) => {
         console.log('body: ', JSON.stringify(body, null, '----'))
         console.log('Version created... '.cyan)
 
-        
-
-
     })
     
     return versionResult
-    
+
 
 }
 
