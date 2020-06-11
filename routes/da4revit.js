@@ -609,12 +609,12 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
         // console.log(JSON.stringify(summary, null, "----"))
 
         if (obj.attributes.displayName === req.body.fileItemName.replace('.zip', '.rvt')){
-            matchingItems.push(obj)
+            matchingItems.push(summary)
         }
     })
 
     console.log('Matching Items found:'.cyan)
-    console.log(JSON.stringify(matchingItems, null, "----".grey))
+    console.log(JSON.stringify(matchingItems, null, "----"))
 
     // add the folder to the req object (?) for convenience
 
