@@ -356,7 +356,7 @@ const createVersion = async (req) => {
             
             },
             "relationships": {
-                "item": {"data": {"type": "items", "id": req.body.fileItemId}},
+                "item": {"data": {"type": "items", "id": req.body.item_id}},
                 "storage": {
                     "data": {"type": "objects", "id": req.storageId}
                 },
