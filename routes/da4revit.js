@@ -514,7 +514,7 @@ const uploadFile = async (req, data) => {
     uploadPromise.then( async (result) => {
         console.log('Upload promise resolved'.brightGreen.bold)
         console.log(JSON.stringify(result, null, "----"))
-        const version =  await createVersion(itemId, storageId, fileName)
+        const version =  await createVersion(req.body.itemId, storageId, fileName)
         console.log('Version created'.green.bold)
         console.log(JSON.stringify(version, null, "----"))
         
