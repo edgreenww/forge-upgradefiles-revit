@@ -331,7 +331,7 @@ const betterCreateStorage = async (req, fileName) => {
  */
 const createVersion = async (req) => {
 
-    const projectId = req.body.projectId
+    const projectId = req.body.project_id
     
 
     const url = `https://developer.api.autodesk.com/data/v1/projects/b.${projectId}/versions`
