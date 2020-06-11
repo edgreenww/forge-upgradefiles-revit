@@ -80,7 +80,7 @@ const zlib = require('zlib');
 const DecompressZip = require('decompress-zip');
 const request = require("request-promise")
 
-const download = (url, dest, token, extractFilesCallback, req, extract=true) => {
+const download = (url, dest, token, extractFilesCallback, req, res, extract=true) => {
     const file = fs.createWriteStream(dest);
     // console.log('req (in "download" method): ', req)
 
@@ -134,7 +134,7 @@ const download = (url, dest, token, extractFilesCallback, req, extract=true) => 
     });
 };
 
-const unzip = (file, uploadCallback, req) => {
+const unzip = (file, uploadCallback, req, res) => {
 
     let unzipper = new DecompressZip( file);
     let extractFilePath = 'routes/data'
@@ -148,7 +148,7 @@ const unzip = (file, uploadCallback, req) => {
         const unzippedFileToUpload = extractFilePath +'/'+ log[0].deflated
         // uploadCallback(unzippedFileToUpload, req)
 
-        createStorageForFile(unzippedFileToUpload, req, uploadCallback)
+        createStorageForFile(unzippedFileToUpload, req, res, uploadCallback)
 
         // send the (first) file extracted as a download to the client (not working yet)
         //res.download(extractFilePath +'/'+ log[0].deflated).end("unzip endpoint called");
@@ -156,13 +156,13 @@ const unzip = (file, uploadCallback, req) => {
     });
 }
 
-const createStorageForFile = async (file, req, uploadCallback) => {
+const createStorageForFile = async (file, req, res, uploadCallback) => {
     const dataFolder = 'routes/data'
     let filePath = dataFolder+'/'+file
     
     console.log('Creating storage for ' + filePath )
     // console.log('Creating storage...')
-    await createStorage(req, filePath)
+    await createStorage(req, res, filePath)
 
     
     console.log('Storage created for ' + filePath)
@@ -180,14 +180,14 @@ const createStorageForEachFile = async (files, req) => {
     const allAsyncResults = []
   
     for (const file of files) {
-      const asyncResult = await createStorageForFile(file, req)
+      const asyncResult = await createStorageForFile(file, req, res)
       allAsyncResults.push(asyncResult)
     }
     console.log('All storages created!')
     return allAsyncResults
   }
 
-const extractFiles =  (req) => {
+const extractFiles =  (req, res) => {
 
     const dataFolder = 'routes/data'
     console.log('Files in local file system: ')
@@ -223,7 +223,7 @@ const extractFiles =  (req) => {
                 
     
                 // createStorage(req, filePath, unzip)
-                unzip(filePath, uploadUnzippedFile, req)
+                unzip(filePath, uploadUnzippedFile, req, res)
             }
 
         })
@@ -347,7 +347,7 @@ const unpackFileData = (req, res) => {
 }
 
 
-const createStorage = async (req, unzippedFilePath) => {
+const createStorage = async (req, res, unzippedFilePath) => {
 
     const filePathParts = unzippedFilePath.split('/')
     const fileName = filePathParts[filePathParts.length-1]
@@ -613,7 +613,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     console.log('Attempting to stream download from URL: ', url)
     // download(url, downloadFilePath, token, extractFiles, req)
 
-    await download(url, downloadFilePath, token, extractFiles, req, extract=true)
+    await download(url, downloadFilePath, token, extractFiles, req, res, extract=true)
 
     console.log("Composite (zip) file downloaded.... " )
     
