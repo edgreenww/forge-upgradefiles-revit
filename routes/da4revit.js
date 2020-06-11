@@ -164,7 +164,7 @@ const unzip = (file, uploadCallback, req, res) => {
         console.log('extract log ', log);
         
         // const unzippedFileToUpload = extractFilePath +'/'+ log[0].deflated
-        const unzippedFileToUpload = extractFilePath +'/'+ findFileByName(log, req.fileItemName)
+        const unzippedFileToUpload = extractFilePath +'/'+ findFileByName(log, req.body.fileItemName)
         // uploadCallback(unzippedFileToUpload, req)
 
         createStorageForFile(unzippedFileToUpload, req, res, uploadCallback)
