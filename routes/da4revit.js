@@ -302,7 +302,7 @@ const betterCreateStorage = async (req, fileName) => {
         }
         
         console.log('Storage info (body)...'.cyan)
-        console.log('body: ', JSON.stringify(body, null, '\t'))
+        console.log('body: ', JSON.stringify(body, null, '    '))
         console.log('Storage created... '.cyan)
 
         const storageId = body.data.id
@@ -582,7 +582,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     }
     console.log('Getting parent item folder.... success'.green)
     console.log('Parent folder - of zip file... '.brightCyan)
-    console.log(folder.body)
+    console.log(JSON.stringify(folder.body, null, "    "))
 
     const folderId = folder.body.data.id
 
@@ -598,7 +598,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
 
     const folderObjects = folderContents.body.data
     folderObjects.forEach(obj => {
-        console.log(JSON.stringify(obj, null, '----'))
+        console.log(JSON.stringify(obj, null, "    "))
         //console.log(obj.attdisplayName, obj.id)
     })
 
