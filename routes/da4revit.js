@@ -359,7 +359,7 @@ const createStorage = async (req, res, unzippedFilePath) => {
 
     const resourceId = unpackFileData(req, res, fileItemName).resourceId
 
-    console.log(`Creating storage for ${fileName}... `.magenta)
+    console.log(`Creating storage for ${fileName}... `.magenta.bold)
     console.log(`resourceId: ${resourceId} `)
     console.log(`projectId: ${projectId} `)
 
@@ -390,8 +390,8 @@ const uploadFile = async (data) => {
         
     } = data
     
-    console.log(`Uploading file: ${fileName} to storage : ${objectName} ...  `)
-    console.log(`Destination folder: ${folderId}`)
+    console.log(`Uploading file: ${fileName} to storage : ${objectName} ...  `.magenta.bold)
+    console.log(`Destination folder: ${folderId}`.magenta.bold)
 
     const uploadPromise = objects.uploadObject(
         bucketKey,
@@ -405,11 +405,11 @@ const uploadFile = async (data) => {
     )
 
     uploadPromise.then( function(result){
-        console.log('\x1b[32m', 'Upload promise resolved')
+        console.log('Upload promise resolved'.brightGreen.bold)
         console.log(result)
 
     }, function(result){
-        console.log("Upload promise rejected")
+        console.log("Upload promise rejected".red.bold)
         console.log(result)
     })
 
