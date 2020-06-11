@@ -563,7 +563,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     // // adding here... 
 
     const items = new ItemsApi();
-    console.log('Getting parent item folder.... (of zipped file)'.cyan)
+    console.log('Getting parent item folder.... (of zipped file)'.brightCyan)
 
     console.log("projectId", projectId.yellow)
     console.log("resourceId", resourceId.yellow)
@@ -571,25 +571,39 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     // console.log("incoming_oauth_token", incoming_oauth_token)
     
 
-    const folder = await items.getItemParentFolder(projectId, resourceId, req.oauth_client, incoming_oauth_token);
+    const folder = await items.getItemParentFolder(
+        projectId, resourceId, req.oauth_client, incoming_oauth_token
+        );
     if(folder === null || folder.statusCode !== 200){
         console.log('failed to get the parent folder.');
         res.status(500).end('failed to get the parent folder');
         return;
     }
     console.log('Getting parent item folder.... success'.green)
-    console.log('Parent folder - of zip file... '.cyan)
+    console.log('Parent folder - of zip file... '.brightCyan)
     console.log(folder.body)
-    
 
-    console.log('Folder contents:'.cyan) 
-    console.log(folder.body.data.relationships.contents)
+    const folderId = folder.body.data.id
+
+    const opts = {}
+    
+    const folders = new FoldersApi()
+
+    console.log('Folder contents:'.brightCyan) 
+
+    const folderContents = await folders.getFolderContents(
+        projectId, folderId, opts, req.oauth_client, incoming_oauth_token
+        ) 
+
+    console.log(folderContents)
 
     // add the folder to the req object (?) for convenience
 
     req.folder = folder
     
-    const versionInfo = await getLatestVersionInfo(projectId, resourceId, req.oauth_client, incoming_oauth_token);
+    const versionInfo = await getLatestVersionInfo(
+        projectId, resourceId, req.oauth_client, incoming_oauth_token
+        );
     if (versionInfo === null ) {
         console.log('failed to get lastest version of the file');
         res.status(500).end('failed to get lastest version of the file');
@@ -605,7 +619,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     let timestamp = Date.now()
     let downloadFilePath = `routes/data/streamedDownload_${timestamp}.zip`
     if (req.body.fileItemName){
-        console.log('File name: ', req.body.fileItemName.yellow)
+        console.log('File name: '.magenta, req.body.fileItemName.yellow)
         downloadFilePath = `routes/data/${req.body.fileItemName}`
     }
     const url = bim360Url 
@@ -617,7 +631,7 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     await download(url, downloadFilePath, token, extractFiles, req, res, extract=true)
 
     console.log("Composite (zip) file downloaded.... ".green.bold )
-    console.log("Local file path: ".cyan, downloadFilePath.yellow  )
+    console.log("Local file path: ".brightCyan, downloadFilePath.yellow  )
     
 
 })
