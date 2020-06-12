@@ -356,7 +356,7 @@ const createVersion = async (req) => {
  * @param {String} message The message / status to set in the field value.
  */
 const updateAirtable = (req, fieldName, message) => {
-    const recordId = req.airtable_record_id
+    const recordId = req.body.airtable_record_id
     console.log(
         'Updating airtable - record '.magenta, 
         recordId.yellow, 
