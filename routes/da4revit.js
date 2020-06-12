@@ -42,7 +42,7 @@ const SOCKET_TOPIC_WORKITEM = 'Workitem-Notification';
 
 let router = express.Router();
 
-
+// Enable colourful console logging
 const colors = require('colors')
 colors.enable()
 
@@ -70,7 +70,7 @@ router.use(async (req, res, next) => {
     }
     // console.log('credentials', credentials)
     if (incomingCreds.client_id){
-        console.log("Using incomeing credentials...")
+        console.log("Using incoming credentials from client request...".magenta)
         credentials = incomingCreds
     }
     // let oauth_client2 = oauth.getClientOurWay(req.scopes, incomingCreds);
@@ -217,10 +217,12 @@ router.post('/da4revit/v1/upgrader/files/unzip', async (req, res, next) => {
     console.log('Attempting to stream download from URL: '.magenta, url.yellow)
     // download(url, downloadFilePath, token, extractFiles, req)
 
+    res.status(200).end(`Unzip of file operation ${req.body.fileItemName} started`);
     await download(url, downloadFilePath, token, extractFiles, req, res, extract=true)
 
     console.log("Composite (zip) file downloaded.... ".green.bold )
     console.log("Local file path: ".brightCyan, downloadFilePath.yellow  )
+    
 
 })
 

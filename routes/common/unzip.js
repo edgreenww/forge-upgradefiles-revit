@@ -5,10 +5,7 @@ const {
     
 } = require('forge-apis');
 
-
-
-
-
+// Enable colourful console logging
 const colors = require('colors')
 colors.enable()
 
