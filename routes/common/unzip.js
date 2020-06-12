@@ -396,7 +396,7 @@ const updateAirtable = (req, fieldName, message) => {
         "Unzip Status" : message
     }).then(result=>{
         console.log('Airtable updated!'.green)
-        console.log(result)
+        // console.log(result)
     }).catch(err => {
         console.log('Airtable error: '.red, err)
     })
