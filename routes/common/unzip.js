@@ -14,6 +14,27 @@ const fs = require('fs');
 const DecompressZip = require('decompress-zip');
 const request = require("request-promise")
 
+const Airtable = require("airtable")
+
+const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
+const AIRTABLE_BASE_ID = "appht0tyYgv6ZxVvU" // EMEA BIM 360 TRANSFER - https://airtable.com/tblyIl5LhMAB7IfZH/viweBNuOdmcYYmsRG?blocks=hide
+
+Airtable.configure({
+    endpointUrl: "https://api.airtable.com",
+    apiKey: AIRTABLE_API_KEY
+  });
+
+const base = new Airtable.base(AIRTABLE_BASE_ID);
+
+const TABLE_NAME = "DOCS - CONTENTS"
+
+const table = base.table(TABLE_NAME)
+
+
+
+
+
+
 
 /**
  * Download file from url to local file system, in preparation for re-uploading to the target
@@ -119,6 +140,8 @@ const unzip = (file, uploadCallback, req, res) => {
     unzipper.extract({
         path: extractFilePath
     })
+
+    updateAirtable(req, 'Unzip Status', 'Unzipping file...')
     
     unzipper.on('extract', function (log) {
         console.log('extract log ', log);
@@ -150,6 +173,7 @@ const createStorageForFile = async (file, req, res, uploadCallback) => {
     console.log('storageResult'.magenta, JSON.stringify(storage, null, "----"))
     req.storageId = storage.data.id
     console.log(`Storage created for ${file}`.brightGreen.bold, storage.data.id.yellow)
+    updateAirtable(req, 'Unzip Status', 'Creating storage...')
     uploadCallback(file, req)
 }
 
@@ -332,6 +356,7 @@ const createVersion = async (req) => {
     }
 
     console.log('Ready to create version...'.cyan)
+    updateAirtable(req, 'Unzip Status', 'Creating version...')
     const versionResult = await request(requestParams, function (error, response, body) {
         if (error) {
             console.log(`Error: ${error}`.red)
@@ -340,7 +365,7 @@ const createVersion = async (req) => {
         // console.log('Version info (body)...'.cyan)
         // console.log('body: ', JSON.stringify(body, null, '----'))
         console.log('Version created... '.cyan.bold, body.data.id.yellow)
-
+        updateAirtable(req, 'Unzip Status', 'Complete')
         
 
     })
@@ -367,6 +392,14 @@ const updateAirtable = (req, fieldName, message) => {
 
     //TODO - implement the call to airtable 
     // will need airtable api key as env variable,
+    table.update(recordId, {
+        fieldName : message
+    }.then(result=>{
+        console.log('Airtable updated!'.green)
+        console.log(result)
+    }).catch(err => {
+        console.log('Airtable error: '.red, err)
+    }))
 
 }
 
@@ -522,6 +555,7 @@ const uploadUnzippedFile = (  ( unzippedFilePath, req, hostId) => {
     }
 
     console.log(`Ready to upload ${unzippedFilePath}...`)
+    updateAirtable(req, 'Unzip Status', 'Uploading...')
     // console.log("req", req.body)
     // Store file data chunks in this array
     let chunks = [];
