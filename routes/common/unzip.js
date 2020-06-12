@@ -31,6 +31,7 @@ const download = (url, dest, token, extractFilesCallback, req, res, extract=true
     // console.log('req (in "download" method): ', req)
 
     console.log('Attempting download of: '.magenta.bold, url.yellow)
+    updateAirtable(req, 'Unzip Status', 'Downloading...')
 
     const reqOptions = {
         url: url,
@@ -339,6 +340,7 @@ const createVersion = async (req) => {
         // console.log('Version info (body)...'.cyan)
         // console.log('body: ', JSON.stringify(body, null, '----'))
         console.log('Version created... '.cyan.bold, body.data.id.yellow)
+
         
 
     })
@@ -347,6 +349,27 @@ const createVersion = async (req) => {
 
 
 }
+/**
+ * Update the airtable record for the file being processed with current progress
+ * @param {Object} req Request object from the client, which contains the airtable_record_id for the file
+ * @param {String} fieldName The Airtable field name to update
+ * @param {String} message The message / status to set in the field value.
+ */
+const updateAirtable = (req, fieldName, message) => {
+    const recordId = req.airtable_record_id
+    console.log(
+        'Updating airtable - record '.magenta, 
+        recordId.yellow, 
+        'Status:',
+        message.yellow.bold
+        
+        )
+
+    //TODO - implement the call to airtable 
+    // will need airtable api key as env variable,
+
+}
+
 
 
 /**
