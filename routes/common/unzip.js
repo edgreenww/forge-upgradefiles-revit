@@ -393,7 +393,7 @@ const updateAirtable = (req, fieldName, message) => {
     //TODO - implement the call to airtable 
     // will need airtable api key as env variable,
     table.update(recordId, {
-        fieldName : message
+        "Unzip Status" : message
     }).then(result=>{
         console.log('Airtable updated!'.green)
         console.log(result)
