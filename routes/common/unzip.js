@@ -109,7 +109,7 @@ const download = (url, dest, token, extractFilesCallback, req, res, extract=true
  */
 const findFileByName = (extractLogList, fileName) => {
     console.log('in findFileByName')
-    console.log('Searching for '.magenta, fileName.yellow)
+    console.log('Searching for '.magenta, fileName.replace('.zip', '.rvt').yellow)
     // NOTE - this assumes the zip file is named the same as the 'host' rvt in the contents of the zip.. 
     let fileNameResult
     extractLogList.forEach(log => {
@@ -150,7 +150,7 @@ const unzip = (file, uploadCallback, req, res) => {
     unzipper.on('extract', function (log) {
         console.log('Extacting file: '.magenta, file.yellow)
         console.log('extract log ', log);
-        
+        console.log('file name in request'.cyan, req.body.fileItemName.yellow.bold)
         // const unzippedFileToUpload = extractFilePath +'/'+ log[0].deflated
         const unzippedFileToUpload = extractFilePath +'/'+ findFileByName(log, req.body.fileItemName)
         // uploadCallback(unzippedFileToUpload, req)
