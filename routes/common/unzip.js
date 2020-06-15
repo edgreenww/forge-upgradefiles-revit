@@ -175,7 +175,7 @@ const createStorageForFile = async (file, req, res, uploadCallback) => {
     const dataFolder = 'routes/data'
     const filePath = dataFolder+'/'+file
     const storage = await createStorage(req, res, filePath)
-    //  console.log('storageResult'.magenta, JSON.stringify(storage, null, "----"))
+    // console.log('storageResult'.magenta, JSON.stringify(storage, null, "----"))
     req.storageId = storage.data.id
     console.log(`Storage created for ${file}`.brightGreen.bold, storage.data.id.yellow)
     updateAirtable(req, 'Unzip Status', 'Creating storage...')
