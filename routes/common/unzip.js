@@ -175,7 +175,7 @@ const createStorageForFile = async (file, req, res, uploadCallback) => {
     const dataFolder = 'routes/data'
     const filePath = dataFolder+'/'+file
     const storage = await createStorage(req, res, filePath)
-    console.log('storageResult'.magenta, JSON.stringify(storage, null, "----"))
+    // console.log('storageResult'.magenta, JSON.stringify(storage, null, "----"))
     req.storageId = storage.data.id
     console.log(`Storage created for ${file}`.brightGreen.bold, storage.data.id.yellow)
     updateAirtable(req, 'Unzip Status', 'Creating storage...')
@@ -285,8 +285,8 @@ const betterCreateStorage = async (req, fileName) => {
             console.log(`Error: ${error}`.red)
         }
         
-        console.log('Storage info (body)...'.cyan)
-        console.log('body: ', JSON.stringify(body, null, '----'))
+        // console.log('Storage info (body)...'.cyan)
+        // console.log('body: ', JSON.stringify(body, null, '----'))
         console.log('Storage created... '.cyan)
 
         const storageId = body.data.id
