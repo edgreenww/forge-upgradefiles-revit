@@ -109,6 +109,7 @@ const download = (url, dest, token, extractFilesCallback, req, res, extract=true
  */
 const findFileByName = (extractLogList, fileName) => {
     console.log('in findFileByName')
+    console.log('Searching for '.magenta, fileName.yellow)
     // NOTE - this assumes the zip file is named the same as the 'host' rvt in the contents of the zip.. 
     let fileNameResult
     extractLogList.forEach(log => {
@@ -120,7 +121,7 @@ const findFileByName = (extractLogList, fileName) => {
         }
     })
 
-    
+
 
     return fileNameResult
 
