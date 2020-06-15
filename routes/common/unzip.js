@@ -109,6 +109,7 @@ const download = (url, dest, token, extractFilesCallback, req, res, extract=true
  */
 const findFileByName = (extractLogList, fileName) => {
     console.log('in findFileByName')
+    // NOTE - this assumes the zip file is named the same as the 'host' rvt in the contents of the zip.. 
     let fileNameResult
     extractLogList.forEach(log => {
         
@@ -118,6 +119,8 @@ const findFileByName = (extractLogList, fileName) => {
             return
         }
     })
+
+    
 
     return fileNameResult
 
@@ -144,6 +147,7 @@ const unzip = (file, uploadCallback, req, res) => {
     updateAirtable(req, 'Unzip Status', 'Unzipping file...')
     
     unzipper.on('extract', function (log) {
+        console.log('Extacting file: '.magenta, file.yellow)
         console.log('extract log ', log);
         
         // const unzippedFileToUpload = extractFilePath +'/'+ log[0].deflated
@@ -390,8 +394,6 @@ const updateAirtable = (req, fieldName, message) => {
         
         )
 
-    //TODO - implement the call to airtable 
-    // will need airtable api key as env variable,
     table.update(recordId, {
         "Unzip Status" : message
     }).then(result=>{
