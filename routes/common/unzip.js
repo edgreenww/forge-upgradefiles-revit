@@ -366,6 +366,11 @@ const createVersion = async (req) => {
         if (error) {
             console.log(`Error: ${error}`.red)
         }
+        if (body.errors) {
+            
+            console.log(`Errors:`.red, JSON.stringify(body.errors, null, '----') )
+            updateAirtable(req, "Unzip Status", `Error: body.errors[0].detail`)
+        }
         
         console.log('Version info (body)...'.cyan)
         console.log('body: ', JSON.stringify(body, null, '----'))
