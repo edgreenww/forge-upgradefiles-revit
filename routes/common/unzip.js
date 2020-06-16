@@ -145,7 +145,7 @@ const findFileByName = (extractLogList, fileName) => {
     let fileNameResult
     extractLogList.forEach(log => {
         
-        if (log.deflated === fileName.replace('.zip', '.rvt')) {
+        if (log.deflated.includes(fileName.replace('.zip', ''))) {
             console.log('filename:', log)
             fileNameResult = log.deflated
             return
