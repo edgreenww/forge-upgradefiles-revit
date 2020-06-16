@@ -400,10 +400,12 @@ const updateAirtable = (req, fieldName, message) => {
         message.yellow.bold
         
         )
+    const data = {
 
-    table.update(recordId, {
-        fieldName : message
-    }).then(result=>{
+    }
+    data[fieldName] = message
+
+    table.update(recordId, data).then(result=>{
         console.log('Airtable updated!'.green)
         // console.log(result)
     }).catch(err => {
