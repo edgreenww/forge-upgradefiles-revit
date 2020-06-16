@@ -50,10 +50,13 @@ const table = base.table(TABLE_NAME)
 const download = (url, dest, token, extractFilesCallback, req, res, extract=true) => {
     // remove download destination file if already downloaded
     try {
-        fs.unlinkSync(dest)
-        //file removed
+        if (fs.existsSync(dest)) {
+            //file exists
+            fs.unlinkSync(dest)
+            //file removed
+          }
     } catch(err) {
-    console.error(err)
+        console.error(err)
     }
 
     const file = fs.createWriteStream(dest);
