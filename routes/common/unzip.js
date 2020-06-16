@@ -367,8 +367,8 @@ const createVersion = async (req) => {
             console.log(`Error: ${error}`.red)
         }
         if (body.errors) {
-            
-            updateAirtable(req, "Unzip Status", `Error: ${body.errors[0].detail}`)
+            updateAirtable(req, "Unzip Status", `Error creating version`)
+            updateAirtable(req, "Unzip Info", `${body.errors[0].detail}`) // first error only (!)
             console.log(`Errors:`.red, JSON.stringify(body.errors, null, '----') )
             return 
         }
@@ -402,7 +402,7 @@ const updateAirtable = (req, fieldName, message) => {
         )
 
     table.update(recordId, {
-        "Unzip Status" : message
+        fieldName : message
     }).then(result=>{
         console.log('Airtable updated!'.green)
         // console.log(result)
