@@ -40,7 +40,6 @@ const table = base.table(TABLE_NAME)
  * @param {String} path The file path of the download in the local node file system
  */
 const cleanupPreviousDownload = (path) => {
-
     // remove download destination file if already downloaded
 
     const paths = [
