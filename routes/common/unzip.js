@@ -54,6 +54,7 @@ const download = (url, dest, token, extractFilesCallback, req, res, extract=true
             //file exists
             fs.unlinkSync(dest)
             //file removed
+            console.log(`Removed:  ${dest}`)
           }
     } catch(err) {
         console.error(err)
