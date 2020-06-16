@@ -33,7 +33,36 @@ const table = base.table(TABLE_NAME)
 
 
 
+/**
+ * Deleate any zip files previously downloaded, and the corresponding extracted rvt file.
+ * This is to prevent conflicts on the local node file system, where files are downloaded and extracted before uploading
+ * 
+ * @param {String} path The file path of the download in the local node file system
+ */
+const cleanupPreviousDownload = (path) => {
 
+    // remove download destination file if already downloaded
+
+    const paths = [
+        path,
+        path.replace('zip', 'rvt')
+    ]
+
+    paths.forEach(path => {
+
+        try {
+            if (fs.existsSync(path)) {
+                //file exists
+                fs.unlinkSync(path)
+                //file removed
+                console.log(`Removed:  ${path}`)
+              }
+        } catch(err) {
+            console.error(err)
+        }
+    })
+
+}
 
 
 /**
@@ -49,16 +78,7 @@ const table = base.table(TABLE_NAME)
  */
 const download = (url, dest, token, extractFilesCallback, req, res, extract=true) => {
     // remove download destination file if already downloaded
-    try {
-        if (fs.existsSync(dest)) {
-            //file exists
-            fs.unlinkSync(dest)
-            //file removed
-            console.log(`Removed:  ${dest}`)
-          }
-    } catch(err) {
-        console.error(err)
-    }
+    cleanupPreviousDownload(dest)
 
     const file = fs.createWriteStream(dest);
     // console.log('req (in "download" method): ', req)
