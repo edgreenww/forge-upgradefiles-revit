@@ -541,7 +541,6 @@ const uploadFile = async (req, data) => {
         const version =  await createVersion(req)
         console.log('Version created'.green.bold)
         // console.log(JSON.stringify(version, null, "----"))
-
     }, function(result){
         console.log("Upload promise rejected".red.bold)
         console.log(JSON.stringify(result, null, "----"))
