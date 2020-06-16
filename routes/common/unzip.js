@@ -48,6 +48,14 @@ const table = base.table(TABLE_NAME)
  * @param {Boolean} extract set to false to prevent the unzip operation
  */
 const download = (url, dest, token, extractFilesCallback, req, res, extract=true) => {
+    // remove download destination file if already downloaded
+    try {
+        fs.unlinkSync(dest)
+        //file removed
+    } catch(err) {
+    console.error(err)
+    }
+
     const file = fs.createWriteStream(dest);
     // console.log('req (in "download" method): ', req)
 
