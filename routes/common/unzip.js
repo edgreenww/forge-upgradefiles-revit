@@ -67,6 +67,7 @@ const cleanupPreviousDownload = (path) => {
 transferFile =  (source, destination, token) => {
     
     const reqOptions = {
+        uri: source,
         url: source,
         // omit headers when retrieving a file from AWS without requiring authentication
         headers: {
