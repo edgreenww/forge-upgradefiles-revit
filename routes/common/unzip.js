@@ -64,6 +64,38 @@ const cleanupPreviousDownload = (path) => {
 }
 
 
+transferFile =  (source, destination, token) => {
+    
+    const reqOptions = {
+        url: source,
+        // omit headers when retrieving a file from AWS without requiring authentication
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+        }
+    }
+
+    const sendReq = request_normal.get(reqOptions);
+    
+    return new Promise((resolve, reject) => {
+        sendReq
+            .on('response', (resSource) => {
+                // console.log('Download ' + source.url + ': ' + resSource.statusCode + ' > ' + resSource.statusMessage);
+                resSource.headers['content-type'] = undefined;
+                if (resSource.statusCode != 206 && resSource.statusCode != 200) {
+                    resolve(resSource)
+                }
+            })
+            .pipe(request(destination)
+                .on('response', (resDestination) => {
+                    // console.log('Upload ' + destination.url + ': ' + resDestination.statusCode + ' > ' + resDestination.statusMessage);
+                    resolve(resDestination)
+                }))
+    })
+}
+
+
+
 /**
  * Download file from url to local file system, in preparation for re-uploading to the target
  * 
@@ -85,27 +117,29 @@ const download = (url, dest, token, extractFilesCallback, req, res, extract=true
     console.log('Attempting download of: '.magenta.bold, url.yellow)
     updateAirtable(req, 'Unzip Status', 'Downloading...')
 
-    const reqOptions = {
-        url: url,
-        // omit headers when retrieving a file from AWS without requiring authentication
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token,
-        }
-    }
+    transferFile(url, file, token)
 
-    const sendReq = request_normal.get(reqOptions);
+    // const reqOptions = {
+    //     url: url,
+    //     // omit headers when retrieving a file from AWS without requiring authentication
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //         "Authorization": "Bearer " + token,
+    //     }
+    // }
 
-    // verify response code
-    sendReq.on('response', (response) => {
-        if (response.statusCode !== 200) {
-            console.log("response status " + response.statusCode)
-            // return cb('Response status was ' + response.statusCode);
-            return
-        }
+    // const sendReq = request_normal.get(reqOptions);
 
-        sendReq.pipe(file);
-    });
+    // // verify response code
+    // sendReq.on('response', (response) => {
+    //     if (response.statusCode !== 200) {
+    //         console.log("response status " + response.statusCode)
+    //         // return cb('Response status was ' + response.statusCode);
+    //         return
+    //     }
+
+    //     sendReq.pipe(file);
+    // });
 
     // close() is async, call extractFilesCallback after close completes
     if (extract){
