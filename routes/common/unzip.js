@@ -87,7 +87,7 @@ transferFile =  (source, destination, token) => {
                     resolve(resSource)
                 }
             })
-            .pipe(request(destination)
+            .pipe(request_normal(destination)
                 .on('response', (resDestination) => {
                     // console.log('Upload ' + destination.url + ': ' + resDestination.statusCode + ' > ' + resDestination.statusMessage);
                     resolve(resDestination)
