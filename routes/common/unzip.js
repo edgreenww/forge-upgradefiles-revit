@@ -117,7 +117,7 @@ const download = (url, dest, token, extractFilesCallback, req, res, extract=true
     console.log('Attempting download of: '.magenta.bold, url.yellow)
     updateAirtable(req, 'Unzip Status', 'Downloading...')
 
-    const sendReq = transferFile(url, file, token)
+    transferFile(url, file, token)
 
     // const reqOptions = {
     //     url: url,
@@ -152,11 +152,11 @@ const download = (url, dest, token, extractFilesCallback, req, res, extract=true
     }
 
     // check for request errors
-    sendReq.on('error', (err) => {
-        fs.unlink(dest);
-        console.log(err.message)
-        return err.message;
-    });
+    // sendReq.on('error', (err) => {
+    //     fs.unlink(dest);
+    //     console.log(err.message)
+    //     return err.message;
+    // });
 
     file.on('error', (err) => { // Handle errors
         console.log(err.message)
