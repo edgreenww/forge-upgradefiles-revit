@@ -118,29 +118,29 @@ const download = (url, dest, token, extractFilesCallback, req, res, extract=true
     console.log('Attempting download of: '.magenta.bold, url.yellow)
     updateAirtable(req, 'Unzip Status', 'Downloading...')
 
-    transferFile(url, file, token)
+    //transferFile(url, file, token)
 
-    // const reqOptions = {
-    //     url: url,
-    //     // omit headers when retrieving a file from AWS without requiring authentication
-    //     headers: {
-    //         "Content-Type": "application/json",
-    //         "Authorization": "Bearer " + token,
-    //     }
-    // }
+    const reqOptions = {
+        url: url,
+        // omit headers when retrieving a file from AWS without requiring authentication
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token,
+        }
+    }
 
-    // const sendReq = request_normal.get(reqOptions);
+    const sendReq = request_normal.get(reqOptions);
 
-    // // verify response code
-    // sendReq.on('response', (response) => {
-    //     if (response.statusCode !== 200) {
-    //         console.log("response status " + response.statusCode)
-    //         // return cb('Response status was ' + response.statusCode);
-    //         return
-    //     }
+    // verify response code
+    sendReq.on('response', (response) => {
+        if (response.statusCode !== 200) {
+            console.log("response status " + response.statusCode)
+            // return cb('Response status was ' + response.statusCode);
+            return
+        }
 
-    //     sendReq.pipe(file);
-    // });
+        sendReq.pipe(file);
+    });
 
     // close() is async, call extractFilesCallback after close completes
     if (extract){
