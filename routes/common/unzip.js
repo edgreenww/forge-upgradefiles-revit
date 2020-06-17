@@ -12,8 +12,8 @@ colors.enable()
 
 const fs = require('fs');
 const DecompressZip = require('decompress-zip');
-const request = require("request")
-
+const request = require("request-promise")
+const request_normal = require("request")
 const Airtable = require("airtable")
 
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
@@ -94,7 +94,7 @@ const download = (url, dest, token, extractFilesCallback, req, res, extract=true
         }
     }
 
-    const sendReq = request.get(reqOptions);
+    const sendReq = request_normal.get(reqOptions);
 
     // verify response code
     sendReq.on('response', (response) => {
