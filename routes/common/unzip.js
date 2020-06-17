@@ -12,7 +12,7 @@ colors.enable()
 
 const fs = require('fs');
 const DecompressZip = require('decompress-zip');
-const request = require("request-promise")
+const request = require("request")
 
 const Airtable = require("airtable")
 
