@@ -283,7 +283,7 @@ const extractFiles =  (req, res) => {
         files.forEach( file => {
             
             let filePath = dataFolder+'/'+file
-            if (filePath.includes(".zip")){
+            if (filePath.includes(".zip") && filePath.includes(req.body.fileItemName) ) {
                 console.log(`Unzipping ${filePath}`.magenta.bold )
 
                 unzip(filePath, uploadUnzippedFile, req, res)
