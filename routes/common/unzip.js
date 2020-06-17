@@ -117,7 +117,7 @@ const download = (url, dest, token, extractFilesCallback, req, res, extract=true
     console.log('Attempting download of: '.magenta.bold, url.yellow)
     updateAirtable(req, 'Unzip Status', 'Downloading...')
 
-    transferFile(url, file, token)
+    const sendReq = transferFile(url, file, token)
 
     // const reqOptions = {
     //     url: url,
