@@ -633,7 +633,7 @@ const uploadFile = async (req, data) => {
             chunkSize, // contentLength,
             contentRange,
             sessionId,
-            body,
+            body.slice(start, end+1),
             options,
             oauth2client,
             credentials
