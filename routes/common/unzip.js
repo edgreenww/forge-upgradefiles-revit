@@ -609,7 +609,7 @@ const uploadFile = async (req, data) => {
 
     // resumable upload
 
-    let sessionId = 12345
+    let sessionId = "12345"
 
     let promises = []
     const chunkSize = 4999999 // 5MB in bytes
@@ -650,7 +650,7 @@ const uploadFile = async (req, data) => {
     
     let uploadPromise = chunksUploadPromises
 
-    uploadPromise = promises[0]
+    // uploadPromise = promises[0]
 
     uploadPromise.then( async (result) => {
         console.log('Upload promise resolved'.brightGreen.bold)
