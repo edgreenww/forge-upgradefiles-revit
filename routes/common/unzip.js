@@ -615,17 +615,15 @@ const uploadFile = async (req, data) => {
     const chunkSize = 103809024 // 99MB in bytes
     let start = 0
     let end = start + chunkSize
-    let endReached = false
     console.log("Chunk upload...")
     while (end < contentLength-1){
         end = start + chunkSize
 
         
-        if ( ( contentLength - 1 ) - end < 0){
+        if ( end > contentLength-1){
             end = contentLength-1
-            
-            
         }
+
         contentRange = `bytes ${start}-${end}/${contentLength}`
         console.log('contentRange', contentRange)
         
@@ -644,7 +642,7 @@ const uploadFile = async (req, data) => {
             promises.push(chunkUploadPromise) 
             
             if (end < contentLength){
-                start += chunkSize
+                start += chunkSize+1
             }
         }
     const chunksUploadPromise = Promise.all(promises)   
