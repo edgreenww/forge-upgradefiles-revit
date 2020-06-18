@@ -187,11 +187,7 @@ const findFileByName = (extractLogList, fileName) => {
         }
     })
 
-
-
     return fileNameResult
-
-    
 
 }
 
@@ -212,7 +208,7 @@ const unzip = (file, uploadCallback, req, res) => {
     })
 
     updateAirtable(req, 'Unzip Status', 'Unzipping file...')
-    
+    // gets stuck here?
     unzipper.on('extract', function (log) {
         console.log('Extacting file: '.magenta, file.yellow)
         console.log('extract log ', log);
@@ -281,9 +277,13 @@ const extractFiles =  (req, res) => {
             console.log(`${file} : ${sizeInMB}MB`.yellow);
         });  
 
+        console.log('in extractFiles function')
+        console.log('current requested file', req.body.fileItemName )
         files.forEach( file => {
             
             let filePath = dataFolder+'/'+file
+            
+            console.log('current file', filePath )
             if (filePath.includes(".zip") && filePath.includes(req.body.fileItemName) ) {
                 console.log(`Unzipping ${filePath}`.magenta.bold )
 
