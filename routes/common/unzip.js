@@ -265,7 +265,7 @@ const extractFiles =  (req, res) => {
     console.log('Files in local file system: '.cyan)
 
     fs.readdir(dataFolder, (err, files) => {
-        
+        // list all files currently in the local working folder
         files.forEach( file => {
 
             let f = file
@@ -277,8 +277,10 @@ const extractFiles =  (req, res) => {
             console.log(`${file} : ${sizeInMB}MB`.yellow);
         });  
 
+        // search for the requested file
         console.log('in extractFiles function')
         console.log('current requested file', req.body.fileItemName )
+        let filePathToUnzip
         files.forEach( file => {
             
             let filePath = dataFolder+'/'+file
@@ -287,10 +289,15 @@ const extractFiles =  (req, res) => {
             if (filePath.includes(".zip") && filePath.includes(req.body.fileItemName) ) {
                 console.log(`Unzipping ${filePath}`.magenta.bold )
 
-                unzip(filePath, uploadUnzippedFile, req, res)
+                
+                filePathToUnzip = filePath
+                return
             }
 
         })
+        unzip(filePathToUnzip, uploadUnzippedFile, req, res)
+
+
 
     });
 }
