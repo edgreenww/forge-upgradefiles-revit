@@ -616,7 +616,7 @@ const uploadFile = async (req, data) => {
     let start = 0
     let end = start + chunkSize
     console.log("Chunk upload...")
-    while (end < contentLength-1){
+    while (end <= contentLength-1){
         end = start + chunkSize
 
         
