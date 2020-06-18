@@ -612,7 +612,7 @@ const uploadFile = async (req, data) => {
     let sessionId = 12345
 
     let promises = []
-    const chunkSize = 103809024 // 99MB in bytes
+    const chunkSize = 99999999 // 99MB in bytes
     let start = 0
     let end = start + chunkSize
     console.log("Chunk upload...")
