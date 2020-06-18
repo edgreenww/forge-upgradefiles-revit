@@ -607,6 +607,49 @@ const uploadFile = async (req, data) => {
 
     )
 
+    // resumable upload
+
+    let sessionId = 12345
+
+    let promises = []
+    const chunkSize = 999999
+    let start = 0
+    let end = start + chunkSize
+    let endReached = false
+    console.log("Chunk upload...")
+    while (end < contentLength){
+        end = start + chunkSize
+
+        contentRange = `bytes ${start}-${end}/${contentLength}`
+
+        if (contentLength - end < 0){
+            end = contentLength
+            
+            
+        }
+        console.log('contentRange', contentRange)
+        
+        // chunkUploadPromise = objects.uploadChunk(
+        //     bucketKey,
+        //     objectName,
+        //     contentLength,
+        //     contentRange,
+        //     sessionId,
+        //     body,
+        //     options,
+        //     oauth2client,
+        //     credentials
+        //     )
+            
+        //     promises.push(chunkUploadPromise) 
+            
+        //     if (end < contentLength){
+        //         start += chunkSize
+        //     }
+        }
+        
+
+
     uploadPromise.then( async (result) => {
         console.log('Upload promise resolved'.brightGreen.bold)
         console.log(JSON.stringify(result, null, "----"))
