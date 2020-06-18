@@ -616,8 +616,8 @@ const uploadFile = async (req, data) => {
     let start = 0
     let end = start + chunkSize
     console.log("Chunk upload...")
-    while (end <= contentLength-1){
-        end = start + chunkSize
+    while (end < contentLength-1){
+        end = start + chunkSize - 1
 
         
         if ( end > contentLength-1){
@@ -633,7 +633,7 @@ const uploadFile = async (req, data) => {
             chunkSize, // contentLength,
             contentRange,
             sessionId,
-            body.slice(start, end+1),
+            body.slice(start, end),
             options,
             oauth2client,
             credentials
@@ -642,7 +642,7 @@ const uploadFile = async (req, data) => {
             promises.push(chunkUploadPromise) 
             
             if (end < contentLength){
-                start += chunkSize+1
+                start += chunkSize
             }
         }
     const chunksUploadPromise = Promise.all(promises)   
