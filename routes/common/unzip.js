@@ -612,7 +612,7 @@ const uploadFile = async (req, data) => {
     let sessionId = 12345
 
     let promises = []
-    const chunkSize = 999999
+    const chunkSize = 99999999
     let start = 0
     let end = start + chunkSize
     let endReached = false
@@ -620,13 +620,13 @@ const uploadFile = async (req, data) => {
     while (end < contentLength){
         end = start + chunkSize
 
-        contentRange = `bytes ${start}-${end}/${contentLength}`
-
+        
         if (contentLength - end < 0){
             end = contentLength
             
             
         }
+        contentRange = `bytes ${start}-${end}/${contentLength}`
         console.log('contentRange', contentRange)
         
         // chunkUploadPromise = objects.uploadChunk(
