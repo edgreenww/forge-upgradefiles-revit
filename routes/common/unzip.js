@@ -596,16 +596,16 @@ const uploadFile = async (req, data) => {
         folderId.yellow
         )
 
-    const uploadPromise = objects.uploadObject(
-        bucketKey,
-        objectName,
-        contentLength,
-        body,
-        options,
-        oauth2client,
-        credentials
+    // const singleUploadPromise = objects.uploadObject(
+    //     bucketKey,
+    //     objectName,
+    //     contentLength,
+    //     body,
+    //     options,
+    //     oauth2client,
+    //     credentials
 
-    )
+    // )
 
     // resumable upload
 
@@ -629,26 +629,27 @@ const uploadFile = async (req, data) => {
         contentRange = `bytes ${start}-${end}/${contentLength}`
         console.log('contentRange', contentRange)
         
-        // chunkUploadPromise = objects.uploadChunk(
-        //     bucketKey,
-        //     objectName,
-        //     contentLength,
-        //     contentRange,
-        //     sessionId,
-        //     body,
-        //     options,
-        //     oauth2client,
-        //     credentials
-        //     )
+        chunkUploadPromise = objects.uploadChunk(
+            bucketKey,
+            objectName,
+            contentLength,
+            contentRange,
+            sessionId,
+            body,
+            options,
+            oauth2client,
+            credentials
+            )
             
-        //     promises.push(chunkUploadPromise) 
+            promises.push(chunkUploadPromise) 
             
             if (end < contentLength){
                 start += chunkSize
             }
         }
-        
-
+    const chunksUploadPromise = Promise.all(promises)   
+    
+    let uploadPromise = chunksUploadPromise
 
     uploadPromise.then( async (result) => {
         console.log('Upload promise resolved'.brightGreen.bold)
