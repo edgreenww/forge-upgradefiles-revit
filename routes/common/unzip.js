@@ -632,7 +632,7 @@ const uploadFile = async (req, data) => {
         chunkUploadPromise = objects.uploadChunk(
             bucketKey,
             objectName,
-            contentLength,
+            chunkSize, // contentLength,
             contentRange,
             sessionId,
             body,
