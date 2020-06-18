@@ -624,10 +624,10 @@ const uploadFile = async (req, data) => {
             end = contentLength-1
         }
 
-        contentRange = `bytes ${start}-${end}/${contentLength}`
+        let contentRange = `bytes ${start}-${end}/${contentLength}`
         console.log('contentRange', contentRange)
         
-        chunkUploadPromise = objects.uploadChunk(
+        let chunkUploadPromise = objects.uploadChunk(
             bucketKey,
             objectName,
             chunkSize, // contentLength,
@@ -645,9 +645,9 @@ const uploadFile = async (req, data) => {
                 start += chunkSize
             }
         }
-    const chunksUploadPromise = Promise.all(promises)   
+    const chunksUploadPromises = Promise.all(promises)   
     
-    let uploadPromise = chunksUploadPromise
+    let uploadPromise = chunksUploadPromises
 
     uploadPromise.then( async (result) => {
         console.log('Upload promise resolved'.brightGreen.bold)
