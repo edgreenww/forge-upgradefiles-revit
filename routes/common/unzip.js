@@ -650,6 +650,8 @@ const uploadFile = async (req, data) => {
     
     let uploadPromise = chunksUploadPromises
 
+    uploadPromise = promises[0]
+
     uploadPromise.then( async (result) => {
         console.log('Upload promise resolved'.brightGreen.bold)
         console.log(JSON.stringify(result, null, "----"))
