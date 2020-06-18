@@ -620,6 +620,7 @@ const uploadFile = async (req, data) => {
         end = start + chunkSize - 1
 
         
+        
         if ( end > contentLength-1){
             end = contentLength-1
         }
@@ -630,7 +631,7 @@ const uploadFile = async (req, data) => {
         let chunkUploadPromise = objects.uploadChunk(
             bucketKey,
             objectName,
-            chunkSize, // contentLength,
+            contentLength,
             contentRange,
             sessionId,
             body.slice(start, end),
