@@ -287,14 +287,14 @@ const extractFiles =  (req, res) => {
             
             console.log('current file', filePath )
             if (filePath.includes(".zip") && filePath.includes(req.body.fileItemName) ) {
-                console.log(`Unzipping ${filePath}`.magenta.bold )
-
+                
                 
                 filePathToUnzip = filePath
                 return
             }
-
+            
         })
+        console.log(`Unzipping ${filePathToUnzip}`.magenta.bold )
         unzip(filePathToUnzip, uploadUnzippedFile, req, res)
 
 
