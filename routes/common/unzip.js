@@ -622,7 +622,7 @@ const uploadFile = async (req, data) => {
 
         
         if (contentLength - end < 0){
-            end = contentLength
+            end = contentLength-1
             
             
         }
