@@ -886,26 +886,48 @@ const uploadFile = async (req, data) => {
         }
 
         console.log('Ready to upload chunk...'.cyan)
-        const uploadResult = await request(requestParams, function (error, response, body) {
-            if (error) {
-                console.log(`Error: ${error}`.red)
-            }
-            if (body.errors) {
-                updateAirtable(req, "Unzip Status", `Error uploading`)
-                updateAirtable(req, "Unzip Info", `${body.errors[0].detail}`) // first error only (!)
-                console.log(`Errors:`.red, JSON.stringify(body.errors, null, '----') )
-                return 
-            }
-            
-            console.log('Chunk upload info (body)...'.cyan)
-            console.log('response: ', JSON.stringify(response, null, '----'))
-            let chunkProgressMessage = `Chunk ${chunkCount} of ${totalChunks} uploaded... `
-            
-            console.log(chunkProgressMessage.cyan.bold, body.data.id.yellow)
-            updateAirtable(req, 'Unzip Status', chunkProgressMessage)
-        })
+        console.log('Ready to upload chunk...'.cyan)
 
-        console.log( 'uploadResult', uploadResult )
+        const reqOptions = {
+            url: url,
+            // omit headers when retrieving a file from AWS without requiring authentication
+            headers: headers
+        }
+
+        const uploadChunkReq = request_normal.put(reqOptions);
+
+        // verify response code
+        uploadChunkReq.on('response', (response) => {
+            console.log(JSON.stringify(response, null, "----"))
+            if (response.statusCode !== 200) {
+                console.log("response status " + response.statusCode)
+                // return cb('Response status was ' + response.statusCode);
+                return
+            }
+
+            
+        });
+
+        // const uploadResult = await request(requestParams, function (error, response, body) {
+        //     if (error) {
+        //         console.log(`Error: ${error}`.red)
+        //     }
+        //     if (body.errors) {
+        //         updateAirtable(req, "Unzip Status", `Error uploading`)
+        //         updateAirtable(req, "Unzip Info", `${body.errors[0].detail}`) // first error only (!)
+        //         console.log(`Errors:`.red, JSON.stringify(body.errors, null, '----') )
+        //         return 
+        //     }
+            
+        //     console.log('Chunk upload info (body)...'.cyan)
+        //     console.log('response: ', JSON.stringify(response, null, '----'))
+        //     let chunkProgressMessage = `Chunk ${chunkCount} of ${totalChunks} uploaded... `
+            
+        //     console.log(chunkProgressMessage.cyan.bold, body.data.id.yellow)
+        //     updateAirtable(req, 'Unzip Status', chunkProgressMessage)
+        // })
+
+        // console.log( 'uploadResult', uploadResult )
 
         
         // let chunkUploadPromise = objects.uploadChunk(
