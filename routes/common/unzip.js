@@ -895,7 +895,7 @@ const uploadFile = async (req, data) => {
             uri: url,
             
             body: readStream, // body.slice(start, end),
-            json: false,
+            json: true,
         }
 
         const uploadChunkReq = request_normal.put(reqOptions);
