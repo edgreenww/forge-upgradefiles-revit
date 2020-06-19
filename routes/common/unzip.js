@@ -863,7 +863,7 @@ const uploadFile = async (req, data) => {
         }
 
         console.log('Ready to upload chunk...'.cyan)
-        const uploadResult = await request(requestParams, function (error, response, body) {
+        const uploadResult = await request_normal(requestParams, function (error, response, body) {
             if (error) {
                 console.log(`Error: ${error}`.red)
             }
