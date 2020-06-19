@@ -772,9 +772,13 @@ myUploadChunk = async (req, data) => {
 
 const promiseRequest = (params) => {
     return new Promise(resolve => {
-        request_normal(params, (error, response, body)=> {
+        request_normal(params, (error, response, body) => {
+            console.log("response", response)
             resolve(body)
         })
+    }, reject => {
+        console.log("rejected", error)
+        reject(error)
     })
 
 }
