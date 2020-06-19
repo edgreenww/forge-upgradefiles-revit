@@ -776,7 +776,7 @@ const uploadFile = async (req, data) => {
             )
             console.log('chunkUploadPromise', chunkUploadPromise)
 
-            chunkUploadPromise.resolve("success").then((result) => {
+            chunkUploadPromise.then((result) => {
                 console.log('chunkUploadPromise - result', result)
             })
 
