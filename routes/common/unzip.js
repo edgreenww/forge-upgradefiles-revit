@@ -674,6 +674,79 @@ const uploadObjectChunked = (token, bucketKey, objectKey,
     })
 }
 
+
+myUploadChunk = (req, data) => {
+
+    const {
+        bucketKey ,
+        fileName,
+        filePath,
+        objectName ,
+        storageId,
+        hostId,
+        contentLength ,
+        body,
+        folderId,
+        options,
+        oauth2client,
+        credentials 
+        
+    } = data
+   
+   
+    const url = `https://developer.api.autodesk.com/oss/v2/buckets/${bucketKey}/objects/${objectName}/resumable`;
+
+    // bucketKey,
+    //         objectName,
+    //         contentLength,
+    //         contentRange,
+    //         sessionId,
+    //         readStream, // body.slice(start, end),
+    //         {},
+    //         oauth2client,
+    //         credentials
+
+    const token = req.body.oauth_token
+    
+    const headers = {
+                'Authorization':'Bearer ' + token,
+                'Content-Type':'application/octet-stream',
+                'Content-Range': contentRange,
+                'Session-Id': session
+            }
+
+    const requestParams = {
+        headers: headers,
+        uri: url,
+        method: 'put',
+        body: body.slice(start, end),
+        json: true,
+    }
+
+    console.log('Ready to upload chunk...'.cyan)
+    const uploadResult = await request(requestParams, function (error, response, body) {
+        if (error) {
+            console.log(`Error: ${error}`.red)
+        }
+        if (body.errors) {
+            updateAirtable(req, "Unzip Status", `Error uploading`)
+            updateAirtable(req, "Unzip Info", `${body.errors[0].detail}`) // first error only (!)
+            console.log(`Errors:`.red, JSON.stringify(body.errors, null, '----') )
+            return 
+        }
+        
+        console.log('Chunk upload info (body)...'.cyan)
+        console.log('body: ', JSON.stringify(body, null, '----'))
+        console.log('Chubk Uploaded... '.cyan.bold, body.data.id.yellow)
+        updateAirtable(req, 'Unzip Status', 'Complete')
+        
+
+    })
+
+
+
+}
+
 /**
  * Upload a file to the storage object, and create a new version in the stack.
  * @param {Object} req The request sent to the API endpoint (needed for createVersion)
@@ -743,13 +816,17 @@ const uploadFile = async (req, data) => {
 
     /// First attempt
 
-    let sessionId = "-12345"
+    let sessionId = Math.floor(100000000 + Math.random() * -900000000);
+
+    const token = req.body.oauth_token
 
     let promises = []
     const chunkSize = 4999999 // 5MB in bytes
     let start = 0
     let end = start + chunkSize
     console.log("Chunk upload...")
+    let chunkCount = 1
+    let totalChunks = Math.ceil(chunkSize/contentLength)
     while (end < contentLength-1){
         end = start + chunkSize - 1
 
@@ -764,53 +841,89 @@ const uploadFile = async (req, data) => {
 
 
         let readStream = fs.createReadStream(filePath, {start, end})
-        
-        let chunkUploadPromise = objects.uploadChunk(
-            bucketKey,
-            objectName,
-            contentLength,
-            contentRange,
-            sessionId,
-            readStream, // body.slice(start, end),
-            {},
-            oauth2client,
-            credentials
-            )
-            console.log('chunkUploadPromise', chunkUploadPromise)
 
-            // chunkUploadPromise.then((result) => {
-            //     console.log('chunkUploadPromise - resolved', result)
-            // }, (result) => {
-            //     console.log('chunkUploadPromise - rejected', result)
-            // })
-
-            promises.push(chunkUploadPromise) 
-            
-            if (end < contentLength){
-                start += chunkSize
-            }
+        const headers = {
+            'Authorization':'Bearer ' + token,
+            'Content-Type':'application/octet-stream',
+            'Content-Range': contentRange,
+            'Session-Id': sessionId
         }
 
+        const requestParams = {
+            headers: headers,
+            uri: url,
+            method: 'PUT',
+            body: body.slice(start, end),
+            json: true,
+        }
+
+        console.log('Ready to upload chunk...'.cyan)
+        const uploadResult = await request(requestParams, function (error, response, body) {
+            if (error) {
+                console.log(`Error: ${error}`.red)
+            }
+            if (body.errors) {
+                updateAirtable(req, "Unzip Status", `Error uploading`)
+                updateAirtable(req, "Unzip Info", `${body.errors[0].detail}`) // first error only (!)
+                console.log(`Errors:`.red, JSON.stringify(body.errors, null, '----') )
+                return 
+            }
+            
+            console.log('Chunk upload info (body)...'.cyan)
+            console.log('body: ', JSON.stringify(body, null, '----'))
+            let chunkProgressMessage = `Chunk ${chunkCount} of ${totalChunks} uploaded... `
+            
+            console.log(chunkProgressMessage.cyan.bold, body.data.id.yellow)
+            updateAirtable(req, 'Unzip Status', chunkProgressMessage)
+        })
+
         
-    const chunksUploadPromises = Promise.all(promises)   
+        // let chunkUploadPromise = objects.uploadChunk(
+        //     bucketKey,
+        //     objectName,
+        //     contentLength,
+        //     contentRange,
+        //     sessionId,
+        //     readStream, // body.slice(start, end),
+        //     {},
+        //     oauth2client,
+        //     credentials
+        //     )
+        //     console.log('chunkUploadPromise', chunkUploadPromise)
 
-    console.log('chunksUploadPromises', chunksUploadPromises)
+        //     // chunkUploadPromise.then((result) => {
+        //     //     console.log('chunkUploadPromise - resolved', result)
+        //     // }, (result) => {
+        //     //     console.log('chunkUploadPromise - rejected', result)
+        //     // })
+
+        //     promises.push(chunkUploadPromise) 
+            
+        //     if (end < contentLength){
+        //         start += chunkSize
+        //     }
+        }
+
+
+    // const chunksUploadPromises = Promise.all(promises)   
+
+    // console.log('chunksUploadPromises', chunksUploadPromises)
     
-    let uploadPromise = chunksUploadPromises
+    // let uploadPromise = chunksUploadPromises
 
-    // uploadPromise = promises[0]
+    // // uploadPromise = promises[0]
 
-    uploadPromise.then( async (result) => {
-        console.log('Upload promise resolved'.brightGreen.bold)
-        console.log(JSON.stringify(result, null, "----"))
+    // uploadPromise.then( async (result) => {
+    //     console.log('Upload promise resolved'.brightGreen.bold)
+    //     console.log(JSON.stringify(result, null, "----"))
 
-        const version =  await createVersion(req)
-        console.log('Version created'.green.bold)
-        // console.log(JSON.stringify(version, null, "----"))
-    }, function(result){
-        console.log("Upload promise rejected".red.bold)
-        console.log(JSON.stringify(result, null, "----"))
-    })
+    //     const version =  await createVersion(req)
+    //     console.log('Version created'.green.bold)
+    //     // console.log(JSON.stringify(version, null, "----"))
+    // }, function(result){
+    //     console.log("Upload promise rejected".red.bold)
+    //     console.log(JSON.stringify(result, null, "----"))
+    // })
 
 }
 
