@@ -775,6 +775,11 @@ const uploadFile = async (req, data) => {
             credentials
             )
             console.log('chunkUploadPromise', chunkUploadPromise)
+
+            chunkUploadPromise.resolve("success").then((result) => {
+                console.log('chunkUploadPromise - result', result)
+            })
+
             promises.push(chunkUploadPromise) 
             
             if (end < contentLength){
