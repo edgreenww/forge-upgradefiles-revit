@@ -875,7 +875,7 @@ const uploadFile = async (req, data) => {
             }
             
             console.log('Chunk upload info (body)...'.cyan)
-            console.log('body: ', JSON.stringify(body, null, '----'))
+            console.log('response: ', JSON.stringify(response, null, '----'))
             let chunkProgressMessage = `Chunk ${chunkCount} of ${totalChunks} uploaded... `
             
             console.log(chunkProgressMessage.cyan.bold, body.data.id.yellow)
