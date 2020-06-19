@@ -782,6 +782,8 @@ const uploadFile = async (req, data) => {
             }
         }
     const chunksUploadPromises = Promise.all(promises)   
+
+    console.log('chunksUploadPromises', chunksUploadPromises)
     
     let uploadPromise = chunksUploadPromises
 
