@@ -770,6 +770,15 @@ myUploadChunk = async (req, data) => {
 
 }
 
+const promiseRequest = (params) => {
+    return new Promise(resolve => {
+        request_normal(params, (error, response, body)=> {
+            resolve(body)
+        })
+    })
+
+}
+
 /**
  * Upload a file to the storage object, and create a new version in the stack.
  * @param {Object} req The request sent to the API endpoint (needed for createVersion)
@@ -880,38 +889,30 @@ const uploadFile = async (req, data) => {
         const requestParams = {
             headers: headers,
             uri: url,
+            url: url,
             method: 'PUT',
             body: readStream, // body.slice(start, end),
-            json: false,
+            json: true,
         }
 
         
         console.log('Ready to upload chunk...'.cyan)
 
-        const reqOptions = {
-            url: url,
-            // omit headers when retrieving a file from AWS without requiring authentication
-            headers: headers,
-            uri: url,
-            
-            body: readStream, // body.slice(start, end),
-            json: true,
-        }
+        // const uploadChunkReq = request_normal.put(requestParams);
 
-        const uploadChunkReq = request_normal.put(reqOptions);
+        const uploadChunkPromise = promiseRequest(requestParams)
 
-       
-        const uploadChunkPromise =  new Promise((resolve, reject) => {
-                uploadChunkReq
-                    .on('response', (resUpload) => {
-                        console.log('Uploading '  + resUpload.statusCode + ' > ' + resUpload.statusMessage);
-                        resUpload.headers['content-type'] = undefined;
-                        if (resUpload.statusCode != 206 && resUpload.statusCode != 200) {
-                            resolve(resUpload)
-                        }
-                    })
+        // const uploadChunkPromise =  new Promise((resolve, reject) => {
+        //         uploadChunkReq
+        //             .on('response', (resUpload) => {
+        //                 console.log('Uploading '  + resUpload.statusCode + ' > ' + resUpload.statusMessage);
+        //                 resUpload.headers['content-type'] = undefined;
+        //                 if (resUpload.statusCode != 206 && resUpload.statusCode != 200) {
+        //                     resolve(resUpload)
+        //                 }
+        //             })
                    
-            })
+        //     })
         
 
         // verify response code
@@ -975,7 +976,7 @@ const uploadFile = async (req, data) => {
         }
 
 
-    const chunksUploadPromises = Promise.all(promises)   
+    const chunksUploadPromises = await Promise.all(promises)   
 
     console.log('chunksUploadPromises', chunksUploadPromises)
     
