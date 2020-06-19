@@ -885,7 +885,7 @@ const uploadFile = async (req, data) => {
             json: false,
         }
 
-        console.log('Ready to upload chunk...'.cyan)
+        
         console.log('Ready to upload chunk...'.cyan)
 
         const reqOptions = {
@@ -898,7 +898,7 @@ const uploadFile = async (req, data) => {
             json: true,
         }
 
-        const uploadChunkReq = request.put(reqOptions);
+        const uploadChunkReq = request_normal.put(reqOptions);
 
        
         const uploadChunkPromise =  new Promise((resolve, reject) => {
