@@ -898,7 +898,7 @@ const uploadFile = async (req, data) => {
             json: true,
         }
 
-        const uploadChunkReq = request_normal.put(reqOptions);
+        const uploadChunkReq = request.put(reqOptions);
 
         // verify response code
         uploadChunkReq.on('response', (response) => {
