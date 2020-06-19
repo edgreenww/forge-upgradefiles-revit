@@ -900,17 +900,31 @@ const uploadFile = async (req, data) => {
 
         const uploadChunkReq = request.put(reqOptions);
 
+       
+        const uploadChunkPromise =  new Promise((resolve, reject) => {
+                uploadChunkReq
+                    .on('response', (resUpload) => {
+                        console.log('Uploading '  + resUpload.statusCode + ' > ' + resUpload.statusMessage);
+                        resUpload.headers['content-type'] = undefined;
+                        if (resUpload.statusCode != 206 && resUpload.statusCode != 200) {
+                            resolve(resUpload)
+                        }
+                    })
+                   
+            })
+        
+
         // verify response code
-        uploadChunkReq.on('response', (response) => {
-            console.log(JSON.stringify(response, null, "----"))
-            if (response.statusCode !== 200) {
-                console.log("response status " + response.statusCode)
-                // return cb('Response status was ' + response.statusCode);
-                return
-            }
+        // uploadChunkReq.on('response', (response) => {
+        //     console.log(JSON.stringify(response, null, "----"))
+        //     if (response.statusCode !== 200) {
+        //         console.log("response status " + response.statusCode)
+        //         // return cb('Response status was ' + response.statusCode);
+        //         return
+        //     }
 
             
-        });
+        // });
 
         // const uploadResult = await request(requestParams, function (error, response, body) {
         //     if (error) {
@@ -953,7 +967,7 @@ const uploadFile = async (req, data) => {
         //     //     console.log('chunkUploadPromise - rejected', result)
         //     // })
 
-        //     promises.push(chunkUploadPromise) 
+                promises.push(uploadChunkPromise) 
             
             if (end < contentLength){
                 start += chunkSize
@@ -961,25 +975,25 @@ const uploadFile = async (req, data) => {
         }
 
 
-    // const chunksUploadPromises = Promise.all(promises)   
+    const chunksUploadPromises = Promise.all(promises)   
 
-    // console.log('chunksUploadPromises', chunksUploadPromises)
+    console.log('chunksUploadPromises', chunksUploadPromises)
     
-    // let uploadPromise = chunksUploadPromises
+    let uploadPromise = chunksUploadPromises
 
     // // uploadPromise = promises[0]
 
-    // uploadPromise.then( async (result) => {
-    //     console.log('Upload promise resolved'.brightGreen.bold)
-    //     console.log(JSON.stringify(result, null, "----"))
+    uploadPromise.then( async (result) => {
+        console.log('Upload promise resolved'.brightGreen.bold)
+        console.log(JSON.stringify(result, null, "----"))
 
-    //     const version =  await createVersion(req)
-    //     console.log('Version created'.green.bold)
-    //     // console.log(JSON.stringify(version, null, "----"))
-    // }, function(result){
-    //     console.log("Upload promise rejected".red.bold)
-    //     console.log(JSON.stringify(result, null, "----"))
-    // })
+        const version =  await createVersion(req)
+        console.log('Version created'.green.bold)
+        // console.log(JSON.stringify(version, null, "----"))
+    }, function(result){
+        console.log("Upload promise rejected".red.bold)
+        console.log(JSON.stringify(result, null, "----"))
+    })
 
 }
 
