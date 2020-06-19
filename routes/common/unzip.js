@@ -904,9 +904,9 @@ const uploadFile = async (req, data) => {
 
         //     promises.push(chunkUploadPromise) 
             
-        //     if (end < contentLength){
-        //         start += chunkSize
-        //     }
+            if (end < contentLength){
+                start += chunkSize
+            }
         }
 
 
