@@ -869,7 +869,7 @@ const uploadFile = async (req, data) => {
             'Authorization':'Bearer ' + token,
             'Content-Type':'application/stream',
             'Content-Range': contentRange,
-            'Content-Length': contentLength,
+            'Content-Length': `${contentLength}`,
             'Session-Id': sessionId
         }
 
