@@ -774,7 +774,7 @@ const uploadFile = async (req, data) => {
             oauth2client,
             credentials
             )
-            
+            console.log('chunkUploadPromise', chunkUploadPromise)
             promises.push(chunkUploadPromise) 
             
             if (end < contentLength){
