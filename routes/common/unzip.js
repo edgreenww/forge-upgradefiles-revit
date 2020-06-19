@@ -9,7 +9,10 @@ const {
 const colors = require('colors')
 colors.enable()
 
-const uuidv1 = require('uuid/v1'); // time based uuid
+
+const { v1: uuidv1 } = require('uuid'); // time based uuid
+// uuidv1(); // -> '6c84fb90-12c4-11e1-840d-7b25c5ee775a' 
+
 
 
 
