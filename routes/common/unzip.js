@@ -9,6 +9,12 @@ const {
 const colors = require('colors')
 colors.enable()
 
+const uuidv1 = require('uuid/v1'); // time based uuid
+
+
+
+
+
 
 const fs = require('fs');
 const DecompressZip = require('decompress-zip');
@@ -580,7 +586,7 @@ const uploadObjectChunked = (token, bucketKey, objectKey,
         }, (e, i) => i)
 
         // generates uniques session ID
-        const sessionId = this.guid()
+        const sessionId = uuidv1()  // time based uuid
 
         // prepare the upload tasks
         const uploadTasks = chunksMap.map((chunkIdx) => {
