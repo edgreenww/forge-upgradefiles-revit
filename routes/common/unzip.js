@@ -718,30 +718,53 @@ myUploadChunk = async (req, data) => {
     const requestParams = {
         headers: headers,
         uri: url,
+        url: url,
         method: 'put',
         body: body.slice(start, end),
         json: true,
     }
 
     console.log('Ready to upload chunk...'.cyan)
-    const uploadResult = await request(requestParams, function (error, response, body) {
-        if (error) {
-            console.log(`Error: ${error}`.red)
+
+    const reqOptions = {
+        url: url,
+        // omit headers when retrieving a file from AWS without requiring authentication
+        headers: headers
+    }
+
+    const uploadChunkReq = request_normal.put(reqOptions);
+
+    // verify response code
+    uploadChunkReq.on('response', (response) => {
+        console.log(JSON.stringify(response, null, "----"))
+        if (response.statusCode !== 200) {
+            console.log("response status " + response.statusCode)
+            // return cb('Response status was ' + response.statusCode);
+            return
         }
-        if (body.errors) {
-            updateAirtable(req, "Unzip Status", `Error uploading`)
-            updateAirtable(req, "Unzip Info", `${body.errors[0].detail}`) // first error only (!)
-            console.log(`Errors:`.red, JSON.stringify(body.errors, null, '----') )
-            return 
-        }
+
         
-        console.log('Chunk upload info (body)...'.cyan)
-        console.log('body: ', JSON.stringify(body, null, '----'))
-        console.log('Chubk Uploaded... '.cyan.bold, body.data.id.yellow)
-        updateAirtable(req, 'Unzip Status', 'Complete')
+    });
+
+
+    // const uploadResult = await request(requestParams, function (error, response, body) {
+    //     if (error) {
+    //         console.log(`Error: ${error}`.red)
+    //     }
+    //     if (body.errors) {
+    //         updateAirtable(req, "Unzip Status", `Error uploading`)
+    //         updateAirtable(req, "Unzip Info", `${body.errors[0].detail}`) // first error only (!)
+    //         console.log(`Errors:`.red, JSON.stringify(body.errors, null, '----') )
+    //         return 
+    //     }
+        
+    //     console.log('Chunk upload info (body)...'.cyan)
+    //     console.log('body: ', JSON.stringify(body, null, '----'))
+    //     console.log('Chubk Uploaded... '.cyan.bold, body.data.id.yellow)
+    //     updateAirtable(req, 'Unzip Status', 'Complete')
         
 
-    })
+    // })
 
 
 
