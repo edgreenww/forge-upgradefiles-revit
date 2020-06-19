@@ -846,6 +846,7 @@ const uploadFile = async (req, data) => {
             'Authorization':'Bearer ' + token,
             'Content-Type':'application/octet-stream',
             'Content-Range': contentRange,
+            'Content-Length': contentLength,
             'Session-Id': sessionId
         }
 
@@ -857,7 +858,7 @@ const uploadFile = async (req, data) => {
             headers: headers,
             uri: url,
             method: 'PUT',
-            body: body.slice(start, end),
+            body: readStream, // body.slice(start, end),
             json: true,
         }
 
