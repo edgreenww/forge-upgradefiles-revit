@@ -632,7 +632,7 @@ const uploadObjectChunked = (token, bucketKey, objectKey,
         // runs asynchronously in parallel the upload tasks
         // number of simultaneous uploads is defined by
         // opts.concurrentUploads
-        eachLimit(uploadTasks, opts.concurrentUploads || 3,
+        const eachLimit = (uploadTasks, opts.concurrentUploads || 3,
             (task, callback) => {
 
                 task.run().then((res) => {
@@ -686,6 +686,7 @@ const uploadFile = async (req, data) => {
     const {
         bucketKey ,
         fileName,
+        filePath,
         objectName ,
         storageId,
         hostId,
@@ -725,75 +726,78 @@ const uploadFile = async (req, data) => {
 
     // https://forge.autodesk.com/blog/nailing-large-files-uploads-forge-resumable-api
 
-    const opts = {}
+    // const opts = {}
 
-    const response = await uploadObjectChunked(
-        credentials,
-        bucketKey,
-        objectName,
-        body,
-        opts
-    )
+    // const response = await uploadObjectChunked(
+    //     credentials,
+    //     bucketKey,
+    //     objectName,
+    //     body,
+    //     opts
+    // )
 
-    const version =  await createVersion(req)
-    console.log('Version created'.green.bold)
+    // const version =  await createVersion(req)
+    // console.log('Version created'.green.bold)
 
     /// First attempt
 
-    // let sessionId = "-12345"
+    let sessionId = "-12345"
 
-    // let promises = []
-    // const chunkSize = 4999999 // 5MB in bytes
-    // let start = 0
-    // let end = start + chunkSize
-    // console.log("Chunk upload...")
-    // while (end < contentLength-1){
-    //     end = start + chunkSize - 1
+    let promises = []
+    const chunkSize = 4999999 // 5MB in bytes
+    let start = 0
+    let end = start + chunkSize
+    console.log("Chunk upload...")
+    while (end < contentLength-1){
+        end = start + chunkSize - 1
 
         
         
-    //     if ( end > contentLength-1){
-    //         end = contentLength-1
-    //     }
+        if ( end > contentLength-1){
+            end = contentLength-1
+        }
 
-    //     let contentRange = `bytes ${start}-${end}/${contentLength}`
-    //     console.log('contentRange', contentRange)
+        let contentRange = `bytes ${start}-${end}/${contentLength}`
+        console.log('contentRange', contentRange)
+
+
+        let readStream = fs.createReadStream(filePath, {start, end})
         
-    //     let chunkUploadPromise = objects.uploadChunk(
-    //         bucketKey,
-    //         objectName,
-    //         contentLength,
-    //         contentRange,
-    //         sessionId,
-    //         body.slice(start, end),
-    //         options,
-    //         oauth2client,
-    //         credentials
-    //         )
+        let chunkUploadPromise = objects.uploadChunk(
+            bucketKey,
+            objectName,
+            contentLength,
+            contentRange,
+            sessionId,
+            readStream, // body.slice(start, end),
+            {},
+            oauth2client,
+            credentials
+            )
             
-    //         promises.push(chunkUploadPromise) 
+            promises.push(chunkUploadPromise) 
             
-    //         if (end < contentLength){
-    //             start += chunkSize
-    //         }
-    //     }
-    // const chunksUploadPromises = Promise.all(promises)   
+            if (end < contentLength){
+                start += chunkSize
+            }
+        }
+    const chunksUploadPromises = Promise.all(promises)   
     
-    // let uploadPromise = chunksUploadPromises
+    let uploadPromise = chunksUploadPromises
 
-    // // uploadPromise = promises[0]
+    // uploadPromise = promises[0]
 
-    // uploadPromise.then( async (result) => {
-    //     console.log('Upload promise resolved'.brightGreen.bold)
-    //     console.log(JSON.stringify(result, null, "----"))
+    uploadPromise.then( async (result) => {
+        console.log('Upload promise resolved'.brightGreen.bold)
+        console.log(JSON.stringify(result, null, "----"))
 
-    //     const version =  await createVersion(req)
-    //     console.log('Version created'.green.bold)
-    //     // console.log(JSON.stringify(version, null, "----"))
-    // }, function(result){
-    //     console.log("Upload promise rejected".red.bold)
-    //     console.log(JSON.stringify(result, null, "----"))
-    // })
+        const version =  await createVersion(req)
+        console.log('Version created'.green.bold)
+        // console.log(JSON.stringify(version, null, "----"))
+    }, function(result){
+        console.log("Upload promise rejected".red.bold)
+        console.log(JSON.stringify(result, null, "----"))
+    })
 
 }
 
@@ -853,6 +857,7 @@ const uploadUnzippedFile = (  ( unzippedFilePath, req, hostId) => {
             bucketKey: "wip.dm.prod",
             fileName: fileName,
             folderId: req.folder.body.data.id,
+            filePath: unzippedFilePath,
             objectName: req.objectName,
             storageId: req.storageId,
             hostId: hostId,
