@@ -844,7 +844,7 @@ const uploadFile = async (req, data) => {
 
         const headers = {
             'Authorization':'Bearer ' + token,
-            'Content-Type':'application/octet-stream',
+            'Content-Type':'application/stream',
             'Content-Range': contentRange,
             'Content-Length': contentLength,
             'Session-Id': sessionId
@@ -881,6 +881,8 @@ const uploadFile = async (req, data) => {
             console.log(chunkProgressMessage.cyan.bold, body.data.id.yellow)
             updateAirtable(req, 'Unzip Status', chunkProgressMessage)
         })
+
+        console.log( 'uploadResult', uploadResult )
 
         
         // let chunkUploadPromise = objects.uploadChunk(
