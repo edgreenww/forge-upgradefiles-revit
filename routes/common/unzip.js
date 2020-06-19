@@ -849,6 +849,10 @@ const uploadFile = async (req, data) => {
             'Session-Id': sessionId
         }
 
+        const url = `https://developer.api.autodesk.com/oss/v2/buckets/${bucketKey}/objects/${objectName}/resumable`;
+
+        console.log('url', url)
+
         const requestParams = {
             headers: headers,
             uri: url,
