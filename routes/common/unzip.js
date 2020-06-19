@@ -867,7 +867,7 @@ const uploadFile = async (req, data) => {
 
         const headers = {
             'Authorization':'Bearer ' + token,
-            'Content-Type':'application/stream',
+            'Content-Type':'application/octet-stream',
             'Content-Range': contentRange,
             'Content-Length': `${contentLength}`,
             'Session-Id': sessionId
@@ -891,7 +891,11 @@ const uploadFile = async (req, data) => {
         const reqOptions = {
             url: url,
             // omit headers when retrieving a file from AWS without requiring authentication
-            headers: headers
+            headers: headers,
+            uri: url,
+            
+            body: readStream, // body.slice(start, end),
+            json: false,
         }
 
         const uploadChunkReq = request_normal.put(reqOptions);
