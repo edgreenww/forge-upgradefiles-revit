@@ -675,7 +675,7 @@ const uploadObjectChunked = (token, bucketKey, objectKey,
 }
 
 
-myUploadChunk = (req, data) => {
+myUploadChunk = async (req, data) => {
 
     const {
         bucketKey ,
