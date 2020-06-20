@@ -903,7 +903,7 @@ const uploadFile = async (req, data) => {
             headers: headers,
             uri: url,
             url: url,
-            method: 'PUT',
+            method: 'POST',
 
             body:  fileBuffer.slice(start, end), // body.slice(start, end), // readStream, //
             // json: true, // automatically parses the json string in the response
@@ -924,27 +924,31 @@ const uploadFile = async (req, data) => {
         // same thing, using await syntax
         await wait(delayMs)
         console.warn('done waiting')
-        request_promise_native(requestParams)
-            .then(response => {
-                console.log('in the THEN - success', response.statusCode, response.statusMessage)
-                // console.log(response)
-            })
-            .catch(error => {
-                console.log('in the THEN - Error', error)
-            })
 
-       
-        // const uploadChunkPromise =  new Promise((resolve, reject) => {
-        //         request_normal.put(requestParams)
-        //             .on('response', (resUpload) => {
-        //                 console.log('Uploading '  + resUpload.statusCode + ' > ' + resUpload.statusMessage);
-        //                 resUpload.headers['content-type'] = undefined;
-        //                 if (resUpload.statusCode != 206 && resUpload.statusCode != 200) {
-        //                     resolve(resUpload)
-        //                 }
-        //             })
-                   
+        // request option 1 - 
+
+        // request_promise_native(requestParams)
+        //     .then(response => {
+        //         console.log('in the THEN - success', response.statusCode, response.statusMessage)
+        //         // console.log(response)
         //     })
+        //     .catch(error => {
+        //         console.log('in the THEN - Error', error)
+        //     })
+
+       // request option 2 -
+
+        const uploadChunkPromise =  new Promise((resolve, reject) => {
+                request_normal.put(requestParams)
+                    .on('response', (resUpload) => {
+                        console.log('Uploading '  + resUpload.statusCode + ' > ' + resUpload.statusMessage);
+                        resUpload.headers['content-type'] = undefined;
+                        if (resUpload.statusCode != 206 && resUpload.statusCode != 200) {
+                            resolve(resUpload)
+                        }
+                    })
+                   
+            })
         
 
         // verify response code
