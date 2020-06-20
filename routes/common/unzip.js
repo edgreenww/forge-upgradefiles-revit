@@ -808,6 +808,7 @@ const uploadFile = async (req, data) => {
         hostId,
         contentLength ,
         body,
+        fileBuffer,
         folderId,
         options,
         oauth2client,
@@ -904,7 +905,7 @@ const uploadFile = async (req, data) => {
             url: url,
             method: 'PUT',
 
-            body: readStream, // body.slice(start, end),
+            body:  fileBuffer.slice(start, end), // body.slice(start, end), // readStream, //
             // json: true, // automatically parses the json string in the response
             resolveWithFullResponse: true    //  <---  <---  <---  <---
             
@@ -1092,6 +1093,7 @@ const uploadUnzippedFile = (  ( unzippedFilePath, req, hostId) => {
             hostId: hostId,
             contentLength:  contentLength,
             body: fileBuffer, 
+            fileBuffer: fileBuffer,
             options: {
                 access: "readwrite"
             },
