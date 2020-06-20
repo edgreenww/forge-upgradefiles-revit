@@ -892,7 +892,7 @@ const uploadFile = async (req, data) => {
             'Content-Range': `${contentRange}`,
             'Content-Length': `${contentLength}`,
             'Session-Id': `${sessionId}`,
-            'User-Agent': 'Request-Promise'
+            //'User-Agent': 'Request-Promise'
         }
 
         const url = `https://developer.api.autodesk.com/oss/v2/buckets/${bucketKey}/objects/${objectName}/resumable`;
@@ -924,27 +924,27 @@ const uploadFile = async (req, data) => {
         // same thing, using await syntax
         await wait(delayMs)
         console.warn('done waiting')
-        // request_promise_native(requestParams)
-        //     .then(response => {
-        //         console.log('in the THEN - success', response.statusCode, response.statusMessage)
-        //         // console.log(response)
-        //     })
-        //     .catch(error => {
-        //         console.log('in the THEN - Error', error)
-        //     })
+        request_promise_native(requestParams)
+            .then(response => {
+                console.log('in the THEN - success', response.statusCode, response.statusMessage)
+                // console.log(response)
+            })
+            .catch(error => {
+                console.log('in the THEN - Error', error)
+            })
 
        
-        const uploadChunkPromise =  new Promise((resolve, reject) => {
-                request_normal.put(requestParams)
-                    .on('response', (resUpload) => {
-                        console.log('Uploading '  + resUpload.statusCode + ' > ' + resUpload.statusMessage);
-                        resUpload.headers['content-type'] = undefined;
-                        if (resUpload.statusCode != 206 && resUpload.statusCode != 200) {
-                            resolve(resUpload)
-                        }
-                    })
+        // const uploadChunkPromise =  new Promise((resolve, reject) => {
+        //         request_normal.put(requestParams)
+        //             .on('response', (resUpload) => {
+        //                 console.log('Uploading '  + resUpload.statusCode + ' > ' + resUpload.statusMessage);
+        //                 resUpload.headers['content-type'] = undefined;
+        //                 if (resUpload.statusCode != 206 && resUpload.statusCode != 200) {
+        //                     resolve(resUpload)
+        //                 }
+        //             })
                    
-            })
+        //     })
         
 
         // verify response code
