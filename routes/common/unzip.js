@@ -896,7 +896,7 @@ const uploadFile = async (req, data) => {
 
         const url = `https://developer.api.autodesk.com/oss/v2/buckets/${bucketKey}/objects/${objectName}/resumable`;
 
-        console.log('url', url)
+        
 
         const requestParams = {
             headers: headers,
@@ -910,16 +910,18 @@ const uploadFile = async (req, data) => {
             
         }
 
+        console.log('requestParams', requestParams)
+
         
         console.log('Ready to upload chunk...'.cyan)
 
         
 
         // const uploadChunkPromise = promiseRequest(requestParams)
-
-        console.log('simulating waiting ... ')
+        const delayMs = 1000
+        console.log(`simulating waiting for ${delayMs} milliseconds `)
         // same thing, using await syntax
-        await wait(2000)
+        await wait(delayMs)
         console.warn('done waiting')
         // request_promise_native(requestParams)
         //     .then(response => {
