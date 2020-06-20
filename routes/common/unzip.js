@@ -913,13 +913,13 @@ const uploadFile = async (req, data) => {
         
         console.log('Ready to upload chunk...'.cyan)
 
-        // const uploadChunkReq = request_normal.put(requestParams);
+        
 
         // const uploadChunkPromise = promiseRequest(requestParams)
 
         console.log('simulating waiting ... ')
         // same thing, using await syntax
-        await wait(31000)
+        await wait(2000)
         console.warn('done waiting')
         // request_promise_native(requestParams)
         //     .then(response => {
@@ -930,17 +930,18 @@ const uploadFile = async (req, data) => {
         //         console.log('in the THEN - Error', error)
         //     })
 
-        // const uploadChunkPromise =  new Promise((resolve, reject) => {
-        //         uploadChunkReq
-        //             .on('response', (resUpload) => {
-        //                 console.log('Uploading '  + resUpload.statusCode + ' > ' + resUpload.statusMessage);
-        //                 resUpload.headers['content-type'] = undefined;
-        //                 if (resUpload.statusCode != 206 && resUpload.statusCode != 200) {
-        //                     resolve(resUpload)
-        //                 }
-        //             })
+       
+        const uploadChunkPromise =  new Promise((resolve, reject) => {
+                request_normal.put(requestParams)
+                    .on('response', (resUpload) => {
+                        console.log('Uploading '  + resUpload.statusCode + ' > ' + resUpload.statusMessage);
+                        resUpload.headers['content-type'] = undefined;
+                        if (resUpload.statusCode != 206 && resUpload.statusCode != 200) {
+                            resolve(resUpload)
+                        }
+                    })
                    
-        //     })
+            })
         
 
         // verify response code
