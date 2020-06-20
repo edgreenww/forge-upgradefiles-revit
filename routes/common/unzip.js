@@ -772,6 +772,8 @@ myUploadChunk = async (req, data) => {
 
 }
 
+const wait = ms => new Promise((r, j)=>setTimeout(r, ms))
+
 const promiseRequest = (params) => {
     return new Promise(resolve => {
         return request_normal(params, (error, response, body) => {
@@ -915,14 +917,18 @@ const uploadFile = async (req, data) => {
 
         // const uploadChunkPromise = promiseRequest(requestParams)
 
-        request_promise_native(requestParams)
-            .then(response => {
-                console.log('in the THEN - success', response.statusCode, response.statusMessage)
-                // console.log(response)
-            })
-            .catch(error => {
-                console.log('in the THEN - Error', error)
-            })
+        console.log('simulating waiting ... ')
+        // same thing, using await syntax
+        await wait(2000)
+        console.warn('done waiting')
+        // request_promise_native(requestParams)
+        //     .then(response => {
+        //         console.log('in the THEN - success', response.statusCode, response.statusMessage)
+        //         // console.log(response)
+        //     })
+        //     .catch(error => {
+        //         console.log('in the THEN - Error', error)
+        //     })
 
         // const uploadChunkPromise =  new Promise((resolve, reject) => {
         //         uploadChunkReq

@@ -80,7 +80,7 @@ router.use(async (req, res, next) => {
     next();
 });
 
-
+// https://spin.atomicobject.com/2018/05/15/extending-heroku-timeout-node/
 const extendTimeoutMiddleware = (req, res, next) => {
     const space = ' ';
     let isFinished = false;
@@ -132,8 +132,9 @@ const extendTimeoutMiddleware = (req, res, next) => {
     waitAndSend();
     next();
   };
-
-  router.use(extendTimeoutMiddleware)
+  // this doesnt help... 
+  // https://spin.atomicobject.com/2018/05/15/extending-heroku-timeout-node/
+  // router.use(extendTimeoutMiddleware)
 
 ///////////////////////////////////////////////////////////////////////
 /// NEW ROUTE - unzip zip file from CompositeDesign
