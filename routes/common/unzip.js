@@ -22,6 +22,8 @@ const { v1: uuidv1 } = require('uuid'); // time based uuid
 const fs = require('fs');
 const DecompressZip = require('decompress-zip');
 const request = require("request-promise")
+
+const request_promise_native = require("request-promise-native")
 const request_normal = require("request")
 const Airtable = require("airtable")
 
@@ -774,6 +776,9 @@ const promiseRequest = (params) => {
     return new Promise(resolve => {
         return request_normal(params, (error, response, body) => {
             // console.log("response", response)
+            console.error('error:', error); // Print the error if one occurred
+            console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+            console.log('body:', body); // Print the HTML for the Google homepage.
             resolve(body)
         })
     }, reject => {
@@ -883,7 +888,8 @@ const uploadFile = async (req, data) => {
             'Content-Type':'application/octet-stream',
             'Content-Range': contentRange,
             'Content-Length': `${contentLength}`,
-            'Session-Id': sessionId
+            'Session-Id': sessionId,
+            'User-Agent': 'Request-Promise'
         }
 
         const url = `https://developer.api.autodesk.com/oss/v2/buckets/${bucketKey}/objects/${objectName}/resumable`;
@@ -895,8 +901,11 @@ const uploadFile = async (req, data) => {
             uri: url,
             url: url,
             method: 'PUT',
+
             body: readStream, // body.slice(start, end),
-            json: true,
+            // json: true, // automatically parses the json string in the response
+            resolveWithFullResponse: true    //  <---  <---  <---  <---
+            
         }
 
         
@@ -904,7 +913,16 @@ const uploadFile = async (req, data) => {
 
         // const uploadChunkReq = request_normal.put(requestParams);
 
-        const uploadChunkPromise = promiseRequest(requestParams)
+        // const uploadChunkPromise = promiseRequest(requestParams)
+
+        request_promise_native(requestParams)
+            .then(response => {
+                console.log('in the THEN - success', response.statusCode)
+                console.log(response)
+            })
+            .catch(error => {
+                console.log('in the THEN - Error', error)
+            })
 
         // const uploadChunkPromise =  new Promise((resolve, reject) => {
         //         uploadChunkReq
@@ -972,33 +990,34 @@ const uploadFile = async (req, data) => {
         //     //     console.log('chunkUploadPromise - rejected', result)
         //     // })
 
-                promises.push(uploadChunkPromise) 
+              //  promises.push(uploadChunkPromise) 
             
             if (end < contentLength){
                 start += chunkSize
             }
         }
-
-
-    const chunksUploadPromises = await Promise.all(promises)   
-
-    console.log('chunksUploadPromises', chunksUploadPromises)
     
-    let uploadPromise = chunksUploadPromises
+    // console.log('promises', promises)
 
-    // // uploadPromise = promises[0]
+    // const chunksUploadPromises = await Promise.all(promises)   
 
-    uploadPromise.then( async (result) => {
-        console.log('Upload promise resolved'.brightGreen.bold)
-        console.log(JSON.stringify(result, null, "----"))
+    // console.log('chunksUploadPromises', chunksUploadPromises)
+    
+    // let uploadPromise = chunksUploadPromises
 
-        const version =  await createVersion(req)
-        console.log('Version created'.green.bold)
-        // console.log(JSON.stringify(version, null, "----"))
-    }, function(result){
-        console.log("Upload promise rejected".red.bold)
-        console.log(JSON.stringify(result, null, "----"))
-    })
+    // // // uploadPromise = promises[0]
+
+    // uploadPromise.then( async (result) => {
+    //     console.log('Upload promise resolved'.brightGreen.bold)
+    //     console.log(JSON.stringify(result, null, "----"))
+
+    //     const version =  await createVersion(req)
+    //     console.log('Version created'.green.bold)
+    //     // console.log(JSON.stringify(version, null, "----"))
+    // }, function(result){
+    //     console.log("Upload promise rejected".red.bold)
+    //     console.log(JSON.stringify(result, null, "----"))
+    // })
 
 }
 
