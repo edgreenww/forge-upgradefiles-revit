@@ -917,8 +917,8 @@ const uploadFile = async (req, data) => {
 
         request_promise_native(requestParams)
             .then(response => {
-                console.log('in the THEN - success', response.statusCode)
-                console.log(response)
+                console.log('in the THEN - success', response.statusCode, response.statusMessage)
+                // console.log(response)
             })
             .catch(error => {
                 console.log('in the THEN - Error', error)
@@ -1003,7 +1003,7 @@ const uploadFile = async (req, data) => {
 
     // console.log('chunksUploadPromises', chunksUploadPromises)
     
-    // let uploadPromise = chunksUploadPromises
+    // let uploadPromise = chunksUploadPromises // singleUploadPromise
 
     // // // uploadPromise = promises[0]
 
