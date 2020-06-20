@@ -919,7 +919,7 @@ const uploadFile = async (req, data) => {
 
         console.log('simulating waiting ... ')
         // same thing, using await syntax
-        await wait(2000)
+        await wait(31000)
         console.warn('done waiting')
         // request_promise_native(requestParams)
         //     .then(response => {
