@@ -890,7 +890,7 @@ const uploadFile = async (req, data) => {
             'Content-Type':'application/octet-stream',
             'Content-Range': `${contentRange}`,
             'Content-Length': `${contentLength}`,
-            'Session-Id': sessionId,
+            'Session-Id': `${sessionId}`,
             'User-Agent': 'Request-Promise'
         }
 
