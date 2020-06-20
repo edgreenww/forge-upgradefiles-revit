@@ -888,7 +888,7 @@ const uploadFile = async (req, data) => {
         const headers = {
             'Authorization':'Bearer ' + token,
             'Content-Type':'application/octet-stream',
-            'Content-Range': contentRange,
+            'Content-Range': `${contentRange}`,
             'Content-Length': `${contentLength}`,
             'Session-Id': sessionId,
             'User-Agent': 'Request-Promise'
