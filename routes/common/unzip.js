@@ -903,7 +903,7 @@ const uploadFile = async (req, data) => {
             headers: headers,
             uri: url,
             url: url,
-            method: 'POST',
+            method: 'PUT',
 
             body:  fileBuffer.slice(start, end), // body.slice(start, end), // readStream, //
             // json: true, // automatically parses the json string in the response
@@ -939,7 +939,7 @@ const uploadFile = async (req, data) => {
        // request option 2 -
 
         const uploadChunkPromise =  new Promise((resolve, reject) => {
-                request_normal.put(requestParams)
+                request_normal.put(requestParams, console.log('request callback'))
                     .on('response', (resUpload) => {
                         console.log('Uploading '  + resUpload.statusCode + ' > ' + resUpload.statusMessage);
                         resUpload.headers['content-type'] = undefined;
