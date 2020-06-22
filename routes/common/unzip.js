@@ -939,7 +939,7 @@ const uploadFile = async (req, data) => {
        // request option 2 -
 
         const uploadChunkPromise =  new Promise((resolve, reject) => {
-                request_normal.put(requestParams, (err, res, body)=> {
+                request_normal(requestParams, (err, res, body)=> {
                     console.log('err: ', err)
                     console.log('res: ', JSON.stringify(res, null, '----'))
                     console.log('body: ', body)
