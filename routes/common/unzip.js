@@ -911,7 +911,7 @@ const uploadFile = async (req, data) => {
             
         }
 
-        console.log('requestParams', JSON.stringify(requestParams))
+        console.log('requestParams', requestParams)
 
         
         console.log('Ready to upload chunk...'.cyan)
