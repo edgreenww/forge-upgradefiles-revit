@@ -880,7 +880,7 @@ const uploadFile = async (req, data) => {
             end = contentLength-1
         }
 
-        let contentRange = `bytes ${start+1}-${end+1}/${contentLength}`
+        let contentRange = `bytes ${start}-${end}/${contentLength}`
         console.log('contentRange', contentRange)
 
 
