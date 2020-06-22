@@ -905,7 +905,7 @@ const uploadFile = async (req, data) => {
             url: url,
             method: 'PUT',
 
-            body: readStream, // fileBuffer.slice(start, end), // body.slice(start, end), // readStream, //
+            body:  fileBuffer.slice(start, end), // body.slice(start, end), // readStream, //
             // json: true, // automatically parses the json string in the response
             resolveWithFullResponse: true    //  <---  <---  <---  <---
             
