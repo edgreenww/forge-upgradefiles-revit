@@ -939,7 +939,12 @@ const uploadFile = async (req, data) => {
        // request option 2 -
 
         const uploadChunkPromise =  new Promise((resolve, reject) => {
-                request_normal.put(requestParams, response => console.log('request callback', response))
+                request_normal.put(requestParams, (err, res, body)=> {
+                    console.log('err: ', err)
+                    console.log('res: ', res)
+                    console.log('body: ', body)
+
+                } )  // response comes back null
                     .on('response', (resUpload) => {
                         console.log('Uploading '  + resUpload.statusCode + ' > ' + resUpload.statusMessage);
                         resUpload.headers['content-type'] = undefined;
