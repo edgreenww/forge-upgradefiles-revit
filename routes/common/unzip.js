@@ -950,12 +950,20 @@ const uploadFile = async (req, data) => {
         console.warn('done waiting')
 
         axios(requestParams)
-            .then(res => {
+            .then(async res => {
                 if (res.status == 200 || res.status == 202) {
                     console.log('Uploaded: ' + res.status + ' > ' + res.statusText)
                 }
                 else {
                     console.log('Failed to Upload: ' + res.status + ' > ' + res.statusText)
+                }
+                if (res.status == 200) {
+                    console.log('Upload complete'.brightGreen.bold)
+                    // console.log(JSON.stringify(res, null, "----"))
+                    const version = await createVersion(req)
+                    console.log(version)
+                    console.log('Version created'.green.bold)
+                    // console.log(JSON.stringify(version, null, "----"))
                 }
             })
             .catch(err => {
