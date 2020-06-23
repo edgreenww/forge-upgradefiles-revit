@@ -15,7 +15,14 @@ const { v1: uuidv1 } = require('uuid'); // time based uuid
 
 
 
+const {
+    DataManagementClient
+} = require('forge-server-utils')
 
+
+const DM = DataManagementClient
+
+console.log('test funtion:', DM.uploadObjectResumable)
 
 
 
