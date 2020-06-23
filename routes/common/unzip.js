@@ -1,8 +1,8 @@
 
 const {
-   
+
     ObjectsApi,
-    
+
 } = require('forge-apis');
 
 // Enable colourful console logging
@@ -57,6 +57,7 @@ const request = require("request-promise")
 
 const request_promise_native = require("request-promise-native")
 const request_normal = require("request")
+const axios = require('axios');
 const Airtable = require("airtable")
 
 const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY
@@ -65,7 +66,7 @@ const AIRTABLE_BASE_ID = "appht0tyYgv6ZxVvU" // EMEA BIM 360 TRANSFER - https://
 Airtable.configure({
     endpointUrl: "https://api.airtable.com",
     apiKey: AIRTABLE_API_KEY
-  });
+});
 
 const base = new Airtable.base(AIRTABLE_BASE_ID);
 
@@ -98,8 +99,8 @@ const cleanupPreviousDownload = (path) => {
                 fs.unlinkSync(path)
                 //file removed
                 console.log(`Removed:  ${path}`)
-              }
-        } catch(err) {
+            }
+        } catch (err) {
             console.error(err)
         }
     })
@@ -107,8 +108,8 @@ const cleanupPreviousDownload = (path) => {
 }
 
 
-transferFile =  (source, destination, token) => {
-    
+transferFile = (source, destination, token) => {
+
     const reqOptions = {
         uri: source,
         url: source,
@@ -120,7 +121,7 @@ transferFile =  (source, destination, token) => {
     }
 
     const sendReq = request_normal.get(reqOptions);
-    
+
     return new Promise((resolve, reject) => {
         sendReq
             .on('response', (resSource) => {
@@ -151,7 +152,7 @@ transferFile =  (source, destination, token) => {
  * @param {Object} res the response object to be sent back to the client
  * @param {Boolean} extract set to false to prevent the unzip operation
  */
-const download = (url, dest, token, extractFilesCallback, req, res, extract=true) => {
+const download = (url, dest, token, extractFilesCallback, req, res, extract = true) => {
     // remove download destination file if already downloaded
     cleanupPreviousDownload(dest)
 
@@ -186,11 +187,11 @@ const download = (url, dest, token, extractFilesCallback, req, res, extract=true
     });
 
     // close() is async, call extractFilesCallback after close completes
-    if (extract){
-        file.on('finish', () => file.close(extractFilesCallback(req)));
-        
-    }else{
-        file.on('finish', () => file.close( () => {
+    if (extract) {
+        file.on('finish', () => file.close(extractFilesCallback(req, res)));
+
+    } else {
+        file.on('finish', () => file.close(() => {
             console.log('Finished...')
         }));
     }
@@ -222,7 +223,7 @@ const findFileByName = (extractLogList, fileName) => {
     // NOTE - this assumes the zip file is named the same as the 'host' rvt in the contents of the zip.. 
     let fileNameResult
     extractLogList.forEach(log => {
-        
+
         if (log.deflated.includes(fileName.replace('.zip', ''))) {
             console.log('filename:', log)
             fileNameResult = log.deflated
@@ -244,7 +245,7 @@ const findFileByName = (extractLogList, fileName) => {
  */
 const unzip = (file, uploadCallback, req, res) => {
 
-    let unzipper = new DecompressZip( file);
+    let unzipper = new DecompressZip(file);
     let extractFilePath = 'routes/data'
     unzipper.extract({
         path: extractFilePath
@@ -257,14 +258,14 @@ const unzip = (file, uploadCallback, req, res) => {
         console.log('extract log ', log);
         console.log('file name in request'.cyan, req.body.fileItemName.yellow.bold)
         // const unzippedFileToUpload = extractFilePath +'/'+ log[0].deflated
-        const unzippedFileToUpload = extractFilePath +'/'+ findFileByName(log, req.body.fileItemName)
+        const unzippedFileToUpload = extractFilePath + '/' + findFileByName(log, req.body.fileItemName)
         // uploadCallback(unzippedFileToUpload, req)
 
         createStorageForFile(unzippedFileToUpload, req, res, uploadCallback)
 
         // send the (first) file extracted as a download to the client (not working yet)
         //res.download(extractFilePath +'/'+ log[0].deflated).end("unzip endpoint called");
-        res.status(200).end(inputUrl);
+        // res.status(200).end(inputUrl);
     });
 }
 
@@ -278,13 +279,13 @@ const unzip = (file, uploadCallback, req, res) => {
  */
 const createStorageForFile = async (file, req, res, uploadCallback) => {
     const dataFolder = 'routes/data'
-    const filePath = dataFolder+'/'+file
+    const filePath = dataFolder + '/' + file
     const storage = await createStorage(req, res, filePath)
     // console.log('storageResult'.magenta, JSON.stringify(storage, null, "----"))
     req.storageId = storage.data.id
     console.log(`Storage created for ${file}`.brightGreen.bold, storage.data.id.yellow)
     updateAirtable(req, 'Unzip Status', 'Creating storage...')
-    uploadCallback(file, req)
+    uploadCallback(file, req, res)
 }
 
 
@@ -302,42 +303,42 @@ const createStorageForFile = async (file, req, res, uploadCallback) => {
  * @param {Object} req - the request sent from the client
  * @param {Object} res - the response sent back to the client
  */
-const extractFiles =  (req, res) => {
+const extractFiles = (req, res) => {
 
     const dataFolder = 'routes/data'
     console.log('Files in local file system: '.cyan)
 
     fs.readdir(dataFolder, (err, files) => {
         // list all files currently in the local working folder
-        files.forEach( file => {
+        files.forEach(file => {
 
             let f = file
-            let filePath = dataFolder+'/'+f
+            let filePath = dataFolder + '/' + f
             let stats = fs.statSync(filePath)
             let sizeInBytes = stats["size"]
-            let sizeInMB = sizeInBytes/1000000
+            let sizeInMB = sizeInBytes / 1000000
 
             console.log(`${file} : ${sizeInMB}MB`.yellow);
-        });  
+        });
 
         // search for the requested file
         console.log('in extractFiles function')
-        console.log('current requested file', req.body.fileItemName )
+        console.log('current requested file', req.body.fileItemName)
         let filePathToUnzip
-        files.forEach( file => {
-            
-            let filePath = dataFolder+'/'+file
-            
-            console.log('current file', filePath )
-            if (filePath.includes(".zip") && filePath.includes(req.body.fileItemName) ) {
-                
-                
+        files.forEach(file => {
+
+            let filePath = dataFolder + '/' + file
+
+            console.log('current file', filePath)
+            if (filePath.includes(".zip") && filePath.includes(req.body.fileItemName)) {
+
+
                 filePathToUnzip = filePath
                 return
             }
-            
+
         })
-        console.log(`Unzipping ${filePathToUnzip}`.magenta.bold )
+        console.log(`Unzipping ${filePathToUnzip}`.magenta.bold)
         unzip(filePathToUnzip, uploadUnzippedFile, req, res)
 
 
@@ -363,26 +364,26 @@ const betterCreateStorage = async (req, fileName) => {
     const token = req.body.oauth_token
     const headers = {
         // "x-user-id": x_user_id, 
-        "Content-Type": "application/vnd.api+json", 
+        "Content-Type": "application/vnd.api+json",
         "Authorization": `Bearer ${token}`
     }
     const name = fileName // req.body.fileItemName
     const hostType = 'folders'
     const hostId = folder.body.data.id
     const data = {
-        "jsonapi": {"version": "1.0"},
+        "jsonapi": { "version": "1.0" },
         "data": {
             "type": "objects",
             "attributes": {
                 "name": name,
                 "extension": {
                     "type": "versions:autodesk.bim360:File",
-                        "version": "1.0"
-                    }
-            
+                    "version": "1.0"
+                }
+
             },
             "relationships": {
-                "target": {"data": {"type": hostType, "id": hostId}}
+                "target": { "data": { "type": hostType, "id": hostId } }
             },
         },
     }
@@ -400,7 +401,7 @@ const betterCreateStorage = async (req, fileName) => {
         if (error) {
             console.log(`Error: ${error}`.red)
         }
-        
+
         // console.log('Storage info (body)...'.cyan)
         // console.log('body: ', JSON.stringify(body, null, '----'))
         console.log('Storage created... '.cyan)
@@ -413,9 +414,9 @@ const betterCreateStorage = async (req, fileName) => {
 
 
     })
-    
+
     return storageResult
-    
+
 }
 
 
@@ -431,19 +432,19 @@ const betterCreateStorage = async (req, fileName) => {
 const createVersion = async (req) => {
 
     const projectId = req.body.project_id
-    
+
 
     const url = `https://developer.api.autodesk.com/data/v1/projects/b.${projectId}/versions`
 
     const token = req.body.oauth_token
     const headers = {
         // "x-user-id": x_user_id, 
-        "Content-Type": "application/vnd.api+json", 
+        "Content-Type": "application/vnd.api+json",
         "Authorization": `Bearer ${token}`
     }
 
     const data = {
-        "jsonapi": {"version": "1.0"},
+        "jsonapi": { "version": "1.0" },
         "data": {
             "type": "versions",
             "attributes": {
@@ -452,21 +453,21 @@ const createVersion = async (req) => {
                     "version": "1.0",
                     "type": "versions:autodesk.bim360:File",
                 },
-            
+
             },
             "relationships": {
-                "item": {"data": {"type": "items", "id": req.body.item_id}},
+                "item": { "data": { "type": "items", "id": req.body.item_id } },
                 "storage": {
-                    "data": {"type": "objects", "id": req.storageId}
+                    "data": { "type": "objects", "id": req.storageId }
                 },
             },
         },
     }
 
     console.log(
-        'Create Version Data'.cyan, 
+        'Create Version Data'.cyan,
         JSON.stringify(data, null, "----")
-        )
+    )
 
     const requestParams = {
         headers: headers,
@@ -485,18 +486,18 @@ const createVersion = async (req) => {
         if (body.errors) {
             updateAirtable(req, "Unzip Status", `Error creating version`)
             updateAirtable(req, "Unzip Info", `${body.errors[0].detail}`) // first error only (!)
-            console.log(`Errors:`.red, JSON.stringify(body.errors, null, '----') )
-            return 
+            console.log(`Errors:`.red, JSON.stringify(body.errors, null, '----'))
+            return
         }
-        
+
         console.log('Version info (body)...'.cyan)
         console.log('body: ', JSON.stringify(body, null, '----'))
         console.log('Version created... '.cyan.bold, body.data.id.yellow)
         updateAirtable(req, 'Unzip Status', 'Complete')
-        
+
 
     })
-    
+
     return versionResult
 
 
@@ -510,18 +511,18 @@ const createVersion = async (req) => {
 const updateAirtable = (req, fieldName, message) => {
     const recordId = req.body.airtable_record_id
     console.log(
-        'Updating airtable - record '.magenta, 
-        recordId.yellow, 
+        'Updating airtable - record '.magenta,
+        recordId.yellow,
         'Status:',
         message.yellow.bold
-        
-        )
+
+    )
     const data = {
 
     }
     data[fieldName] = message
 
-    table.update(recordId, data).then(result=>{
+    table.update(recordId, data).then(result => {
         console.log('Airtable updated!'.green)
         // console.log(result)
     }).catch(err => {
@@ -541,8 +542,8 @@ const updateAirtable = (req, fieldName, message) => {
 const unpackFileData = (req, res, fileItemName) => {
 
     const projectId = req.body.project_id
-    const fileItemId   = req.body.fileItemId;
-    if (!fileItemName){
+    const fileItemId = req.body.fileItemId;
+    if (!fileItemName) {
         fileItemName = req.body.fileItemName
     }
 
@@ -553,10 +554,10 @@ const unpackFileData = (req, res, fileItemName) => {
 
     if (fileItemId === '#') {
         res.status(500).end('not supported item');
-    } 
+    }
 
     const params = fileItemId.split('/');
-    if( params.length < 3){
+    if (params.length < 3) {
         res.status(500).end('selected item id has problem');
     }
 
@@ -568,14 +569,14 @@ const unpackFileData = (req, res, fileItemName) => {
 
     const resourceId = params[params.length - 1];
     // if no projectId in request, try to extract it from the fileItemId
-    if (!projectId){
+    if (!projectId) {
         const projectId = params[params.length - 3];
     }
 
     return {
-        "resourceId" : resourceId,
-        "projectId" : projectId
-    }    
+        "resourceId": resourceId,
+        "projectId": projectId
+    }
 
 }
 
@@ -587,19 +588,19 @@ const unpackFileData = (req, res, fileItemName) => {
  * @param {String} unzippedFilePath path to unzipped file in local file system
  */
 const createStorage = async (req, res, unzippedFilePath) => {
-    
+
     const projectId = req.body.project_id
     const filePathParts = unzippedFilePath.split('/')
-    const fileName = filePathParts[filePathParts.length-1]
+    const fileName = filePathParts[filePathParts.length - 1]
     const fileItemName = fileName;
-    
+
     const resourceId = unpackFileData(req, res, fileItemName).resourceId
 
     console.log(`Creating storage for ${fileName}... `.magenta.bold)
     console.log(`resourceId:`, `${resourceId}`.yellow)
-    console.log(`projectId:`,`${projectId}`.yellow)
+    console.log(`projectId:`, `${projectId}`.yellow)
 
-    const storageResult = await betterCreateStorage(req, fileName )
+    const storageResult = await betterCreateStorage(req, fileName)
 
     return storageResult
 }
@@ -651,8 +652,8 @@ const uploadObjectChunked = (token, bucketKey, objectKey,
                     bucketKey, objectKey,
                     length, range, sessionId,
                     readStream, {}, {
-                        autoRefresh: false
-                    }, token)
+                    autoRefresh: false
+                }, token)
             }
 
             return {
@@ -712,22 +713,22 @@ const uploadObjectChunked = (token, bucketKey, objectKey,
 myUploadChunk = async (req, data) => {
 
     const {
-        bucketKey ,
+        bucketKey,
         fileName,
         filePath,
-        objectName ,
+        objectName,
         storageId,
         hostId,
-        contentLength ,
+        contentLength,
         body,
         folderId,
         options,
         oauth2client,
-        credentials 
-        
+        credentials
+
     } = data
-   
-   
+
+
     const url = `https://developer.api.autodesk.com/oss/v2/buckets/${bucketKey}/objects/${objectName}/resumable`;
 
     // bucketKey,
@@ -741,13 +742,13 @@ myUploadChunk = async (req, data) => {
     //         credentials
 
     const token = req.body.oauth_token
-    
+
     const headers = {
-                'Authorization':'Bearer ' + token,
-                'Content-Type': 'application/stream', // 'application/octet-stream',
-                'Content-Range': contentRange,
-                'Session-Id': session
-            }
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/stream', // 'application/octet-stream',
+        'Content-Range': contentRange,
+        'Session-Id': session
+    }
 
     const requestParams = {
         headers: headers,
@@ -779,7 +780,7 @@ myUploadChunk = async (req, data) => {
             return
         }
 
-        
+
     });
 
 
@@ -793,12 +794,12 @@ myUploadChunk = async (req, data) => {
     //         console.log(`Errors:`.red, JSON.stringify(body.errors, null, '----') )
     //         return 
     //     }
-        
+
     //     console.log('Chunk upload info (body)...'.cyan)
     //     console.log('body: ', JSON.stringify(body, null, '----'))
     //     console.log('Chubk Uploaded... '.cyan.bold, body.data.id.yellow)
     //     updateAirtable(req, 'Unzip Status', 'Complete')
-        
+
 
     // })
 
@@ -806,7 +807,7 @@ myUploadChunk = async (req, data) => {
 
 }
 
-const wait = ms => new Promise((r, j)=>setTimeout(r, ms))
+const wait = ms => new Promise((r, j) => setTimeout(r, ms))
 
 const promiseRequest = (params) => {
     return new Promise(resolve => {
@@ -832,34 +833,34 @@ const promiseRequest = (params) => {
 const uploadFile = async (req, data) => {
 
     const objects = new ObjectsApi()
-    
+
     const {
-        bucketKey ,
+        bucketKey,
         fileName,
         filePath,
-        objectName ,
+        objectName,
         storageId,
         hostId,
-        contentLength ,
+        contentLength,
         body,
         fileBuffer,
         folderId,
         options,
         oauth2client,
-        credentials 
-        
+        credentials
+
     } = data
-    
+
     console.log(
-        `Uploading file:`.magenta.bold , 
-        fileName.yellow,  
-        `to storage:`.magenta.bold,  
+        `Uploading file:`.magenta.bold,
+        fileName.yellow,
+        `to storage:`.magenta.bold,
         objectName.yellow
-        )
+    )
     console.log(
-        `Destination folder:`.magenta.bold, 
+        `Destination folder:`.magenta.bold,
         folderId.yellow
-        )
+    )
 
     // const singleUploadPromise = objects.uploadObject(
     //     bucketKey,
@@ -899,61 +900,82 @@ const uploadFile = async (req, data) => {
     const token = req.body.oauth_token
 
     let promises = []
-    const chunkSize = 4999999 // 5MB in bytes
+    const chunkSize = 50000000 // 50MB in bytes
     let start = 0
-    let end = start + chunkSize
+    let end = 0
     console.log("Chunk upload...")
     let chunkCount = 1
-    let totalChunks = Math.ceil(chunkSize/contentLength)
-    while (end < contentLength-1){
+    let totalChunks = Math.ceil(chunkSize / contentLength)
+    while (end < contentLength - 1) {
         end = start + chunkSize - 1
 
-        if ( end > contentLength-1){
-            end = contentLength-1
+        if (end > contentLength - 1) {
+            end = contentLength - 1
         }
 
         let contentRange = `bytes ${start}-${end}/${contentLength}`
         console.log('contentRange', contentRange)
 
 
-        let readStream = fs.createReadStream(filePath, {start, end})
+        let readStream = fs.createReadStream(filePath, { start, end })
 
         const headers = {
-            'Authorization':'Bearer ' + token,
-            'Content-Type':'application/octet-stream',
+            'Authorization': 'Bearer ' + token,
+            // 'Content-Type': 'application/octet-stream',
             'Content-Range': `${contentRange}`,
             'Content-Length': `${contentLength}`,
             'Session-Id': `${sessionId}`,
-           
+
         }
 
         const url = `https://developer.api.autodesk.com/oss/v2/buckets/${bucketKey}/objects/${objectName}/resumable`;
 
-        
-
         const requestParams = {
             headers: headers,
-            uri: url,
             url: url,
             method: 'PUT',
-
-            body:  fileBuffer.slice(start, end), // body.slice(start, end), // readStream, //
-            // json: true, // automatically parses the json string in the response
-            resolveWithFullResponse: true    //  <---  <---  <---  <---
-            
+            data: slicedArrayBuffer(fileBuffer, start, end),
+            maxContentLength: Infinity,
+            maxBodyLength: Infinity
         }
 
         console.log('requestParams', requestParams)
 
-        
         console.log('Ready to upload chunk...'.cyan)
 
-        // const uploadChunkPromise = promiseRequest(requestParams)
+        // CONVERT TIME FOR FOR RATE LIMITING
         const delayMs = 1000
         console.log(`simulating waiting for ${delayMs} milliseconds `)
-        // same thing, using await syntax
         await wait(delayMs)
         console.warn('done waiting')
+
+        axios(requestParams)
+            .then(res => {
+                if (res.status == 200 || res.status == 202) {
+                    console.log('Uploaded: ' + res.status + ' > ' + res.statusText)
+                }
+                else {
+                    console.log('Failed to Upload: ' + res.status + ' > ' + res.statusText)
+                }
+            })
+            .catch(err => {
+                console.log("catch")
+                console.log(err)
+            })
+
+        // uploadChunkPromise(requestParams)
+        //     .then(res => {
+        //         console.log("then")
+        //         console.log(res.statusCode + ' > ' + res.statusMessage)
+        //         console.log(res)
+        //         callback(null);
+        //     })
+        //     .catch(err => {
+        //         console.log("catch")
+        //         // console.log(err.response.statusCode + ' > ' + err.response.statusMessage)
+        //         console.log(err)
+        //         callback(err);
+        //     })
 
         // request option 1 - 
 
@@ -966,24 +988,24 @@ const uploadFile = async (req, data) => {
         //         console.log('in the THEN - Error', error)
         //     })
 
-       // request option 2 -
+        // request option 2 -
 
-        const uploadChunkPromise =  new Promise((resolve, reject) => {
-                request_normal(requestParams, (err, res, body)=> {
-                    console.log('err: ', err)
-                    console.log('res: ', JSON.stringify(res, null, '----'))
-                    console.log('body: ', body)
+        // const uploadChunkPromise = new Promise((resolve, reject) => {
+        //     request_normal(requestParams, (err, res, body) => {
+        //         console.log('err: ', err)
+        //         console.log('res: ', JSON.stringify(res, null, '----'))
+        //         console.log('body: ', body)
 
-                } )  
-                    .on('response', (resUpload) => {
-                        console.log('Uploading '  + resUpload.statusCode + ' > ' + resUpload.statusMessage);
-                        resUpload.headers['content-type'] = undefined;
-                        if (resUpload.statusCode != 206 && resUpload.statusCode != 200) {
-                            resolve(resUpload)
-                        }
-                    })
-                   
-            })
+        //     })
+        //         .on('response', (resUpload) => {
+        //             console.log('Uploading ' + resUpload.statusCode + ' > ' + resUpload.statusMessage);
+        //             resUpload.headers['content-type'] = undefined;
+        //             if (resUpload.statusCode != 206 && resUpload.statusCode != 200) {
+        //                 resolve(resUpload)
+        //             }
+        //         })
+
+        // })
 
         // request option 3
 
@@ -993,7 +1015,7 @@ const uploadFile = async (req, data) => {
         //     console.log('body: ', body)
 
         // } )  
-        
+
 
         // verify response code
         // uploadChunkReq.on('response', (response) => {
@@ -1004,7 +1026,7 @@ const uploadFile = async (req, data) => {
         //         return
         //     }
 
-            
+
         // });
 
         // const uploadResult = await request(requestParams, function (error, response, body) {
@@ -1017,18 +1039,18 @@ const uploadFile = async (req, data) => {
         //         console.log(`Errors:`.red, JSON.stringify(body.errors, null, '----') )
         //         return 
         //     }
-            
+
         //     console.log('Chunk upload info (body)...'.cyan)
         //     console.log('response: ', JSON.stringify(response, null, '----'))
         //     let chunkProgressMessage = `Chunk ${chunkCount} of ${totalChunks} uploaded... `
-            
+
         //     console.log(chunkProgressMessage.cyan.bold, body.data.id.yellow)
         //     updateAirtable(req, 'Unzip Status', chunkProgressMessage)
         // })
 
         // console.log( 'uploadResult', uploadResult )
 
-        
+
         // let chunkUploadPromise = objects.uploadChunk(
         //     bucketKey,
         //     objectName,
@@ -1048,19 +1070,19 @@ const uploadFile = async (req, data) => {
         //     //     console.log('chunkUploadPromise - rejected', result)
         //     // })
 
-              //  promises.push(uploadChunkPromise) 
-            
-            if (end < contentLength){
-                start += chunkSize
-            }
+        //  promises.push(uploadChunkPromise) 
+
+        if (end < contentLength) {
+            start += chunkSize
         }
-    
+    }
+
     // console.log('promises', promises)
 
     // const chunksUploadPromises = await Promise.all(promises)   
 
     // console.log('chunksUploadPromises', chunksUploadPromises)
-    
+
     // let uploadPromise = chunksUploadPromises // singleUploadPromise
 
     // // // uploadPromise = promises[0]
@@ -1087,12 +1109,13 @@ const uploadFile = async (req, data) => {
  * @param {Object} req the request object (with authentication info) from the API call from the python upgrade/unzip script
  * 
  */
-const uploadUnzippedFile = (  ( unzippedFilePath, req, hostId) => {
+const uploadUnzippedFile = (unzippedFilePath, req, hostId) => {
+
 
     const credentials = {
         // with Bearer we get the error:faultstring: 'Failed to Decode Token: policy(jwt-decode-HS256)',
-        "access_token": req.body.oauth_token, 
-        "expires_in" : 3600
+        "access_token": req.body.oauth_token,
+        "expires_in": 3600
     }
 
     console.log(`Ready to upload ${unzippedFilePath}...`)
@@ -1107,15 +1130,15 @@ const uploadUnzippedFile = (  ( unzippedFilePath, req, hostId) => {
     });
 
     fileStream.on('data', chunk => {
-        
+
         chunks.push(chunk)
     });
-    
+
     // An error occurred with the stream
     fileStream.once('error', (err) => {
         // Be sure to handle this properly!
         console.log("Error reading fileStream...")
-        console.error(err); 
+        console.error(err);
     });
 
     // File is done being read
@@ -1124,12 +1147,12 @@ const uploadUnzippedFile = (  ( unzippedFilePath, req, hostId) => {
         fileBuffer = Buffer.concat(chunks);
 
         console.log('fileBuffer', fileBuffer)
-        
+
         const filePathParts = unzippedFilePath.split('/')
-        const fileName = filePathParts[filePathParts.length-1]
+        const fileName = filePathParts[filePathParts.length - 1]
         const contentLength = fileBuffer.length // file size in bytes?
 
-        console.log('content-length', contentLength )
+        console.log('content-length', contentLength)
 
         const data = {
             bucketKey: "wip.dm.prod",
@@ -1139,21 +1162,41 @@ const uploadUnzippedFile = (  ( unzippedFilePath, req, hostId) => {
             objectName: req.objectName,
             storageId: req.storageId,
             hostId: hostId,
-            contentLength:  contentLength,
-            body: fileBuffer, 
+            contentLength: contentLength,
+            body: fileBuffer,
             fileBuffer: fileBuffer,
             options: {
                 access: "readwrite"
             },
-            oauth2client: req.oauth2_client, 
+            oauth2client: req.oauth2_client,
             credentials: credentials
-    
+
         }
+
         return uploadFile(req, data)
     });
 
-})
+}
 
+const uploadChunkPromise = (requestParams) => {
+    return new Promise((resolve, reject) => {
+        request_normal(requestParams)
+            .on('response', (resUpload) => {
+                console.log('Uploading ' + resUpload.statusCode + ' > ' + resUpload.statusMessage);
+                // resUpload.headers['content-type'] = undefined;
+                resolve(resUpload)
+            })
+    })
+}
+
+const slicedArrayBuffer = (fileBuffer, start, end) => {
+    let ab = new ArrayBuffer(end - start + 1);
+    let view = new Uint8Array(ab);
+    for (var i = start; i < end + 1; ++i) {
+        view[i] = fileBuffer[i];
+    }
+    return ab;
+}
 
 module.exports = {
     download,

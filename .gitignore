@@ -393,3 +393,7 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+
+
+routes/data/*.zip
+routes/data/*.rvt
