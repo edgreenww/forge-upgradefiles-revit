@@ -15,14 +15,39 @@ const { v1: uuidv1 } = require('uuid'); // time based uuid
 
 
 
-const {
-    DataManagementClient
-} = require('forge-server-utils')
+// const {
+//     DataManagementClient
+// } = require('forge-server-utils')
 
 
-const DM = DataManagementClient
+// const DM = DataManagementClient
 
-console.log('test funtion:', DM.uploadObjectResumable)
+// console.log('test funtion:', DM.uploadObjectResumable)
+
+
+// /**
+//      * Uploads content to a specific bucket object using the resumable capabilities
+//      * ({@link https://forge.autodesk.com/en/docs/data/v2/reference/http/buckets-:bucketKey-objects-:objectName-resumable-PUT|docs}).
+//      * @async
+//      * @param {string} bucketKey Bucket key.
+//      * @param {string} objectName Name of uploaded object.
+//      * @param {Buffer} data Object content.
+//      * @param {number} byteOffset Byte offset of the uploaded blob in the target object.
+//      * @param {number} totalBytes Total byte size of the target object.
+//      * @param {string} sessionId Resumable session ID.
+//      * @param {string} [contentType='application/stream'] Type of content to be used in HTTP headers, for example, "application/json".
+//      * @throws Error when the request fails, for example, due to insufficient rights, or incorrect scopes.
+//      */
+//     const async uploadObjectResumable = (bucketKey: string, objectName: string, data: Buffer, byteOffset: number, totalBytes: number, sessionId: string, contentType: string = 'application/stream') => {
+//         const headers = {
+//             'Authorization': '',
+//             'Content-Type': contentType,
+//             'Content-Length': data.byteLength.toString(),
+//             'Content-Range': `bytes ${byteOffset}-${byteOffset + data.byteLength - 1}/${totalBytes}`,
+//             'Session-Id': sessionId
+//         }
+//         return this.put(`buckets/${bucketKey}/objects/${encodeURIComponent(objectName)}/resumable`, data, headers, WriteTokenScopes);
+//     }
 
 
 
@@ -734,6 +759,8 @@ myUploadChunk = async (req, data) => {
     }
 
     console.log('Ready to upload chunk...'.cyan)
+
+
 
     const reqOptions = {
         url: url,
