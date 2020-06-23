@@ -744,7 +744,7 @@ myUploadChunk = async (req, data) => {
     
     const headers = {
                 'Authorization':'Bearer ' + token,
-                'Content-Type':'application/octet-stream',
+                'Content-Type': 'application/stream', // 'application/octet-stream',
                 'Content-Range': contentRange,
                 'Session-Id': session
             }
@@ -908,8 +908,6 @@ const uploadFile = async (req, data) => {
     while (end < contentLength-1){
         end = start + chunkSize - 1
 
-        
-        
         if ( end > contentLength-1){
             end = contentLength-1
         }
@@ -926,7 +924,7 @@ const uploadFile = async (req, data) => {
             'Content-Range': `${contentRange}`,
             'Content-Length': `${contentLength}`,
             'Session-Id': `${sessionId}`,
-            //'User-Agent': 'Request-Promise'
+           
         }
 
         const url = `https://developer.api.autodesk.com/oss/v2/buckets/${bucketKey}/objects/${objectName}/resumable`;
@@ -950,8 +948,6 @@ const uploadFile = async (req, data) => {
         
         console.log('Ready to upload chunk...'.cyan)
 
-        
-
         // const uploadChunkPromise = promiseRequest(requestParams)
         const delayMs = 1000
         console.log(`simulating waiting for ${delayMs} milliseconds `)
@@ -972,22 +968,31 @@ const uploadFile = async (req, data) => {
 
        // request option 2 -
 
-        const uploadChunkPromise =  new Promise((resolve, reject) => {
-                request_normal(requestParams, (err, res, body)=> {
-                    console.log('err: ', err)
-                    console.log('res: ', JSON.stringify(res, null, '----'))
-                    console.log('body: ', body)
+        // const uploadChunkPromise =  new Promise((resolve, reject) => {
+        //         request_normal(requestParams, (err, res, body)=> {
+        //             console.log('err: ', err)
+        //             console.log('res: ', JSON.stringify(res, null, '----'))
+        //             console.log('body: ', body)
 
-                } )  
-                    .on('response', (resUpload) => {
-                        console.log('Uploading '  + resUpload.statusCode + ' > ' + resUpload.statusMessage);
-                        resUpload.headers['content-type'] = undefined;
-                        if (resUpload.statusCode != 206 && resUpload.statusCode != 200) {
-                            resolve(resUpload)
-                        }
-                    })
+        //         } )  
+        //             .on('response', (resUpload) => {
+        //                 console.log('Uploading '  + resUpload.statusCode + ' > ' + resUpload.statusMessage);
+        //                 resUpload.headers['content-type'] = undefined;
+        //                 if (resUpload.statusCode != 206 && resUpload.statusCode != 200) {
+        //                     resolve(resUpload)
+        //                 }
+        //             })
                    
-            })
+        //     })
+
+        // request option 3
+
+        request_normal(requestParams, (err, res, body)=> {
+            console.log('err: ', err)
+            console.log('res: ', JSON.stringify(res, null, '----'))
+            console.log('body: ', body)
+
+        } )  
         
 
         // verify response code
