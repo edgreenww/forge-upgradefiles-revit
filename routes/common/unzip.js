@@ -968,31 +968,31 @@ const uploadFile = async (req, data) => {
 
        // request option 2 -
 
-        // const uploadChunkPromise =  new Promise((resolve, reject) => {
-        //         request_normal(requestParams, (err, res, body)=> {
-        //             console.log('err: ', err)
-        //             console.log('res: ', JSON.stringify(res, null, '----'))
-        //             console.log('body: ', body)
+        const uploadChunkPromise =  new Promise((resolve, reject) => {
+                request_normal(requestParams, (err, res, body)=> {
+                    console.log('err: ', err)
+                    console.log('res: ', JSON.stringify(res, null, '----'))
+                    console.log('body: ', body)
 
-        //         } )  
-        //             .on('response', (resUpload) => {
-        //                 console.log('Uploading '  + resUpload.statusCode + ' > ' + resUpload.statusMessage);
-        //                 resUpload.headers['content-type'] = undefined;
-        //                 if (resUpload.statusCode != 206 && resUpload.statusCode != 200) {
-        //                     resolve(resUpload)
-        //                 }
-        //             })
+                } )  
+                    .on('response', (resUpload) => {
+                        console.log('Uploading '  + resUpload.statusCode + ' > ' + resUpload.statusMessage);
+                        resUpload.headers['content-type'] = undefined;
+                        if (resUpload.statusCode != 206 && resUpload.statusCode != 200) {
+                            resolve(resUpload)
+                        }
+                    })
                    
-        //     })
+            })
 
         // request option 3
 
-        request_normal(requestParams, (err, res, body)=> {
-            console.log('err: ', err)
-            console.log('res: ', JSON.stringify(res, null, '----'))
-            console.log('body: ', body)
+        // request_normal(requestParams, (err, res, body)=> {
+        //     console.log('err: ', err)
+        //     console.log('res: ', JSON.stringify(res, null, '----'))
+        //     console.log('body: ', body)
 
-        } )  
+        // } )  
         
 
         // verify response code
