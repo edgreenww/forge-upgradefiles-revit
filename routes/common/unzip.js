@@ -959,7 +959,6 @@ const uploadFile = async (req, data) => {
                 }
             })
             .catch(err => {
-                console.log("catch")
                 console.log(err)
             })
 
@@ -1178,16 +1177,16 @@ const uploadUnzippedFile = (unzippedFilePath, req, hostId) => {
 
 }
 
-const uploadChunkPromise = (requestParams) => {
-    return new Promise((resolve, reject) => {
-        request_normal(requestParams)
-            .on('response', (resUpload) => {
-                console.log('Uploading ' + resUpload.statusCode + ' > ' + resUpload.statusMessage);
-                // resUpload.headers['content-type'] = undefined;
-                resolve(resUpload)
-            })
-    })
-}
+// const uploadChunkPromise = (requestParams) => {
+//     return new Promise((resolve, reject) => {
+//         request_normal(requestParams)
+//             .on('response', (resUpload) => {
+//                 console.log('Uploading ' + resUpload.statusCode + ' > ' + resUpload.statusMessage);
+//                 // resUpload.headers['content-type'] = undefined;
+//                 resolve(resUpload)
+//             })
+//     })
+// }
 
 const slicedArrayBuffer = (fileBuffer, start, end) => {
     let ab = new ArrayBuffer(end - start + 1);
