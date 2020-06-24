@@ -1200,10 +1200,7 @@ const slicedArrayBuffer = (fileBuffer, start, end) => {
     let ab = new ArrayBuffer(end - start + 1);
     let view = new Uint8Array(ab);
     for (let i = start; i < end + 1; i++) {
-        if (i % 1000000 === 0) {
-            console.log(i, fileBuffer[i])
-        }
-        view[i] = fileBuffer[i];
+        view[i] = fileBuffer.readUInt8(i);
     }
     return ab;
 }
