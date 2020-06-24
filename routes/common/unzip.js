@@ -1199,8 +1199,11 @@ const uploadUnzippedFile = (unzippedFilePath, req, hostId) => {
 const slicedArrayBuffer = (fileBuffer, start, end) => {
     let ab = new ArrayBuffer(end - start + 1);
     let view = new Uint8Array(ab);
-    for (let i = start; i < end + 1; i++) {
-        view[i] = fileBuffer.readUInt8(i);
+    for (let i = 0; i < end - start + 1; i++) {
+        view[i] = fileBuffer[i + start];
+        // if (i % 1000000 == 0) {
+        //     console.log(i, view[i], fileBuffer[i + start])
+        // }
     }
     return ab;
 }
