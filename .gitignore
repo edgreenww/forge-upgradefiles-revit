@@ -7,6 +7,9 @@ yarn-error.log*
 .vscode
 .DS_Store
 
+#ignore downloaded data
+routes/data
+
 
 
 # Runtime data
@@ -397,3 +400,4 @@ ASALocalRun/
 .mfractor/
 *.rvt
 *.zip
+*.png
