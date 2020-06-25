@@ -7,6 +7,9 @@ yarn-error.log*
 .vscode
 .DS_Store
 
+#ignore downloaded files
+routes/data/
+
 # Runtime data
 pids
 *.pid
